@@ -1,18 +1,19 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { LogOut, User, Shield, Save } from 'lucide-react';
+import { LogOut, User, Shield, Save, Upload, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useForm } from 'react-hook-form';
 import { toast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 const profileFormSchema = z.object({
   first_name: z.string().optional(),
@@ -28,6 +29,9 @@ const SettingsPage = () => {
   const { user, signOut } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [profileData, setProfileData] = useState<ProfileFormValues | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -48,7 +52,7 @@ const SettingsPage = () => {
         setIsLoading(true);
         const { data, error } = await supabase
           .from('profiles')
-          .select('first_name, last_name, gender, pronouns, sexual_orientation')
+          .select('first_name, last_name, gender, pronouns, sexual_orientation, avatar_url')
           .eq('id', user.id)
           .single();
         
@@ -56,6 +60,7 @@ const SettingsPage = () => {
         
         if (data) {
           setProfileData(data);
+          setAvatarUrl(data.avatar_url);
           form.reset({
             first_name: data.first_name || '',
             last_name: data.last_name || '',
@@ -116,6 +121,96 @@ const SettingsPage = () => {
     }
   };
 
+  const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true);
+      
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error('È necessario selezionare un\'immagine');
+      }
+      
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user?.id}/${Date.now()}.${fileExt}`;
+      
+      // Upload image to storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+        
+      if (uploadError) throw uploadError;
+      
+      // Get public URL
+      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      const avatarUrl = data.publicUrl;
+      
+      // Update profile with new avatar URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: avatarUrl })
+        .eq('id', user?.id);
+        
+      if (updateError) throw updateError;
+      
+      setAvatarUrl(avatarUrl);
+      
+      toast({
+        title: "Immagine caricata",
+        description: "La tua foto profilo è stata aggiornata con successo.",
+      });
+      
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      toast({
+        title: "Errore",
+        description: "Impossibile caricare l'immagine. Riprova.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+  
+  const removeAvatar = async () => {
+    if (!user || !avatarUrl) return;
+    
+    try {
+      setUploading(true);
+      
+      // Update profile to remove avatar URL
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: null })
+        .eq('id', user.id);
+        
+      if (updateError) throw updateError;
+      
+      setAvatarUrl(null);
+      
+      toast({
+        title: "Immagine rimossa",
+        description: "La tua foto profilo è stata rimossa con successo.",
+      });
+      
+    } catch (error) {
+      console.error('Error removing avatar:', error);
+      toast({
+        title: "Errore",
+        description: "Impossibile rimuovere l'immagine. Riprova.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+  
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <div className="container mx-auto py-6">
       <h1 className="text-2xl font-bold mb-6">Impostazioni</h1>
@@ -133,6 +228,58 @@ const SettingsPage = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
+              <div className="flex flex-col items-center space-y-3 sm:flex-row sm:space-x-4 sm:space-y-0">
+                <div className="relative">
+                  <Avatar 
+                    className="h-24 w-24 cursor-pointer hover:opacity-90 transition-opacity" 
+                    onClick={handleAvatarClick}
+                  >
+                    {avatarUrl ? (
+                      <AvatarImage src={avatarUrl} alt="Foto profilo" />
+                    ) : null}
+                    <AvatarFallback className="text-xl">
+                      {profileData?.first_name ? profileData.first_name[0] : user?.email ? user.email[0].toUpperCase() : 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={uploadAvatar}
+                    accept="image/*"
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <div className="flex space-x-2">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleAvatarClick}
+                      disabled={uploading}
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      {uploading ? 'Caricamento...' : 'Cambia foto'}
+                    </Button>
+                    {avatarUrl && (
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={removeAvatar}
+                        disabled={uploading}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Rimuovi
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Clicca sull'immagine per caricare una nuova foto profilo
+                  </p>
+                </div>
+              </div>
               <div>
                 <p className="text-sm font-medium">Email</p>
                 <p className="text-sm text-muted-foreground">{user?.email}</p>
