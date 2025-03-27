@@ -1,12 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Search, Loader2 } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
+import LocationSearchBar from '@/components/test-locations/LocationSearchBar';
+import LocationMap from '@/components/test-locations/LocationMap';
+import LocationList from '@/components/test-locations/LocationList';
+import { calculateDistance, formatDistance } from '@/utils/locationUtils';
 
 interface TestLocation {
   id: string;
@@ -79,31 +78,6 @@ const TestLocationsPage: React.FC = () => {
 
   const handleViewDetails = (locationId: string) => {
     navigate(`/app/test-locations/${locationId}`);
-  };
-
-  // Calculate distance between two coordinates in kilometers
-  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-    const R = 6371; // Radius of the earth in km
-    const dLat = deg2rad(lat2 - lat1);
-    const dLon = deg2rad(lon2 - lon1);
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2); 
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-    const d = R * c; // Distance in km
-    return d;
-  };
-
-  const deg2rad = (deg: number): number => {
-    return deg * (Math.PI/180);
-  };
-
-  const formatDistance = (distance: number): string => {
-    if (distance < 1) {
-      return `${Math.round(distance * 1000)} m`;
-    }
-    return `${distance.toFixed(1)} km`;
   };
 
   const findNearMe = () => {
@@ -194,95 +168,22 @@ const TestLocationsPage: React.FC = () => {
         <p className="text-muted-foreground">Trova centri medici e laboratori vicino a te</p>
       </section>
 
-      <div className="h-[300px] rounded-xl bg-gray-100 relative overflow-hidden mb-8">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-muted-foreground text-sm">Mappa dei centri di test</p>
-        </div>
-        <div className="absolute bottom-4 right-4">
-          <Button 
-            size="sm" 
-            variant="secondary" 
-            className="shadow-md"
-            onClick={findNearMe}
-            disabled={isLocating}
-          >
-            {isLocating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Localizzando...
-              </>
-            ) : (
-              <>
-                <MapPin className="mr-2 h-4 w-4" />
-                Trova vicino a me
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
+      <LocationMap 
+        findNearMe={findNearMe} 
+        isLocating={isLocating} 
+      />
 
-      <form onSubmit={handleSearch} className="flex w-full max-w-sm items-center space-x-2 mb-6">
-        <Input
-          type="text"
-          placeholder="Cerca per nome, indirizzo o tipo di test"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1"
-        />
-        <Button type="submit" size="icon">
-          <Search className="h-4 w-4" />
-        </Button>
-      </form>
+      <LocationSearchBar 
+        searchQuery={searchQuery} 
+        setSearchQuery={setSearchQuery} 
+        handleSearch={handleSearch} 
+      />
 
-      <div className="space-y-4">
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-            <p className="text-muted-foreground">Caricamento centri test...</p>
-          </div>
-        ) : filteredLocations.length > 0 ? (
-          filteredLocations.map((location) => (
-            <Card key={location.id} className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-xl">{location.name}</CardTitle>
-                    <CardDescription className="mt-1">
-                      {location.address}, {location.city}
-                    </CardDescription>
-                  </div>
-                  {location.distance && (
-                    <Badge variant="outline" className="ml-2">
-                      {location.distance}
-                    </Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {location.testTypes.map((type) => (
-                    <Badge key={type} variant="secondary">
-                      {type}
-                    </Badge>
-                  ))}
-                </div>
-                <Button 
-                  className="mt-4" 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => handleViewDetails(location.id)}
-                >
-                  Vedi dettagli
-                </Button>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Nessun risultato trovato</p>
-          </div>
-        )}
-      </div>
+      <LocationList 
+        isLoading={isLoading} 
+        filteredLocations={filteredLocations} 
+        handleViewDetails={handleViewDetails} 
+      />
     </div>
   );
 };
