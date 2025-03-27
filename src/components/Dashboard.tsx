@@ -1,22 +1,16 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Calendar, 
-  AlertCircle, 
-  Beaker, 
-  Clock, 
-  Heart, 
-  ChevronRight 
-} from 'lucide-react';
+import { Calendar, AlertCircle, Beaker, Clock, Heart, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatTimeAgo } from '@/utils/dateUtils';
 import { getRiskColor, getRiskLabel } from '@/utils/riskCalculator';
-
 interface DashboardProps {
-  lastTest?: { date: string; result: string };
+  lastTest?: {
+    date: string;
+    result: string;
+  };
   riskLevel: 'low' | 'medium' | 'high';
   nextTestDue?: string;
   recentEncounters: Array<{
@@ -31,16 +25,14 @@ interface DashboardProps {
     type: string;
   }>;
 }
-
 const Dashboard: React.FC<DashboardProps> = ({
   lastTest,
   riskLevel,
   nextTestDue,
   recentEncounters,
-  upcomingTests,
+  upcomingTests
 }) => {
-  return (
-    <div className="space-y-8">
+  return <div className="space-y-8">
       <section className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">La tua dashboard</h1>
         <p className="text-muted-foreground">Gestisci la tua salute sessuale in modo semplice e consapevole</p>
@@ -110,10 +102,8 @@ const Dashboard: React.FC<DashboardProps> = ({
             <CardDescription>Gli ultimi rapporti registrati</CardDescription>
           </CardHeader>
           <CardContent className="pb-2">
-            {recentEncounters.length > 0 ? (
-              <div className="space-y-3">
-                {recentEncounters.map((encounter) => (
-                  <div key={encounter.id} className="flex items-center justify-between group">
+            {recentEncounters.length > 0 ? <div className="space-y-3">
+                {recentEncounters.map(encounter => <div key={encounter.id} className="flex items-center justify-between group">
                     <div className="flex items-center space-x-3">
                       <div className={`w-2 h-2 rounded-full ${getRiskColor(encounter.risk)}`} />
                       <div>
@@ -124,14 +114,10 @@ const Dashboard: React.FC<DashboardProps> = ({
                     <Badge variant="outline" className={`text-xs ${encounter.risk === 'high' ? 'border-red-500 text-red-500' : encounter.risk === 'medium' ? 'border-yellow-500 text-yellow-500' : 'border-green-500 text-green-500'}`}>
                       {getRiskLabel(encounter.risk)}
                     </Badge>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-8 text-center">
+                  </div>)}
+              </div> : <div className="py-8 text-center">
                 <p className="text-muted-foreground text-sm">Nessun rapporto registrato</p>
-              </div>
-            )}
+              </div>}
           </CardContent>
           <CardFooter className="pt-2">
             <Button asChild className="w-full" variant="outline">
@@ -150,11 +136,9 @@ const Dashboard: React.FC<DashboardProps> = ({
           </CardTitle>
           <CardDescription>Test e visite pianificate</CardDescription>
         </CardHeader>
-        <CardContent className="pb-2">
-          {upcomingTests.length > 0 ? (
-            <div className="space-y-3">
-              {upcomingTests.map((test) => (
-                <div key={test.id} className="flex items-center justify-between p-3 rounded-lg border group hover:bg-secondary/50 transition-colors">
+        <CardContent className="pb-2 py-[12px]">
+          {upcomingTests.length > 0 ? <div className="space-y-3">
+              {upcomingTests.map(test => <div key={test.id} className="flex items-center justify-between p-3 rounded-lg border group hover:bg-secondary/50 transition-colors">
                   <div className="flex items-center space-x-3">
                     <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                       <Beaker className="h-5 w-5 text-primary" />
@@ -165,21 +149,15 @@ const Dashboard: React.FC<DashboardProps> = ({
                     </div>
                   </div>
                   <ChevronRight className="h-5 w-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-8 text-center">
+                </div>)}
+            </div> : <div className="py-8 text-center">
               <p className="text-muted-foreground text-sm">Nessun test pianificato</p>
               <Button variant="link" className="mt-2" asChild>
                 <Link to="/app/calendar">Pianifica un test</Link>
               </Button>
-            </div>
-          )}
+            </div>}
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default Dashboard;
