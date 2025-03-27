@@ -28,7 +28,9 @@ const TabBar: React.FC = () => {
               cn(
                 "flex flex-col items-center justify-center w-full h-full px-1",
                 "text-xs font-medium transition-colors",
-                isActive ? "text-primary" : "text-muted-foreground"
+                isActive 
+                  ? "text-white bg-primary rounded-md mx-1" 
+                  : "text-muted-foreground"
               )
             }
           >
