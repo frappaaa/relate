@@ -2,9 +2,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
-import EncounterForm from '@/components/EncounterForm';
+import EncounterForm from '@/components/encounter/EncounterForm';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { FormData } from '@/components/encounter/types';
 
 const NewEncounterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const NewEncounterPage: React.FC = () => {
   const dateParam = searchParams.get('date');
   const initialDate = dateParam ? new Date(dateParam) : new Date();
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: FormData & { riskScore: number; riskLevel: 'low' | 'medium' | 'high' }) => {
     if (!user) {
       toast({
         title: "Accesso richiesto",
