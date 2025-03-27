@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { fetchLocationById, TestLocation } from '@/services/locationService';
 import LocationDetailHeader from '@/components/test-locations/LocationDetailHeader';
-import LocationMapPlaceholder from '@/components/test-locations/LocationMapPlaceholder';
+import LocationDetailMap from '@/components/test-locations/LocationDetailMap';
 import LocationDetailsCard from '@/components/test-locations/LocationDetailsCard';
 import LocationDetailLoading from '@/components/test-locations/LocationDetailLoading';
 import LocationNotFound from '@/components/test-locations/LocationNotFound';
@@ -63,7 +63,10 @@ const TestLocationDetailPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <LocationDetailHeader onBack={handleBack} />
-      <LocationMapPlaceholder coordinates={location.coordinates} />
+      <LocationDetailMap 
+        coordinates={location.coordinates} 
+        locationName={location.name}
+      />
       <LocationDetailsCard 
         location={location}
         onBookAppointment={handleBookAppointment}

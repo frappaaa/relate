@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import LocationSearchBar from '@/components/test-locations/LocationSearchBar';
-import LocationMap from '@/components/test-locations/LocationMap';
+import LocationsMap from '@/components/test-locations/LocationsMap';
 import LocationList from '@/components/test-locations/LocationList';
 import { calculateDistance, formatDistance } from '@/utils/locationUtils';
 
@@ -168,9 +168,12 @@ const TestLocationsPage: React.FC = () => {
         <p className="text-muted-foreground">Trova centri medici e laboratori vicino a te</p>
       </section>
 
-      <LocationMap 
+      <LocationsMap 
+        locations={filteredLocations}
+        isLoading={isLoading}
         findNearMe={findNearMe} 
-        isLocating={isLocating} 
+        isLocating={isLocating}
+        onSelectLocation={handleViewDetails}
       />
 
       <LocationSearchBar 
