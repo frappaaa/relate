@@ -1,11 +1,22 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Shield, Calendar, Activity, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect to dashboard if already logged in
+  React.useEffect(() => {
+    if (user) {
+      navigate('/app/dashboard');
+    }
+  }, [user, navigate]);
+
   return (
     <div className="flex flex-col min-h-screen">
       <header className="py-6 md:py-10 w-full border-b">
@@ -14,9 +25,14 @@ const Index = () => {
             <div className="flex items-center justify-center w-8 h-8 rounded-full bg-relate-500 text-white font-semibold text-sm">R</div>
             <span className="font-medium tracking-tight text-lg">Relate</span>
           </div>
-          <Button asChild>
-            <Link to="/app/dashboard">Accedi</Link>
-          </Button>
+          <div className="flex gap-3">
+            <Button variant="outline" asChild>
+              <Link to="/login">Accedi</Link>
+            </Button>
+            <Button asChild>
+              <Link to="/register">Registrati</Link>
+            </Button>
+          </div>
         </div>
       </header>
 
