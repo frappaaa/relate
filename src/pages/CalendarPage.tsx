@@ -82,9 +82,9 @@ const CalendarPage: React.FC = () => {
 
   const handleViewEvent = (event: CalendarEvent) => {
     if (event.type === 'encounter') {
-      alert(`Dettagli rapporto: ${event.details?.encounterType} - Rischio: ${event.details?.risk}`);
+      navigate(`/app/encounter/${event.id}`);
     } else {
-      alert(`Dettagli test: ${event.details?.testType} - Stato: ${event.details?.status} - Risultato: ${event.details?.result || 'In attesa'}`);
+      navigate(`/app/test/${event.id}`);
     }
   };
 

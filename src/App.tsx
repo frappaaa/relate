@@ -15,6 +15,8 @@ import TestLocationDetailPage from "./pages/TestLocationDetailPage";
 import CalendarPage from "./pages/CalendarPage";
 import NewEncounterPage from "./pages/NewEncounterPage";
 import NewTestPage from "./pages/NewTestPage";
+import EncounterDetailPage from "./pages/EncounterDetailPage";
+import TestDetailPage from "./pages/TestDetailPage";
 import SettingsPage from "./pages/SettingsPage";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -42,6 +44,8 @@ const App = () => (
                 <Route path="calendar" element={<CalendarPage />} />
                 <Route path="new-encounter" element={<NewEncounterPage />} />
                 <Route path="new-test" element={<NewTestPage />} />
+                <Route path="encounter/:id" element={<EncounterDetailPage />} />
+                <Route path="test/:id" element={<TestDetailPage />} />
                 <Route path="settings" element={<SettingsPage />} />
               </Route>
             </Route>
