@@ -3,8 +3,21 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CalendarComponent from '@/components/Calendar';
 
-// Mock data for the calendar
-const mockEvents = [
+// Define the type to match CalendarComponent's expected type
+interface CalendarEvent {
+  id: string;
+  date: Date;
+  type: 'encounter' | 'test';
+  details?: {
+    encounterType?: string;
+    risk?: 'low' | 'medium' | 'high';
+    testType?: string;
+    result?: string;
+  };
+}
+
+// Mock data for the calendar with correct type annotation
+const mockEvents: CalendarEvent[] = [
   {
     id: '1',
     date: new Date(2023, 9, 10), // October 10, 2023
@@ -36,7 +49,7 @@ const mockEvents = [
 
 const CalendarPage: React.FC = () => {
   const navigate = useNavigate();
-  const [events, setEvents] = useState(mockEvents);
+  const [events, setEvents] = useState<CalendarEvent[]>(mockEvents);
 
   const handleAddEvent = (date: Date) => {
     // In a real app, you would navigate to a form or open a modal
@@ -44,14 +57,14 @@ const CalendarPage: React.FC = () => {
     navigate(`/app/new-encounter?date=${date.toISOString()}`);
   };
 
-  const handleViewEvent = (event: any) => {
+  const handleViewEvent = (event: CalendarEvent) => {
     // In a real app, you would open a details view
     console.log('View event:', event);
     // For demonstration, just show an alert
     if (event.type === 'encounter') {
-      alert(`Dettagli rapporto: ${event.details.encounterType} - Rischio: ${event.details.risk}`);
+      alert(`Dettagli rapporto: ${event.details?.encounterType} - Rischio: ${event.details?.risk}`);
     } else {
-      alert(`Dettagli test: ${event.details.testType} - Risultato: ${event.details.result || 'In attesa'}`);
+      alert(`Dettagli test: ${event.details?.testType} - Risultato: ${event.details?.result || 'In attesa'}`);
     }
   };
 
