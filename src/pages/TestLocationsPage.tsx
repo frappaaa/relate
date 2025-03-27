@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Search, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,63 +18,56 @@ interface TestLocation {
   coordinates?: [number, number]; // [latitude, longitude]
 }
 
-const testLocations: TestLocation[] = [
-  {
-    id: '1',
-    name: 'Centro Medico Salute',
-    address: 'Via Roma 123',
-    city: 'Milano',
-    testTypes: ['HIV', 'Clamidia', 'Gonorrea'],
-    distance: '1.2 km',
-    coordinates: [45.464664, 9.188540],
-  },
-  {
-    id: '2',
-    name: 'Laboratorio Analisi Moderno',
-    address: 'Corso Italia 45',
-    city: 'Milano',
-    testTypes: ['HIV', 'Sifilide', 'HPV'],
-    distance: '2.5 km',
-    coordinates: [45.458309, 9.186477],
-  },
-  {
-    id: '3',
-    name: 'Ospedale San Raffaele',
-    address: 'Via Olgettina 60',
-    city: 'Milano', 
-    testTypes: ['HIV', 'Epatite B', 'Epatite C', 'Clamidia', 'Gonorrea', 'Sifilide'],
-    distance: '5.8 km',
-    coordinates: [45.505855, 9.264530],
-  },
-  {
-    id: '4',
-    name: 'Centro IST AIED',
-    address: 'Via Vitruvio 42',
-    city: 'Milano',
-    testTypes: ['HIV', 'Sifilide', 'Gonorrea', 'Clamidia'],
-    distance: '3.1 km',
-    coordinates: [45.484173, 9.204326],
-  },
-  {
-    id: '5',
-    name: 'Poliambulatorio San Donato',
-    address: 'Piazza Bobbio 1',
-    city: 'San Donato Milanese',
-    testTypes: ['HIV', 'HPV'],
-    distance: '7.4 km',
-    coordinates: [45.418697, 9.268297],
-  },
-];
-
 const TestLocationsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredLocations, setFilteredLocations] = useState<TestLocation[]>(testLocations);
+  const [filteredLocations, setFilteredLocations] = useState<TestLocation[]>([]);
+  const [allLocations, setAllLocations] = useState<TestLocation[]>([]);
   const [isLocating, setIsLocating] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('https://script.google.com/macros/s/AKfycbyY_by3TUuC9f771RqXfBarbTDxDEIp9BFbqbtqtoU/dev');
+        
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        
+        const data = await response.json();
+        
+        // Transform the API data to match our TestLocation interface
+        const transformedData = data.map((item: any) => ({
+          id: item.id || String(Math.random()),
+          name: item.name,
+          address: item.address,
+          city: item.city,
+          testTypes: item.testTypes || [],
+          coordinates: item.coordinates || undefined
+        }));
+        
+        setAllLocations(transformedData);
+        setFilteredLocations(transformedData);
+      } catch (error) {
+        console.error('Error fetching test locations:', error);
+        toast({
+          title: "Errore",
+          description: "Si è verificato un errore durante il caricamento dei centri test.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLocations();
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const filtered = testLocations.filter(
+    const filtered = allLocations.filter(
       location => 
         location.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         location.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -132,7 +125,7 @@ const TestLocationsPage: React.FC = () => {
         const userLon = position.coords.longitude;
         
         // Calculate distance for each location
-        const locationsWithDistance = testLocations.map(location => {
+        const locationsWithDistance = allLocations.map(location => {
           if (!location.coordinates) return location;
           
           const distance = calculateDistance(
@@ -242,7 +235,12 @@ const TestLocationsPage: React.FC = () => {
       </form>
 
       <div className="space-y-4">
-        {filteredLocations.length > 0 ? (
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+            <p className="text-muted-foreground">Caricamento centri test...</p>
+          </div>
+        ) : filteredLocations.length > 0 ? (
           filteredLocations.map((location) => (
             <Card key={location.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-2">

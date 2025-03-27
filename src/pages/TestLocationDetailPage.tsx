@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Phone, MapPin, Clock, Calendar, Info, ArrowLeft, ExternalLink } from 'lucide-react';
+import { Phone, MapPin, Clock, Calendar, Info, ArrowLeft, ExternalLink, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -19,105 +19,60 @@ interface TestLocation {
   website?: string;
   hours?: { day: string; hours: string }[];
   description?: string;
+  coordinates?: [number, number];
 }
-
-// Mock data - in a real app, this would come from an API
-const testLocationsData: TestLocation[] = [
-  {
-    id: '1',
-    name: 'Centro Medico Salute',
-    address: 'Via Roma 123',
-    city: 'Milano',
-    testTypes: ['HIV', 'Clamidia', 'Gonorrea'],
-    distance: '1.2 km',
-    phone: '+39 02 1234567',
-    website: 'https://centromedicosalute.it',
-    hours: [
-      { day: 'Lunedì - Venerdì', hours: '9:00 - 18:00' },
-      { day: 'Sabato', hours: '9:00 - 12:00' },
-      { day: 'Domenica', hours: 'Chiuso' }
-    ],
-    description: 'Centro specializzato in test per malattie sessualmente trasmissibili con personale qualificato e risultati in 24-48 ore.'
-  },
-  {
-    id: '2',
-    name: 'Laboratorio Analisi Moderno',
-    address: 'Corso Italia 45',
-    city: 'Milano',
-    testTypes: ['HIV', 'Sifilide', 'HPV'],
-    distance: '2.5 km',
-    phone: '+39 02 7654321',
-    website: 'https://labmoderno.it',
-    hours: [
-      { day: 'Lunedì - Venerdì', hours: '8:30 - 19:00' },
-      { day: 'Sabato', hours: '8:30 - 12:30' },
-      { day: 'Domenica', hours: 'Chiuso' }
-    ],
-    description: 'Laboratorio di analisi con apparecchiature all\'avanguardia e personale altamente qualificato per test IST completi.'
-  },
-  {
-    id: '3',
-    name: 'Ospedale San Raffaele',
-    address: 'Via Olgettina 60',
-    city: 'Milano', 
-    testTypes: ['HIV', 'Epatite B', 'Epatite C', 'Clamidia', 'Gonorrea', 'Sifilide'],
-    distance: '5.8 km',
-    phone: '+39 02 2643651',
-    website: 'https://www.hsr.it',
-    hours: [
-      { day: 'Lunedì - Venerdì', hours: '7:00 - 19:00' },
-      { day: 'Sabato', hours: '7:00 - 13:00' },
-      { day: 'Domenica', hours: 'Chiuso' }
-    ],
-    description: 'Ospedale universitario con centro specializzato per malattie infettive e test completi per IST con consulenza medica.'
-  },
-  {
-    id: '4',
-    name: 'Centro IST AIED',
-    address: 'Via Vitruvio 42',
-    city: 'Milano',
-    testTypes: ['HIV', 'Sifilide', 'Gonorrea', 'Clamidia'],
-    distance: '3.1 km',
-    phone: '+39 02 8901234',
-    website: 'https://aied-milano.it',
-    hours: [
-      { day: 'Lunedì - Giovedì', hours: '9:00 - 17:00' },
-      { day: 'Venerdì', hours: '9:00 - 15:00' },
-      { day: 'Sabato - Domenica', hours: 'Chiuso' }
-    ],
-    description: 'Centro specializzato in salute sessuale con test anonimi e supporto psicologico per persone con diagnosi positive.'
-  },
-  {
-    id: '5',
-    name: 'Poliambulatorio San Donato',
-    address: 'Piazza Bobbio 1',
-    city: 'San Donato Milanese',
-    testTypes: ['HIV', 'HPV'],
-    distance: '7.4 km',
-    phone: '+39 02 5276890',
-    website: 'https://poliambulatoriosandonato.it',
-    hours: [
-      { day: 'Lunedì - Venerdì', hours: '8:00 - 20:00' },
-      { day: 'Sabato', hours: '8:00 - 13:00' },
-      { day: 'Domenica', hours: 'Chiuso' }
-    ],
-    description: 'Poliambulatorio che offre test IST con consulenza specialistica e possibilità di prenotazione online.'
-  },
-];
 
 const TestLocationDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [location, setLocation] = useState<TestLocation | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // In a real app, this would be an API call
-    const foundLocation = testLocationsData.find(loc => loc.id === id);
-    if (foundLocation) {
-      setLocation(foundLocation);
+    const fetchLocationDetails = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('https://script.google.com/macros/s/AKfycbyY_by3TUuC9f771RqXfBarbTDxDEIp9BFbqbtqtoU/dev');
+        
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        
+        const data = await response.json();
+        const foundLocation = data.find((loc: any) => loc.id === id);
+        
+        if (foundLocation) {
+          // Transform to match our interface
+          setLocation({
+            id: foundLocation.id,
+            name: foundLocation.name,
+            address: foundLocation.address,
+            city: foundLocation.city,
+            testTypes: foundLocation.testTypes || [],
+            phone: foundLocation.phone,
+            website: foundLocation.website,
+            hours: foundLocation.hours,
+            description: foundLocation.description,
+            coordinates: foundLocation.coordinates
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching location details:', error);
+        toast({
+          title: "Errore",
+          description: "Si è verificato un errore durante il caricamento dei dettagli del centro.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchLocationDetails();
     }
-  }, [id]);
+  }, [id, toast]);
 
   const handleBookAppointment = () => {
     toast({
@@ -131,6 +86,15 @@ const TestLocationDetailPage: React.FC = () => {
   const handleBack = () => {
     navigate('/app/test-locations');
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[70vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-muted-foreground">Caricamento dettagli...</p>
+      </div>
+    );
+  }
 
   if (!location) {
     return (
