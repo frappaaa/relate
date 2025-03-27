@@ -9,6 +9,45 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      encounters: {
+        Row: {
+          created_at: string
+          date: string
+          encounter_type: Database["public"]["Enums"]["encounter_type"]
+          id: string
+          notes: string | null
+          partner_name: string | null
+          protection_used: boolean
+          risk_level: Database["public"]["Enums"]["risk_level"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          encounter_type: Database["public"]["Enums"]["encounter_type"]
+          id?: string
+          notes?: string | null
+          partner_name?: string | null
+          protection_used?: boolean
+          risk_level?: Database["public"]["Enums"]["risk_level"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          encounter_type?: Database["public"]["Enums"]["encounter_type"]
+          id?: string
+          notes?: string | null
+          partner_name?: string | null
+          protection_used?: boolean
+          risk_level?: Database["public"]["Enums"]["risk_level"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -36,6 +75,45 @@ export type Database = {
         }
         Relationships: []
       }
+      tests: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          location: string | null
+          notes: string | null
+          result: Database["public"]["Enums"]["test_result"] | null
+          status: Database["public"]["Enums"]["test_status"]
+          test_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          result?: Database["public"]["Enums"]["test_result"] | null
+          status?: Database["public"]["Enums"]["test_status"]
+          test_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          result?: Database["public"]["Enums"]["test_result"] | null
+          status?: Database["public"]["Enums"]["test_status"]
+          test_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -44,7 +122,10 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      encounter_type: "oral" | "vaginal" | "anal" | "other"
+      risk_level: "low" | "medium" | "high"
+      test_result: "negative" | "positive" | "pending"
+      test_status: "scheduled" | "completed" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, AlertCircle, Beaker, Clock, Heart, ChevronRight } from 'lucide-react';
@@ -6,13 +7,16 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDate, formatTimeAgo } from '@/utils/dateUtils';
 import { getRiskColor, getRiskLabel } from '@/utils/riskCalculator';
+import { Skeleton } from '@/components/ui/skeleton';
+
 interface DashboardProps {
+  isLoading?: boolean;
   lastTest?: {
     date: string;
     result: string;
-  };
+  } | null;
   riskLevel: 'low' | 'medium' | 'high';
-  nextTestDue?: string;
+  nextTestDue?: string | null;
   recentEncounters: Array<{
     id: string;
     date: string;
@@ -25,13 +29,19 @@ interface DashboardProps {
     type: string;
   }>;
 }
+
 const Dashboard: React.FC<DashboardProps> = ({
+  isLoading = false,
   lastTest,
   riskLevel,
   nextTestDue,
   recentEncounters,
   upcomingTests
 }) => {
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
+
   return <div className="space-y-8">
       <section className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">La tua dashboard</h1>
@@ -80,7 +90,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   <span className="text-sm">Prossimo test consigliato</span>
                 </div>
                 <span className="text-sm font-medium">
-                  {nextTestDue ? formatDate(nextTestDue) : 'Non calcolato'}
+                  {nextTestDue ? nextTestDue : 'Non calcolato'}
                 </span>
               </div>
             </div>
@@ -160,4 +170,106 @@ const Dashboard: React.FC<DashboardProps> = ({
       </Card>
     </div>;
 };
+
+// Skeleton loader for dashboard
+const DashboardSkeleton = () => {
+  return (
+    <div className="space-y-8">
+      <section className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">La tua dashboard</h1>
+        <p className="text-muted-foreground">Gestisci la tua salute sessuale in modo semplice e consapevole</p>
+      </section>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="overflow-hidden shadow-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-relate-500" />
+              Stato attuale
+            </CardTitle>
+            <CardDescription>La tua valutazione del rischio</CardDescription>
+          </CardHeader>
+          <CardContent className="pb-2">
+            <div className="flex items-center space-x-4 mb-4">
+              <Skeleton className="h-16 w-16 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-48" />
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+              <div className="flex justify-between items-center">
+                <Skeleton className="h-4 w-48" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="pt-2">
+            <Skeleton className="h-10 w-full" />
+          </CardFooter>
+        </Card>
+
+        <Card className="shadow-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <Heart className="h-5 w-5 text-relate-500" />
+              Rapporti recenti
+            </CardTitle>
+            <CardDescription>Gli ultimi rapporti registrati</CardDescription>
+          </CardHeader>
+          <CardContent className="pb-2">
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Skeleton className="h-2 w-2 rounded-full" />
+                    <div>
+                      <Skeleton className="h-4 w-32 mb-1" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+          <CardFooter className="pt-2">
+            <Skeleton className="h-10 w-full" />
+          </CardFooter>
+        </Card>
+      </div>
+
+      <Card className="shadow-card">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="h-5 w-5 text-relate-500" />
+            Prossimi appuntamenti
+          </CardTitle>
+          <CardDescription>Test e visite pianificate</CardDescription>
+        </CardHeader>
+        <CardContent className="pb-2 py-[16px]">
+          <div className="space-y-3">
+            {[1, 2].map((i) => (
+              <div key={i} className="flex items-center justify-between p-3 rounded-lg border">
+                <div className="flex items-center space-x-3">
+                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <div>
+                    <Skeleton className="h-4 w-48 mb-1" />
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                </div>
+                <Skeleton className="h-5 w-5 rounded" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
 export default Dashboard;

@@ -69,9 +69,15 @@ type FormData = z.infer<typeof formSchema>;
 
 interface EncounterFormProps {
   onSubmit: (data: FormData & { riskScore: number; riskLevel: 'low' | 'medium' | 'high' }) => void;
+  initialDate?: Date;
+  isSubmitting?: boolean;
 }
 
-const EncounterForm: React.FC<EncounterFormProps> = ({ onSubmit }) => {
+const EncounterForm: React.FC<EncounterFormProps> = ({ 
+  onSubmit, 
+  initialDate = new Date(),
+  isSubmitting = false 
+}) => {
   const [riskResult, setRiskResult] = useState<{ score: number; level: 'low' | 'medium' | 'high' } | null>(null);
 
   // Initialize symptoms with all options set to false
@@ -83,7 +89,7 @@ const EncounterForm: React.FC<EncounterFormProps> = ({ onSubmit }) => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      date: new Date(),
+      date: initialDate,
       partnerStatus: 'unknown',
       symptoms: initialSymptoms,
     },
@@ -364,8 +370,8 @@ const EncounterForm: React.FC<EncounterFormProps> = ({ onSubmit }) => {
             </Card>
           )}
 
-          <Button type="submit" className="w-full md:w-auto">
-            Salva rapporto
+          <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting}>
+            {isSubmitting ? "Salvataggio in corso..." : "Salva rapporto"}
           </Button>
         </form>
       </Form>
