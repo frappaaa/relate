@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import TabBar from './TabBar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { cn } from '@/lib/utils';
 
 const Layout: React.FC = () => {
   const isMobile = useIsMobile();
