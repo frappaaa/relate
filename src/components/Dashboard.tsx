@@ -136,7 +136,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           </CardTitle>
           <CardDescription>Test e visite pianificate</CardDescription>
         </CardHeader>
-        <CardContent className="pb-2 py-[12px]">
+        <CardContent className="pb-2 py-[16px]">
           {upcomingTests.length > 0 ? <div className="space-y-3">
               {upcomingTests.map(test => <div key={test.id} className="flex items-center justify-between p-3 rounded-lg border group hover:bg-secondary/50 transition-colors">
                   <div className="flex items-center space-x-3">
