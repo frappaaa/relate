@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, getDay } from 'date-fns';
+import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, getDay, isAfter, startOfDay } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Plus, Heart, Beaker } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -41,6 +41,7 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const today = startOfDay(new Date());
 
   const nextMonth = () => {
     setCurrentMonth(addMonths(currentMonth, 1));
@@ -66,9 +67,27 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
     setIsDialogOpen(true);
   };
 
-  const handleAddEvent = () => {
+  const handleAddEncounter = () => {
     if (selectedDate) {
       onAddEvent(selectedDate);
+      setIsDialogOpen(false);
+    }
+  };
+
+  const isFutureDate = (date: Date) => {
+    return isAfter(startOfDay(date), today);
+  };
+
+  const navigateToEncounterForm = () => {
+    if (selectedDate) {
+      window.location.href = `/app/new-encounter?date=${selectedDate.toISOString()}`;
+      setIsDialogOpen(false);
+    }
+  };
+
+  const navigateToTestForm = () => {
+    if (selectedDate) {
+      window.location.href = `/app/new-test?date=${selectedDate.toISOString()}`;
       setIsDialogOpen(false);
     }
   };
@@ -177,26 +196,33 @@ const CalendarComponent: React.FC<CalendarComponentProps> = ({
               {selectedDate && format(selectedDate, 'd MMMM yyyy', { locale: it })}
             </DialogTitle>
             <DialogDescription>
-              Scegli cosa vuoi aggiungere per questa data
+              {selectedDate && isFutureDate(selectedDate) 
+                ? "Pianifica un nuovo test per questa data" 
+                : "Scegli cosa vuoi aggiungere per questa data"}
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <Button 
-              className="flex items-center gap-2 h-auto py-4"
-              onClick={handleAddEvent}
-            >
-              <Heart className="h-5 w-5" />
-              <div className="text-left">
-                <div className="font-medium">Rapporto</div>
-                <div className="text-xs text-muted-foreground">Registra un nuovo rapporto</div>
-              </div>
-            </Button>
+          <div className={cn(
+            "grid gap-4 mt-4",
+            selectedDate && isFutureDate(selectedDate) ? "grid-cols-1" : "grid-cols-2"
+          )}>
+            {selectedDate && !isFutureDate(selectedDate) && (
+              <Button 
+                className="flex items-center gap-2 h-auto py-4"
+                onClick={navigateToEncounterForm}
+              >
+                <Heart className="h-5 w-5" />
+                <div className="text-left">
+                  <div className="font-medium">Rapporto</div>
+                  <div className="text-xs text-muted-foreground">Registra un nuovo rapporto</div>
+                </div>
+              </Button>
+            )}
             
             <Button
-              variant="outline"
+              variant={selectedDate && isFutureDate(selectedDate) ? "default" : "outline"}
               className="flex items-center gap-2 h-auto py-4"
-              onClick={handleAddEvent}
+              onClick={navigateToTestForm}
             >
               <Beaker className="h-5 w-5" />
               <div className="text-left">
