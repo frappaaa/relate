@@ -9,6 +9,10 @@ interface LocationDetailMapProps {
   locationName: string;
 }
 
+// Token di esempio per Mapbox (in un'app reale, questo dovrebbe essere sostituito con un token valido)
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiZGVtby1tYXBib3giLCJhIjoiY2xsNW1yZHh3MHRrMDNxcGJwNXptYnptZiJ9.66cOV3nnumNU_twBgj0nWQ';
+mapboxgl.accessToken = MAPBOX_TOKEN;
+
 const LocationDetailMap: React.FC<LocationDetailMapProps> = ({ coordinates, locationName }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -16,14 +20,9 @@ const LocationDetailMap: React.FC<LocationDetailMapProps> = ({ coordinates, loca
   const [mapError, setMapError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Replace with your Mapbox token
-    const MAPBOX_TOKEN = 'pk.eyJ1IjoiZGVtby1sb3ZhYmxlIiwiYSI6ImNsNDhpcnUwMDBjZGgzaW56YWd2N3VvN2YifQ.UeP8BnNzNf1UG61U-_VviA';
-    
     if (!coordinates || !mapContainer.current) return;
     
     try {
-      mapboxgl.accessToken = MAPBOX_TOKEN;
-      
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/streets-v12',

@@ -21,6 +21,10 @@ interface LocationsMapProps {
   onSelectLocation: (locationId: string) => void;
 }
 
+// Token di esempio per Mapbox (in un'app reale, questo dovrebbe essere sostituito con un token valido)
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiZGVtby1tYXBib3giLCJhIjoiY2xsNW1yZHh3MHRrMDNxcGJwNXptYnptZiJ9.66cOV3nnumNU_twBgj0nWQ';
+mapboxgl.accessToken = MAPBOX_TOKEN;
+
 const LocationsMap: React.FC<LocationsMapProps> = ({
   locations,
   isLoading,
@@ -34,9 +38,6 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
 
   useEffect(() => {
     if (!mapContainer.current) return;
-    
-    const MAPBOX_TOKEN = 'pk.eyJ1IjoiZGVtby1sb3ZhYmxlIiwiYSI6ImNsNDhpcnUwMDBjZGgzaW56YWd2N3VvN2YifQ.UeP8BnNzNf1UG61U-_VviA';
-    mapboxgl.accessToken = MAPBOX_TOKEN;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,

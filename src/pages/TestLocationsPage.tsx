@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
@@ -6,16 +5,7 @@ import LocationSearchBar from '@/components/test-locations/LocationSearchBar';
 import LocationsMap from '@/components/test-locations/LocationsMap';
 import LocationList from '@/components/test-locations/LocationList';
 import { calculateDistance, formatDistance } from '@/utils/locationUtils';
-
-interface TestLocation {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-  testTypes: string[];
-  distance?: string;
-  coordinates?: [number, number]; // [latitude, longitude]
-}
+import { fetchLocations, TestLocation } from '@/services/locationService';
 
 const TestLocationsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -26,29 +16,12 @@ const TestLocationsPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchLocations = async () => {
+    const loadLocations = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('https://script.google.com/macros/s/AKfycbyY_by3TUuC9f771RqXfBarbTDxDEIp9BFbqbtqtoU/dev');
-        
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        
-        const data = await response.json();
-        
-        // Transform the API data to match our TestLocation interface
-        const transformedData = data.map((item: any) => ({
-          id: item.id || String(Math.random()),
-          name: item.name,
-          address: item.address,
-          city: item.city,
-          testTypes: item.testTypes || [],
-          coordinates: item.coordinates || undefined
-        }));
-        
-        setAllLocations(transformedData);
-        setFilteredLocations(transformedData);
+        const data = await fetchLocations();
+        setAllLocations(data);
+        setFilteredLocations(data);
       } catch (error) {
         console.error('Error fetching test locations:', error);
         toast({
@@ -61,7 +34,7 @@ const TestLocationsPage: React.FC = () => {
       }
     };
 
-    fetchLocations();
+    loadLocations();
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
