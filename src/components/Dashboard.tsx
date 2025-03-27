@@ -163,7 +163,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             </div> : <div className="py-8 text-center">
               <p className="text-muted-foreground text-sm">Nessun test pianificato</p>
               <Button variant="link" className="mt-2" asChild>
-                <Link to="/app/calendar">Pianifica un test</Link>
+                <Link to="/app/new-test">Pianifica un test</Link>
               </Button>
             </div>}
         </CardContent>
