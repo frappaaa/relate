@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Calendar, Home, Plus, Settings } from 'lucide-react';
+import { Calendar, Home, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -14,7 +14,6 @@ const TabBar: React.FC = () => {
     { path: '/app/dashboard', label: 'Dashboard', icon: <Home className="h-5 w-5" /> },
     { path: '/app/calendar', label: 'Calendario', icon: <Calendar className="h-5 w-5" /> },
     { path: '/app/new-encounter', label: 'Nuovo', icon: <Plus className="h-5 w-5" /> },
-    { path: '/app/settings', label: 'Impostazioni', icon: <Settings className="h-5 w-5" /> },
   ];
 
   return (

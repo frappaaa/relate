@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Calendar, Home, Plus, Settings } from 'lucide-react';
+import { Calendar, Home, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -14,7 +14,6 @@ const Navbar: React.FC = () => {
     { path: '/app/dashboard', label: 'Dashboard', icon: <Home className="h-5 w-5" /> },
     { path: '/app/calendar', label: 'Calendario', icon: <Calendar className="h-5 w-5" /> },
     { path: '/app/new-encounter', label: 'Nuovo', icon: <Plus className="h-5 w-5" /> },
-    { path: '/app/settings', label: 'Impostazioni', icon: <Settings className="h-5 w-5" /> },
   ];
 
   const handleAvatarClick = () => {
@@ -26,12 +25,7 @@ const Navbar: React.FC = () => {
       <div className="container flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-2">
           {isMobile ? (
-            <Avatar 
-              className="h-8 w-8 cursor-pointer" 
-              onClick={handleAvatarClick}
-            >
-              <AvatarFallback className="bg-relate-500 text-white">U</AvatarFallback>
-            </Avatar>
+            <div />
           ) : (
             <NavLink to="/app/dashboard" className="flex items-center gap-2">
               <div className="flex items-center justify-center w-8 h-8 rounded-full bg-relate-500 text-white font-semibold text-sm">R</div>
@@ -60,6 +54,13 @@ const Navbar: React.FC = () => {
             ))}
           </nav>
         )}
+        
+        <Avatar 
+          className="h-8 w-8 cursor-pointer" 
+          onClick={handleAvatarClick}
+        >
+          <AvatarFallback className="bg-relate-500 text-white">U</AvatarFallback>
+        </Avatar>
       </div>
     </header>
   );
