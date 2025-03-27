@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import DashboardPage from "./pages/DashboardPage";
 import TestLocationsPage from "./pages/TestLocationsPage";
+import TestLocationDetailPage from "./pages/TestLocationDetailPage";
 import CalendarPage from "./pages/CalendarPage";
 import NewEncounterPage from "./pages/NewEncounterPage";
 import SettingsPage from "./pages/SettingsPage";
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/app" element={<Layout />}>
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="test-locations" element={<TestLocationsPage />} />
+            <Route path="test-locations/:id" element={<TestLocationDetailPage />} />
             <Route path="calendar" element={<CalendarPage />} />
             <Route path="new-encounter" element={<NewEncounterPage />} />
             <Route path="settings" element={<SettingsPage />} />

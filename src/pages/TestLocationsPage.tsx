@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapPin, Search } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -61,6 +62,7 @@ const testLocations: TestLocation[] = [
 const TestLocationsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredLocations, setFilteredLocations] = useState<TestLocation[]>(testLocations);
+  const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,6 +74,10 @@ const TestLocationsPage: React.FC = () => {
         location.testTypes.some(type => type.toLowerCase().includes(searchQuery.toLowerCase()))
     );
     setFilteredLocations(filtered);
+  };
+
+  const handleViewDetails = (locationId: string) => {
+    navigate(`/app/test-locations/${locationId}`);
   };
 
   return (
@@ -133,7 +139,12 @@ const TestLocationsPage: React.FC = () => {
                     </Badge>
                   ))}
                 </div>
-                <Button className="mt-4" variant="outline" size="sm">
+                <Button 
+                  className="mt-4" 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleViewDetails(location.id)}
+                >
                   Vedi dettagli
                 </Button>
               </CardContent>
