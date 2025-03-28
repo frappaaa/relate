@@ -32,10 +32,14 @@ const StatusField: React.FC<StatusFieldProps> = ({ form }) => {
                 <RadioGroupItem value="completed" id="completed" />
                 <Label htmlFor="completed">Completato</Label>
               </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="cancelled" id="cancelled" />
+                <Label htmlFor="cancelled">Annullato</Label>
+              </div>
             </RadioGroup>
           </FormControl>
           <FormDescription>
-            Seleziona se il test è già stato completato o è programmato per il futuro
+            Seleziona se il test è già stato completato, programmato per il futuro, o annullato
           </FormDescription>
           <FormMessage />
         </FormItem>

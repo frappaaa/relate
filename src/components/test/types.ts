@@ -15,7 +15,7 @@ export const stiOptions = [
 
 export const formSchema = z.object({
   date: z.date({ required_error: "La data è obbligatoria" }),
-  status: z.enum(['scheduled', 'completed'], { required_error: "Lo stato è obbligatorio" }),
+  status: z.enum(['scheduled', 'completed', 'cancelled'], { required_error: "Lo stato è obbligatorio" }),
   testTypes: z.record(z.boolean()).default({}),
   location: z.string().optional(),
   result: z.enum(['negative', 'positive', 'pending']).default('pending'),
