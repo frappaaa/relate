@@ -30,7 +30,7 @@ const LocationCard: React.FC<LocationCardProps> = ({
           <div>
             <CardTitle className="text-xl">{name}</CardTitle>
             <CardDescription className="mt-1">
-              {address}, {city}
+              {address}{city ? `, ${city}` : ''}
             </CardDescription>
           </div>
           {distance && (

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
@@ -7,6 +8,7 @@ import LocationList from '@/components/test-locations/LocationList';
 import { calculateDistance, formatDistance } from '@/utils/locationUtils';
 import { fetchLocations, TestLocation } from '@/services/locationService';
 
+// Non definire TestLocation qui, usa quello da locationService
 const TestLocationsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredLocations, setFilteredLocations] = useState<TestLocation[]>([]);
@@ -43,7 +45,8 @@ const TestLocationsPage: React.FC = () => {
       location => 
         location.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         location.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        location.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (location.city?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+        (location.region?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
         location.testTypes.some(type => type.toLowerCase().includes(searchQuery.toLowerCase()))
     );
     setFilteredLocations(filtered);

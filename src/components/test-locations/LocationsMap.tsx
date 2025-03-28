@@ -9,7 +9,8 @@ interface TestLocation {
   id: string;
   name: string;
   address: string;
-  city: string;
+  city?: string;
+  region?: string;
   coordinates?: [number, number];
 }
 
@@ -72,10 +73,11 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
       if (!location.coordinates || !map.current) return;
       
       // Create popup content
+      const cityOrRegion = location.city || location.region || '';
       const popupHtml = `
         <div class="p-2">
           <h3 class="font-bold mb-1">${location.name}</h3>
-          <p class="text-sm">${location.address}, ${location.city}</p>
+          <p class="text-sm">${location.address}${cityOrRegion ? ', ' + cityOrRegion : ''}</p>
         </div>
       `;
       

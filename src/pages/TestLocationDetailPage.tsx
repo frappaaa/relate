@@ -70,7 +70,17 @@ const TestLocationDetailPage: React.FC = () => {
         />
       )}
       <LocationDetailsCard 
-        location={location}
+        location={{
+          name: location.name,
+          address: location.address,
+          city: location.city || location.region || '',
+          testTypes: location.testTypes,
+          distance: location.distance,
+          phone: location.phone,
+          website: location.website,
+          hours: location.hours,
+          description: location.description
+        }}
         onBookAppointment={handleBookAppointment}
       />
     </div>

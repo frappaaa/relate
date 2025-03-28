@@ -7,7 +7,8 @@ interface TestLocation {
   id: string;
   name: string;
   address: string;
-  city: string;
+  city?: string;
+  region?: string;
   testTypes: string[];
   distance?: string;
   coordinates?: [number, number];
@@ -49,7 +50,7 @@ const LocationList: React.FC<LocationListProps> = ({
           id={location.id}
           name={location.name}
           address={location.address}
-          city={location.city}
+          city={location.city || location.region || ''}
           testTypes={location.testTypes}
           distance={location.distance}
           handleViewDetails={handleViewDetails}
