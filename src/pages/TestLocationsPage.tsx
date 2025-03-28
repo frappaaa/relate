@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
@@ -8,7 +7,6 @@ import LocationList from '@/components/test-locations/LocationList';
 import { calculateDistance, formatDistance } from '@/utils/locationUtils';
 import { fetchLocations, TestLocation } from '@/services/locationService';
 
-// Non definire TestLocation qui, usa quello da locationService
 const TestLocationsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredLocations, setFilteredLocations] = useState<TestLocation[]>([]);
@@ -74,7 +72,6 @@ const TestLocationsPage: React.FC = () => {
         const userLat = position.coords.latitude;
         const userLon = position.coords.longitude;
         
-        // Calculate distance for each location
         const locationsWithDistance = allLocations.map(location => {
           if (!location.coordinates) return location;
           
@@ -91,7 +88,6 @@ const TestLocationsPage: React.FC = () => {
           };
         });
         
-        // Sort by distance
         const sortedLocations = [...locationsWithDistance].sort((a, b) => {
           if (!a.distance || !b.distance) return 0;
           return parseFloat(a.distance) - parseFloat(b.distance);

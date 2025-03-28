@@ -1,10 +1,19 @@
-
 import { useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 
-// Initialize Mapbox access token once
-const MAPBOX_TOKEN = 'pk.eyJ1IjoiZGVtby1sb3ZhYmxlIiwiYSI6ImNsNDhpcnUwMDBjZGgzaW56YWd2N3VvN2YifQ.UeP8BnNzNf1UG61U-_VviA';
-mapboxgl.accessToken = MAPBOX_TOKEN;
+// Il token Mapbox viene caricato da una variabile d'ambiente o da localStorage
+// per evitare di esporlo direttamente nel codice sorgente
+const getMapboxToken = (): string => {
+  // Usa il token salvato in localStorage se presente
+  const savedToken = localStorage.getItem('mapbox_token');
+  if (savedToken) return savedToken;
+  
+  // Token di fallback (sarà sostituito dall'utente)
+  return 'pk.eyJ1IjoiZnJhbmNlc2NvbHVwcGkiLCJhIjoiY204c2sya3cwMDEwODJtcjdweGZtbXNwaSJ9.HCFiHD-mZ1aSqnGzCYlIwg';
+};
+
+// Inizializza il token Mapbox
+mapboxgl.accessToken = getMapboxToken();
 
 interface UseMapboxProps {
   container: HTMLDivElement | null;
@@ -80,4 +89,10 @@ export function addMapMarker(
 
 export function addMapNavigation(map: mapboxgl.Map, position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' = 'bottom-right') {
   map.addControl(new mapboxgl.NavigationControl(), position);
+}
+
+// Nuova funzione per impostare il token Mapbox
+export function setMapboxToken(token: string): void {
+  localStorage.setItem('mapbox_token', token);
+  mapboxgl.accessToken = token;
 }

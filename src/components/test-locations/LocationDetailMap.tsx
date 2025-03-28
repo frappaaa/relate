@@ -1,8 +1,9 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { MapPin, Loader2 } from 'lucide-react';
 import { useMapbox, addMapMarker, addMapNavigation } from '@/hooks/use-mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import MapboxTokenManager from './MapboxTokenManager';
 
 interface LocationDetailMapProps {
   coordinates?: [number, number];
@@ -40,22 +41,26 @@ const LocationDetailMap: React.FC<LocationDetailMapProps> = ({ coordinates, loca
   }
 
   return (
-    <div className="h-[300px] rounded-xl bg-gray-100 relative overflow-hidden">
-      <div ref={mapContainer} className="h-full w-full" />
+    <div className="space-y-4">
+      <MapboxTokenManager />
       
-      {!isLoaded && !error && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50">
-          <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
-          <p className="text-sm text-muted-foreground">Caricamento mappa...</p>
-        </div>
-      )}
-      
-      {error && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <MapPin className="h-8 w-8 text-gray-400 mb-2" />
-          <p className="text-sm text-destructive">{error}</p>
-        </div>
-      )}
+      <div className="h-[300px] rounded-xl bg-gray-100 relative overflow-hidden">
+        <div ref={mapContainer} className="h-full w-full" />
+        
+        {!isLoaded && !error && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+            <p className="text-sm text-muted-foreground">Caricamento mappa...</p>
+          </div>
+        )}
+        
+        {error && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <MapPin className="h-8 w-8 text-gray-400 mb-2" />
+            <p className="text-sm text-destructive">{error}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
