@@ -87,54 +87,82 @@ const Navbar: React.FC = () => {
     return 'U';
   };
 
+  // Mobile avatar component (fixed position)
+  const MobileAvatar = () => (
+    <div className="fixed top-3 right-4 z-50">
+      <Avatar 
+        className="h-8 w-8 cursor-pointer shadow-md border border-white/20" 
+        onClick={handleAvatarClick}
+      >
+        {profileData?.avatar_url ? (
+          <AvatarImage src={profileData.avatar_url} alt="Foto profilo" />
+        ) : null}
+        <AvatarFallback className={cn("text-white", bgColor)}>
+          {getInitial()}
+        </AvatarFallback>
+      </Avatar>
+    </div>
+  );
+
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
-      <div className="container flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-2">
-          {isMobile ? (
-            <div />
-          ) : (
-            <NavLink to="/app/dashboard" className="flex items-center gap-2">
-              <Logo variant="gradient" size="md" />
-              <span className="font-medium tracking-tight text-lg">Relate</span>
-            </NavLink>
+    <>
+      {/* Show fixed avatar only in mobile view */}
+      {isMobile && <MobileAvatar />}
+      
+      <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
+        <div className="container flex h-16 items-center justify-between px-4">
+          <div className="flex items-center gap-2">
+            {isMobile ? (
+              <NavLink to="/app/dashboard" className="flex items-center gap-2">
+                <Logo variant="gradient" size="md" />
+                <span className="font-medium tracking-tight text-lg">Relate</span>
+              </NavLink>
+            ) : (
+              <NavLink to="/app/dashboard" className="flex items-center gap-2">
+                <Logo variant="gradient" size="md" />
+                <span className="font-medium tracking-tight text-lg">Relate</span>
+              </NavLink>
+            )}
+          </div>
+
+          {/* Desktop navigation - only show on non-mobile */}
+          {!isMobile && (
+            <nav className="flex items-center gap-6">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    cn(
+                      "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
+                      isActive ? "text-primary" : "text-muted-foreground"
+                    )
+                  }
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </NavLink>
+              ))}
+            </nav>
+          )}
+          
+          {/* Only show avatar in header on desktop */}
+          {!isMobile && (
+            <Avatar 
+              className="h-8 w-8 cursor-pointer" 
+              onClick={handleAvatarClick}
+            >
+              {profileData?.avatar_url ? (
+                <AvatarImage src={profileData.avatar_url} alt="Foto profilo" />
+              ) : null}
+              <AvatarFallback className={cn("text-white", bgColor)}>
+                {getInitial()}
+              </AvatarFallback>
+            </Avatar>
           )}
         </div>
-
-        {/* Desktop navigation - only show on non-mobile */}
-        {!isMobile && (
-          <nav className="flex items-center gap-6">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  cn(
-                    "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
-                    isActive ? "text-primary" : "text-muted-foreground"
-                  )
-                }
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </NavLink>
-            ))}
-          </nav>
-        )}
-        
-        <Avatar 
-          className="h-8 w-8 cursor-pointer" 
-          onClick={handleAvatarClick}
-        >
-          {profileData?.avatar_url ? (
-            <AvatarImage src={profileData.avatar_url} alt="Foto profilo" />
-          ) : null}
-          <AvatarFallback className={cn("text-white", bgColor)}>
-            {getInitial()}
-          </AvatarFallback>
-        </Avatar>
-      </div>
-    </header>
+      </header>
+    </>
   );
 };
 
