@@ -1,12 +1,12 @@
 
 {
-  "name": "Safepoint Journal",
-  "short_name": "Safepoint",
+  "name": "Relate",
+  "short_name": "Relate",
   "description": "Gestisci la tua salute sessuale in modo semplice e consapevole",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#4f46e5",
+  "theme_color": "#374957",
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
