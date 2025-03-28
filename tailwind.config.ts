@@ -64,17 +64,17 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				relate: {
-					50: '#f0f9ff',
-					100: '#e0f2fe',
-					200: '#bae6fd',
-					300: '#7dd3fc',
-					400: '#38bdf8',
-					500: '#0ea5e9',
-					600: '#0284c7',
-					700: '#0369a1',
-					800: '#075985',
-					900: '#0c4a6e',
-					950: '#082f49',
+					50: '#fff5f5',
+					100: '#ffe0e0',
+					200: '#ffc2c2',
+					300: '#ff9494',
+					400: '#ff5757',
+					500: '#ff3333',
+					600: '#ff0000',
+					700: '#e50000',
+					800: '#c20000',
+					900: '#a10000',
+					950: '#560000',
 				}
 			},
 			borderRadius: {
@@ -130,6 +130,9 @@ export default {
 			},
 			backdropBlur: {
 				'xs': '2px',
+			},
+			backgroundImage: {
+				'gradient-relate': 'linear-gradient(135deg, #ff3000 0%, #ff005c 100%)',
 			},
 		}
 	},

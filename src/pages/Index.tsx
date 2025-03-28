@@ -5,6 +5,7 @@ import { ArrowRight, Shield, Calendar, Activity, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
+import { Logo } from '@/components/ui/logo';
 
 const Index = () => {
   const { user } = useAuth();
@@ -22,7 +23,7 @@ const Index = () => {
       <header className="py-6 md:py-10 w-full border-b">
         <div className="container flex items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-relate-500 text-white font-semibold text-sm">R</div>
+            <Logo variant="gradient" size="md" />
             <span className="font-medium tracking-tight text-lg">Relate</span>
           </div>
           <div className="flex gap-3">
@@ -50,7 +51,7 @@ const Index = () => {
                 Un'app discreta che ti aiuta a prendersi cura della tua salute sessuale con strumenti intuitivi, promemoria personalizzati e una stima immediata del rischio.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 min-[400px]:gap-4">
-                <Button size="lg" className="animate-fade-in" asChild>
+                <Button size="lg" className="animate-fade-in bg-gradient-relate" asChild>
                   <Link to="/app/dashboard">
                     Inizia a usare Relate
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -184,7 +185,7 @@ const Index = () => {
             </div>
 
             <div className="flex justify-center">
-              <Button size="lg" className="animate-fade-in" asChild>
+              <Button size="lg" className="animate-fade-in bg-gradient-relate" asChild>
                 <Link to="/app/dashboard">
                   Prova Relate ora
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -198,7 +199,7 @@ const Index = () => {
       <footer className="py-6 md:py-8 border-t">
         <div className="container px-4 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-6 h-6 rounded-full bg-relate-500 text-white font-semibold text-xs">R</div>
+            <Logo variant="gradient" size="sm" />
             <span className="text-sm font-medium">Relate</span>
           </div>
           <p className="text-sm text-muted-foreground">

@@ -7,6 +7,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { Logo } from '@/components/ui/logo';
 
 // Generate a consistent random color based on the input string
 const stringToColor = (str: string) => {
@@ -17,7 +18,7 @@ const stringToColor = (str: string) => {
   
   const colors = [
     'bg-red-500', 'bg-pink-500', 'bg-purple-500', 'bg-indigo-500', 
-    'bg-blue-500', 'bg-cyan-500', 'bg-teal-500', 'bg-green-500', 
+    'bg-relate-500', 'bg-cyan-500', 'bg-teal-500', 'bg-green-500', 
     'bg-lime-500', 'bg-yellow-500', 'bg-orange-500', 'bg-amber-500'
   ];
   
@@ -94,7 +95,7 @@ const Navbar: React.FC = () => {
             <div />
           ) : (
             <NavLink to="/app/dashboard" className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-relate-500 text-white font-semibold text-sm">R</div>
+              <Logo variant="gradient" size="md" />
               <span className="font-medium tracking-tight text-lg">Relate</span>
             </NavLink>
           )}
