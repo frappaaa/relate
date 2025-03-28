@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Form } from '@/components/ui/form';
@@ -16,11 +16,12 @@ import { formSchema, FormData, TestFormProps, stiOptions } from './types';
 const TestForm: React.FC<TestFormProps> = ({ 
   onSubmit, 
   initialDate = new Date(),
+  initialData = null,
   isSubmitting = false 
 }) => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       date: initialDate,
       status: 'scheduled',
       result: 'pending',

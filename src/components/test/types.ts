@@ -27,5 +27,6 @@ export type FormData = z.infer<typeof formSchema>;
 export interface TestFormProps {
   onSubmit: (data: FormData) => void;
   initialDate?: Date;
+  initialData?: FormData | null;
   isSubmitting?: boolean;
 }

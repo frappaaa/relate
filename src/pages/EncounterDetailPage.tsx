@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Heart, Trash2, Shield, ShieldAlert, ShieldCheck, CalendarClock } from 'lucide-react';
+import { Heart, Trash2, Shield, ShieldAlert, ShieldCheck, CalendarClock, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
@@ -196,29 +196,40 @@ const EncounterDetailPage = () => {
           )}
         </CardContent>
         <Separator />
-        <CardFooter className="pt-6">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" className="flex items-center gap-2" disabled={isDeleting}>
-                <Trash2 className="h-4 w-4" />
-                {isDeleting ? 'Eliminazione...' : 'Elimina rapporto'}
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Sei sicuro di voler eliminare questo rapporto?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Questa azione non può essere annullata. Tutti i dati relativi a questo rapporto verranno eliminati permanentemente.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Annulla</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
-                  Elimina
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+        <CardFooter className="pt-6 flex justify-between">
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2" 
+              onClick={() => navigate(`/app/edit-encounter/${id}`)}
+            >
+              <Edit className="h-4 w-4" />
+              Modifica
+            </Button>
+            
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="flex items-center gap-2" disabled={isDeleting}>
+                  <Trash2 className="h-4 w-4" />
+                  {isDeleting ? 'Eliminazione...' : 'Elimina rapporto'}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Sei sicuro di voler eliminare questo rapporto?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Questa azione non può essere annullata. Tutti i dati relativi a questo rapporto verranno eliminati permanentemente.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annulla</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
+                    Elimina
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </CardFooter>
       </Card>
     </div>

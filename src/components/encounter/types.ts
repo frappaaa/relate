@@ -27,5 +27,6 @@ export type FormData = z.infer<typeof formSchema>;
 export interface EncounterFormProps {
   onSubmit: (data: FormData & { riskScore: number; riskLevel: 'low' | 'medium' | 'high' }) => void;
   initialDate?: Date;
+  initialData?: FormData | null;
   isSubmitting?: boolean;
 }

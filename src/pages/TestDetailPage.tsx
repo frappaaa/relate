@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Beaker, Trash2, CalendarClock, MapPin } from 'lucide-react';
+import { Beaker, Trash2, CalendarClock, MapPin, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
@@ -122,40 +122,27 @@ const TestDetailPage = () => {
 
   const testDate = new Date(test.date);
   const formattedDate = format(testDate, 'd MMMM yyyy', { locale: it });
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'scheduled': return 'Programmato';
-      case 'completed': return 'Completato';
-      case 'cancelled': return 'Cancellato';
-      default: return 'Sconosciuto';
-    }
+  
+  const statusLabels = {
+    scheduled: 'Programmato',
+    completed: 'Completato',
+    cancelled: 'Annullato'
   };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'scheduled': return 'text-blue-500 bg-blue-500';
-      case 'completed': return 'text-green-500 bg-green-500';
-      case 'cancelled': return 'text-red-500 bg-red-500';
-      default: return 'text-gray-500 bg-gray-500';
-    }
+  
+  const resultLabels = {
+    negative: 'Negativo',
+    positive: 'Positivo',
+    pending: 'In attesa'
   };
-
-  const getResultLabel = (result: string | null) => {
-    if (!result || result === 'pending') return 'In attesa';
-    switch (result) {
-      case 'negative': return 'Negativo';
-      case 'positive': return 'Positivo';
-      default: return 'Sconosciuto';
-    }
-  };
-
-  const getResultColor = (result: string | null) => {
-    if (!result || result === 'pending') return 'text-yellow-500 bg-yellow-500';
-    switch (result) {
-      case 'negative': return 'text-green-500 bg-green-500';
-      case 'positive': return 'text-red-500 bg-red-500';
-      default: return 'text-gray-500 bg-gray-500';
+  
+  const getBadgeColor = (result: string) => {
+    switch(result) {
+      case 'negative':
+        return 'text-green-700 bg-green-100';
+      case 'positive':
+        return 'text-red-700 bg-red-100';
+      default:
+        return 'text-blue-700 bg-blue-100';
     }
   };
 
@@ -180,9 +167,10 @@ const TestDetailPage = () => {
             </div>
             <Badge 
               variant="outline" 
-              className={`${getStatusColor(test.status)} bg-opacity-15`}
+              className={getBadgeColor(test.result || 'pending')}
             >
-              {getStatusLabel(test.status)}
+              {statusLabels[test.status as keyof typeof statusLabels]}
+              {test.status === 'completed' && `: ${resultLabels[test.result as keyof typeof resultLabels]}`}
             </Badge>
           </div>
         </CardHeader>
@@ -192,25 +180,10 @@ const TestDetailPage = () => {
             <span>{formattedDate}</span>
           </div>
 
-          {test.status === 'completed' && (
-            <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-1">Risultato</h3>
-              <Badge 
-                variant="outline" 
-                className={`${getResultColor(test.result)} bg-opacity-15`}
-              >
-                {getResultLabel(test.result)}
-              </Badge>
-            </div>
-          )}
-
           {test.location && (
-            <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-1">Luogo</h3>
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span>{test.location}</span>
-              </div>
+            <div className="flex items-start gap-2">
+              <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
+              <span>{test.location}</span>
             </div>
           )}
 
@@ -222,29 +195,40 @@ const TestDetailPage = () => {
           )}
         </CardContent>
         <Separator />
-        <CardFooter className="pt-6">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" className="flex items-center gap-2" disabled={isDeleting}>
-                <Trash2 className="h-4 w-4" />
-                {isDeleting ? 'Eliminazione...' : 'Elimina test'}
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Sei sicuro di voler eliminare questo test?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Questa azione non può essere annullata. Tutti i dati relativi a questo test verranno eliminati permanentemente.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Annulla</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
-                  Elimina
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+        <CardFooter className="pt-6 flex justify-between">
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2"
+              onClick={() => navigate(`/app/edit-test/${id}`)}
+            >
+              <Edit className="h-4 w-4" />
+              Modifica
+            </Button>
+            
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" className="flex items-center gap-2" disabled={isDeleting}>
+                  <Trash2 className="h-4 w-4" />
+                  {isDeleting ? 'Eliminazione...' : 'Elimina test'}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Sei sicuro di voler eliminare questo test?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Questa azione non può essere annullata. Tutti i dati relativi a questo test verranno eliminati permanentemente.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annulla</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
+                    Elimina
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </CardFooter>
       </Card>
     </div>

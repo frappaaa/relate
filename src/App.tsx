@@ -16,7 +16,9 @@ import CalendarPage from "./pages/CalendarPage";
 import NewEncounterPage from "./pages/NewEncounterPage";
 import NewTestPage from "./pages/NewTestPage";
 import EncounterDetailPage from "./pages/EncounterDetailPage";
+import EditEncounterPage from "./pages/EditEncounterPage";
 import TestDetailPage from "./pages/TestDetailPage";
+import EditTestPage from "./pages/EditTestPage";
 import SettingsPage from "./pages/SettingsPage";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -45,7 +47,9 @@ const App = () => (
                 <Route path="new-encounter" element={<NewEncounterPage />} />
                 <Route path="new-test" element={<NewTestPage />} />
                 <Route path="encounter/:id" element={<EncounterDetailPage />} />
+                <Route path="edit-encounter/:id" element={<EditEncounterPage />} />
                 <Route path="test/:id" element={<TestDetailPage />} />
+                <Route path="edit-test/:id" element={<EditTestPage />} />
                 <Route path="settings" element={<SettingsPage />} />
               </Route>
             </Route>

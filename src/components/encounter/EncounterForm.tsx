@@ -18,6 +18,7 @@ import { formSchema, FormData, EncounterFormProps, symptomsOptions } from './typ
 const EncounterForm: React.FC<EncounterFormProps> = ({ 
   onSubmit, 
   initialDate = new Date(),
+  initialData = null,
   isSubmitting = false 
 }) => {
   const [riskResult, setRiskResult] = useState<{ score: number; level: 'low' | 'medium' | 'high' } | null>(null);
@@ -30,7 +31,7 @@ const EncounterForm: React.FC<EncounterFormProps> = ({
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       date: initialDate,
       partnerStatus: 'unknown',
       symptoms: initialSymptoms,
@@ -78,6 +79,13 @@ const EncounterForm: React.FC<EncounterFormProps> = ({
     
     return () => subscription.unsubscribe();
   }, [form.watch]);
+
+  // Calculate initial risk when editing an existing entry
+  useEffect(() => {
+    if (initialData && initialData.type && initialData.protection) {
+      calculateRisk(initialData);
+    }
+  }, [initialData]);
 
   return (
     <div className="space-y-8">
