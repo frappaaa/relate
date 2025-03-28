@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Calendar, Home, Plus, MapPin } from 'lucide-react';
@@ -106,30 +107,32 @@ const Navbar: React.FC = () => {
       {!isMobile && (
         <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
           <div className="container flex h-14 items-center">
-            <div className="mr-4 flex">
+            <div className="mr-auto flex">
               <NavLink to="/app/dashboard" className="flex items-center space-x-2">
                 <Logo />
                 <span className="font-bold text-lg">Relate</span>
               </NavLink>
             </div>
-            <nav className="flex items-center space-x-4 lg:space-x-6">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    cn(
-                      "text-sm font-medium transition-colors hover:text-primary flex items-center space-x-1",
-                      isActive ? "text-foreground" : "text-muted-foreground"
-                    )
-                  }
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </NavLink>
-              ))}
-            </nav>
-            <div className="ml-auto flex items-center space-x-4">
+            
+            <div className="flex items-center space-x-4">
+              <nav className="flex items-center space-x-4 lg:space-x-6 mr-4">
+                {navItems.map((item) => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    className={({ isActive }) =>
+                      cn(
+                        "text-sm font-medium transition-colors hover:text-primary flex items-center space-x-1",
+                        isActive ? "text-foreground" : "text-muted-foreground"
+                      )
+                    }
+                  >
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </NavLink>
+                ))}
+              </nav>
+              
               <Avatar className="h-8 w-8 cursor-pointer" onClick={handleAvatarClick}>
                 {profileData?.avatar_url ? <AvatarImage src={profileData.avatar_url} alt="Foto profilo" /> : null}
                 <AvatarFallback className={cn("text-white", bgColor)}>
