@@ -87,6 +87,69 @@ export type Database = {
         }
         Relationships: []
       }
+      test_locations: {
+        Row: {
+          address: string
+          category: string | null
+          contacts: string | null
+          coordinates: number[] | null
+          created_at: string
+          description: string | null
+          email: string | null
+          id: string
+          images: string[] | null
+          last_verified_date: string | null
+          name: string
+          opening_hours: Json | null
+          region: string | null
+          services: string[] | null
+          social: Json | null
+          source: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address: string
+          category?: string | null
+          contacts?: string | null
+          coordinates?: number[] | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          images?: string[] | null
+          last_verified_date?: string | null
+          name: string
+          opening_hours?: Json | null
+          region?: string | null
+          services?: string[] | null
+          social?: Json | null
+          source?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string
+          category?: string | null
+          contacts?: string | null
+          coordinates?: number[] | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          images?: string[] | null
+          last_verified_date?: string | null
+          name?: string
+          opening_hours?: Json | null
+          region?: string | null
+          services?: string[] | null
+          social?: Json | null
+          source?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       tests: {
         Row: {
           created_at: string

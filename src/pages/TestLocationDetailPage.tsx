@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -43,7 +44,7 @@ const TestLocationDetailPage: React.FC = () => {
       title: "Prenotazione test",
       description: `Hai prenotato un test presso ${location?.name}`,
     });
-    // In a real app, this would navigate to a booking form or calendar
+    // In una vera app, qui verrebbe navigato a un form di prenotazione o calendario
     navigate('/app/calendar');
   };
 
