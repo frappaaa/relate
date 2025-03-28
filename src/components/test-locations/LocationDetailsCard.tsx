@@ -93,7 +93,7 @@ const LocationDetailsCard: React.FC<LocationDetailsCardProps> = ({
         <Separator className="my-4" />
 
         <div>
-          <p className="font-medium mb-2">Test disponibili:</p>
+          <p className="font-medium mb-2">Servizi disponibili:</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {location.testTypes.map((type) => (
               <Badge key={type} variant="secondary">
