@@ -4,7 +4,6 @@ import { MapPin, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import MapboxTokenManager from './MapboxTokenManager';
 
 interface TestLocation {
   id: string;
@@ -119,8 +118,6 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
 
   return (
     <div className="space-y-4">
-      <MapboxTokenManager />
-      
       <div className="h-[300px] rounded-xl bg-gray-100 relative overflow-hidden mb-8">
         <div ref={mapContainer} className="w-full h-full" />
         

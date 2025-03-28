@@ -1,9 +1,8 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { MapPin, Loader2 } from 'lucide-react';
 import { useMapbox, addMapMarker, addMapNavigation } from '@/hooks/use-mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import MapboxTokenManager from './MapboxTokenManager';
 
 interface LocationDetailMapProps {
   coordinates?: [number, number];
@@ -42,8 +41,6 @@ const LocationDetailMap: React.FC<LocationDetailMapProps> = ({ coordinates, loca
 
   return (
     <div className="space-y-4">
-      <MapboxTokenManager />
-      
       <div className="h-[300px] rounded-xl bg-gray-100 relative overflow-hidden">
         <div ref={mapContainer} className="h-full w-full" />
         
