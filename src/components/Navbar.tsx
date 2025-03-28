@@ -19,6 +19,7 @@ const stringToColor = (str: string) => {
   // Use the hash to select a color from the array
   return colors[Math.abs(hash) % colors.length];
 };
+
 const Navbar: React.FC = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ const Navbar: React.FC = () => {
     avatar_url: string | null;
   } | null>(null);
   const [bgColor, setBgColor] = useState('bg-relate-500');
+
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!user) return;
@@ -53,6 +55,7 @@ const Navbar: React.FC = () => {
     };
     fetchProfileData();
   }, [user]);
+  
   const navItems = [{
     path: '/app/dashboard',
     label: 'Dashboard',
@@ -70,6 +73,7 @@ const Navbar: React.FC = () => {
     label: 'Nuovo',
     icon: <Plus className="h-5 w-5" />
   }];
+  
   const handleAvatarClick = () => {
     navigate('/app/settings');
   };
@@ -93,13 +97,50 @@ const Navbar: React.FC = () => {
         </AvatarFallback>
       </Avatar>
     </div>;
+
   return <>
       {/* Show fixed avatar only in mobile view */}
       {isMobile && <MobileAvatar />}
       
-      <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
-        
-      </header>
+      {/* Only show the header in desktop mode */}
+      {!isMobile && (
+        <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
+          <div className="container flex h-14 items-center">
+            <div className="mr-4 flex">
+              <NavLink to="/app/dashboard" className="flex items-center space-x-2">
+                <Logo />
+                <span className="font-bold text-lg">Relate</span>
+              </NavLink>
+            </div>
+            <nav className="flex items-center space-x-4 lg:space-x-6">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    cn(
+                      "text-sm font-medium transition-colors hover:text-primary flex items-center space-x-1",
+                      isActive ? "text-foreground" : "text-muted-foreground"
+                    )
+                  }
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </NavLink>
+              ))}
+            </nav>
+            <div className="ml-auto flex items-center space-x-4">
+              <Avatar className="h-8 w-8 cursor-pointer" onClick={handleAvatarClick}>
+                {profileData?.avatar_url ? <AvatarImage src={profileData.avatar_url} alt="Foto profilo" /> : null}
+                <AvatarFallback className={cn("text-white", bgColor)}>
+                  {getInitial()}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
+        </header>
+      )}
     </>;
 };
+
 export default Navbar;
