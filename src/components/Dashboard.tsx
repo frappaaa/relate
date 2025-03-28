@@ -45,6 +45,9 @@ const Dashboard: React.FC<DashboardProps> = ({
     date: formatDate(lastTest.date)
   } : null;
 
+  // Limitare il numero di rapporti recenti a 3
+  const limitedRecentEncounters = recentEncounters.slice(0, 3);
+
   return (
     <div className="space-y-8">
       <section className="space-y-2">
@@ -59,7 +62,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           nextTestDue={nextTestDue}
         />
         
-        <RecentEncountersCard recentEncounters={recentEncounters} />
+        <RecentEncountersCard recentEncounters={limitedRecentEncounters} />
       </div>
 
       <UpcomingTestsCard upcomingTests={upcomingTests} />

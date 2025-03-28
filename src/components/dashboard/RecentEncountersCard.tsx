@@ -25,7 +25,7 @@ const RecentEncountersCard: React.FC<RecentEncountersCardProps> = ({ recentEncou
           <Heart className="h-5 w-5 text-relate-500" />
           Rapporti recenti
         </CardTitle>
-        <CardDescription>Gli ultimi rapporti registrati</CardDescription>
+        <CardDescription>Gli ultimi 3 rapporti registrati</CardDescription>
       </CardHeader>
       <CardContent className="pb-2">
         {recentEncounters.length > 0 ? (
