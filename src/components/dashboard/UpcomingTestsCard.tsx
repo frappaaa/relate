@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Beaker, ChevronRight, Clock } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,12 @@ interface UpcomingTestsCardProps {
 }
 
 const UpcomingTestsCard: React.FC<UpcomingTestsCardProps> = ({ upcomingTests }) => {
+  const navigate = useNavigate();
+  
+  const handleTestClick = (testId: string) => {
+    navigate(`/app/test/${testId}`);
+  };
+  
   return (
     <Card className="shadow-card">
       <CardHeader className="pb-2">
@@ -28,7 +34,11 @@ const UpcomingTestsCard: React.FC<UpcomingTestsCardProps> = ({ upcomingTests }) 
         {upcomingTests.length > 0 ? (
           <div className="space-y-3">
             {upcomingTests.map(test => (
-              <div key={test.id} className="flex items-center justify-between p-3 rounded-lg border group hover:bg-secondary/50 transition-colors">
+              <div 
+                key={test.id} 
+                className="flex items-center justify-between p-3 rounded-lg border group hover:bg-secondary/50 transition-colors cursor-pointer"
+                onClick={() => handleTestClick(test.id)}
+              >
                 <div className="flex items-center space-x-3">
                   <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                     <Beaker className="h-5 w-5 text-primary" />
