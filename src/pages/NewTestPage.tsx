@@ -49,6 +49,16 @@ const NewTestPage: React.FC = () => {
       // For each selected test type, create a test entry
       const testType = selectedTestTypes.join(', ');
       
+      console.log("Saving test with data:", {
+        user_id: user.id,
+        date: data.date.toISOString(),
+        test_type: testType,
+        status: data.status,
+        result: data.status === 'completed' ? data.result : null,
+        location: data.location || null,
+        notes: data.notes || null
+      });
+      
       const { error } = await supabase
         .from('tests')
         .insert({
