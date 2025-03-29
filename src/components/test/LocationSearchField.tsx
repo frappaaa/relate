@@ -22,22 +22,28 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
   const value = form.watch('location') || '';
 
   useEffect(() => {
-    const loadLocations = async () => {
-      setIsLoading(true);
-      try {
-        const fetchedLocations = await fetchLocations();
-        setLocations(fetchedLocations);
-      } catch (error) {
-        console.error('Error loading locations:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    // Only fetch locations when the popover is open
+    if (open) {
+      const loadLocations = async () => {
+        setIsLoading(true);
+        try {
+          const fetchedLocations = await fetchLocations();
+          setLocations(fetchedLocations);
+        } catch (error) {
+          console.error('Error loading locations:', error);
+          // Ensure we always have a valid array even if there's an error
+          setLocations([]);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
-    loadLocations();
-  }, []);
+      loadLocations();
+    }
+  }, [open]);
 
-  const filteredLocations = searchQuery 
+  // Make sure filteredLocations is always an array
+  const filteredLocations = searchQuery && locations.length > 0
     ? locations.filter(location => 
         location.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
         location.address.toLowerCase().includes(searchQuery.toLowerCase())
@@ -77,20 +83,18 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
                     "w-full justify-between h-10 font-normal",
                     !field.value && "text-muted-foreground"
                   )}
-                  onClick={() => setOpen(!open)}
                 >
                   {field.value || "Inserisci il nome del centro medico o laboratorio"}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </FormControl>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
+            <PopoverContent className="w-full p-0" align="start" side="bottom">
               <Command shouldFilter={false}>
                 <CommandInput 
                   placeholder="Cerca un centro..." 
                   value={searchQuery}
                   onValueChange={handleInputChange}
-                  className="h-9"
                 />
                 {isLoading ? (
                   <div className="py-6 text-center text-sm">Caricamento...</div>
@@ -104,7 +108,6 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
                             key={location.id}
                             value={location.name}
                             onSelect={() => handleSelect(location.name)}
-                            className="flex items-center"
                           >
                             <Check
                               className={cn(
