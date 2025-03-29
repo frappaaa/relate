@@ -21,7 +21,7 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
   const [isLoading, setIsLoading] = useState(false);
   const value = form.watch('location') || '';
 
-  // Only fetch locations when the popover is open
+  // Only load locations when the popover is opened
   useEffect(() => {
     if (open) {
       const loadLocations = async () => {
@@ -29,10 +29,9 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
         try {
           const fetchedLocations = await fetchLocations();
           // Ensure we set a valid array even if the API returns null or undefined
-          setLocations(fetchedLocations || []);
+          setLocations(Array.isArray(fetchedLocations) ? fetchedLocations : []);
         } catch (error) {
           console.error('Error loading locations:', error);
-          // Ensure we always have a valid array even if there's an error
           setLocations([]);
         } finally {
           setIsLoading(false);
@@ -43,13 +42,13 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
     }
   }, [open]);
 
-  // Ensure filteredLocations is always an array
-  const filteredLocations = searchQuery 
+  // Ensure filteredLocations is always a valid array
+  const filteredLocations = searchQuery && locations && locations.length > 0
     ? locations.filter(location => 
         location.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
         location.address.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : locations;
+    : locations || [];
 
   const handleSelect = (currentValue: string) => {
     if (currentValue === value) {
@@ -90,43 +89,41 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
                 </Button>
               </FormControl>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0" align="start" side="bottom">
-              <Command shouldFilter={false}>
-                <CommandInput 
-                  placeholder="Cerca un centro..." 
-                  value={searchQuery}
-                  onValueChange={handleInputChange}
-                />
-                {isLoading ? (
-                  <div className="py-6 text-center text-sm">Caricamento...</div>
-                ) : (
-                  <>
-                    <CommandEmpty>Nessun risultato. Continua a digitare per aggiungere un nuovo luogo.</CommandEmpty>
-                    {filteredLocations.length > 0 && (
-                      <CommandGroup heading="Centri disponibili">
-                        {filteredLocations.map((location) => (
-                          <CommandItem
-                            key={location.id}
-                            value={location.name}
-                            onSelect={() => handleSelect(location.name)}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                value === location.name ? "opacity-100" : "opacity-0"
-                              )}
-                            />
-                            <div>
-                              <p>{location.name}</p>
-                              <p className="text-xs text-muted-foreground">{location.address}</p>
-                            </div>
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    )}
-                  </>
-                )}
-              </Command>
+            <PopoverContent className="w-full p-0" align="start" side="bottom" sideOffset={4}>
+              {isLoading ? (
+                <div className="py-6 text-center text-sm">Caricamento...</div>
+              ) : (
+                <Command shouldFilter={false}>
+                  <CommandInput 
+                    placeholder="Cerca un centro..." 
+                    value={searchQuery}
+                    onValueChange={handleInputChange}
+                  />
+                  <CommandEmpty>Nessun risultato. Continua a digitare per aggiungere un nuovo luogo.</CommandEmpty>
+                  {filteredLocations.length > 0 && (
+                    <CommandGroup heading="Centri disponibili">
+                      {filteredLocations.map((location) => (
+                        <CommandItem
+                          key={location.id}
+                          value={location.name}
+                          onSelect={() => handleSelect(location.name)}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              value === location.name ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          <div>
+                            <p>{location.name}</p>
+                            <p className="text-xs text-muted-foreground">{location.address}</p>
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  )}
+                </Command>
+              )}
             </PopoverContent>
           </Popover>
           <FormDescription>
