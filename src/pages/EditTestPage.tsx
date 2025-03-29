@@ -48,12 +48,16 @@ const EditTestPage: React.FC = () => {
           return acc;
         }, {} as Record<string, boolean>);
 
+        // Parse specific results if available
+        const specificResults = data.specific_results || {};
+
         setInitialData({
           date: new Date(data.date),
           status: data.status,
           testTypes: testTypesObject,
           location: data.location || '',
           result: data.result || 'pending',
+          specificResults,
           notes: data.notes || ''
         });
       } catch (error) {
@@ -103,6 +107,18 @@ const EditTestPage: React.FC = () => {
       // For each selected test type, create a test entry
       const testType = selectedTestTypes.join(', ');
       
+      // Process specific results
+      let specificResults = {};
+      
+      if (data.status === 'completed' && data.result === 'positive') {
+        // Only include results for selected test types
+        specificResults = selectedTestTypes.reduce((acc, typeId) => {
+          const result = data.specificResults[typeId] || 'pending';
+          acc[typeId] = result;
+          return acc;
+        }, {} as Record<string, string>);
+      }
+      
       const { error } = await supabase
         .from('tests')
         .update({
@@ -110,6 +126,7 @@ const EditTestPage: React.FC = () => {
           test_type: testType,
           status: data.status,
           result: data.status === 'completed' ? data.result : null,
+          specific_results: data.status === 'completed' && data.result === 'positive' ? specificResults : null,
           location: data.location || null,
           notes: data.notes || null,
           updated_at: new Date().toISOString()

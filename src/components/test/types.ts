@@ -19,6 +19,7 @@ export const formSchema = z.object({
   testTypes: z.record(z.boolean()).default({}),
   location: z.string().optional(),
   result: z.enum(['negative', 'positive', 'pending']).default('pending'),
+  specificResults: z.record(z.enum(['negative', 'positive', 'pending'])).default({}),
   notes: z.string().max(500, "Le note non possono superare 500 caratteri").optional(),
 });
 

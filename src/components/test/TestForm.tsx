@@ -1,68 +1,78 @@
 
 import React from 'react';
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-
+import { Card } from '@/components/ui/card';
+import { formSchema, FormData } from './types';
 import DateField from './DateField';
 import StatusField from './StatusField';
+import STISelector from './STISelector';
 import LocationField from './LocationField';
 import ResultField from './ResultField';
-import STISelector from './STISelector';
+import SpecificResultsSelector from './SpecificResultsSelector';
 import NotesField from './NotesField';
-import { formSchema, FormData, TestFormProps, stiOptions } from './types';
 
-const TestForm: React.FC<TestFormProps> = ({ 
-  onSubmit, 
+interface TestFormProps {
+  onSubmit: (data: FormData) => void;
+  initialDate?: Date;
+  initialData?: FormData | null;
+  isSubmitting?: boolean;
+}
+
+const TestForm: React.FC<TestFormProps> = ({
+  onSubmit,
   initialDate = new Date(),
   initialData = null,
-  isSubmitting = false 
+  isSubmitting = false
 }) => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       date: initialDate,
       status: 'scheduled',
+      testTypes: {},
+      location: '',
       result: 'pending',
-      testTypes: stiOptions.reduce((acc, option) => {
-        acc[option.id] = false;
-        return acc;
-      }, {} as Record<string, boolean>),
-    },
+      specificResults: {},
+      notes: ''
+    }
   });
-
-  // Show result field only if status is completed
-  const showResultField = form.watch('status') === 'completed';
 
   const handleSubmit = (data: FormData) => {
     onSubmit(data);
   };
 
   return (
-    <div className="space-y-8">
+    <Card className="p-6">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-6">
-              <DateField form={form} />
-              <StatusField form={form} />
-              <LocationField form={form} />
-              <ResultField form={form} isVisible={showResultField} />
-            </div>
-
-            <div className="space-y-6">
-              <STISelector form={form} />
-              <NotesField form={form} />
-            </div>
+            <DateField form={form} />
+            <StatusField form={form} />
           </div>
+          
+          <STISelector form={form} />
+          
+          {form.watch('status') === 'completed' && (
+            <ResultField form={form} />
+          )}
 
-          <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting}>
-            {isSubmitting ? "Salvataggio in corso..." : "Salva test"}
-          </Button>
+          {/* New component for specific results */}
+          <SpecificResultsSelector form={form} />
+          
+          <LocationField form={form} />
+          <NotesField form={form} />
+          
+          <div className="flex justify-end">
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Salvataggio...' : 'Salva test'}
+            </Button>
+          </div>
         </form>
       </Form>
-    </div>
+    </Card>
   );
 };
 

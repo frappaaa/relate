@@ -22,6 +22,7 @@ import { Beaker, Trash2, CalendarClock, MapPin, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import { stiOptions } from '@/components/test/types';
 
 const TestDetailPage = () => {
   const { id } = useParams();
@@ -123,6 +124,12 @@ const TestDetailPage = () => {
   const testDate = new Date(test.date);
   const formattedDate = format(testDate, 'd MMMM yyyy', { locale: it });
   
+  // Parsing test types from the string
+  const testTypes = test.test_type ? test.test_type.split(', ') : [];
+  
+  // Parsing specific results if available
+  const specificResults = test.specific_results ? test.specific_results : {};
+  
   const statusLabels = {
     scheduled: 'Programmato',
     completed: 'Completato',
@@ -146,6 +153,12 @@ const TestDetailPage = () => {
     }
   };
 
+  // Find STI label by ID
+  const getStiLabel = (stiId: string) => {
+    const sti = stiOptions.find(option => option.id === stiId);
+    return sti ? sti.label : stiId;
+  };
+
   return (
     <div className="space-y-8">
       <section className="space-y-2">
@@ -163,14 +176,15 @@ const TestDetailPage = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Beaker className="h-5 w-5 text-blue-500" />
-              <CardTitle>Test {test.test_type}</CardTitle>
+              <CardTitle>Test IST</CardTitle>
             </div>
             <Badge 
               variant="outline" 
               className={getBadgeColor(test.result || 'pending')}
             >
               {statusLabels[test.status as keyof typeof statusLabels]}
-              {test.status === 'completed' && `: ${resultLabels[test.result as keyof typeof resultLabels]}`}
+              {test.status === 'completed' && test.result !== 'positive' && 
+                `: ${resultLabels[test.result as keyof typeof resultLabels]}`}
             </Badge>
           </div>
         </CardHeader>
@@ -179,6 +193,42 @@ const TestDetailPage = () => {
             <CalendarClock className="h-5 w-5 text-muted-foreground" />
             <span>{formattedDate}</span>
           </div>
+
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">Test effettuati per:</h3>
+            <div className="flex flex-wrap gap-2">
+              {testTypes.map((type: string) => (
+                <Badge key={type} variant="outline">
+                  {getStiLabel(type)}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          {test.status === 'completed' && test.result === 'positive' && (
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">Risultati positivi per:</h3>
+              <div className="space-y-2">
+                {Object.keys(specificResults).length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {Object.entries(specificResults).map(([stiId, result]) => (
+                      result === 'positive' && (
+                        <Badge key={stiId} variant="outline" className={getBadgeColor('positive')}>
+                          {getStiLabel(stiId)}
+                        </Badge>
+                      )
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    Risultato positivo, ma non sono specificate le IST.
+                    <br />
+                    Modifica il test per aggiungere dettagli sui risultati specifici.
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
 
           {test.location && (
             <div className="flex items-start gap-2">
