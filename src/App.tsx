@@ -22,44 +22,56 @@ import EditTestPage from "./pages/EditTestPage";
 import SettingsPage from "./pages/SettingsPage";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import React from "react";
 
-const queryClient = new QueryClient();
+// Create a new QueryClient instance outside of the component
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            
-            {/* Protected routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/app" element={<Layout />}>
-                <Route path="dashboard" element={<DashboardPage />} />
-                <Route path="test-locations" element={<TestLocationsPage />} />
-                <Route path="test-locations/:id" element={<TestLocationDetailPage />} />
-                <Route path="calendar" element={<CalendarPage />} />
-                <Route path="new-encounter" element={<NewEncounterPage />} />
-                <Route path="new-test" element={<NewTestPage />} />
-                <Route path="encounter/:id" element={<EncounterDetailPage />} />
-                <Route path="edit-encounter/:id" element={<EditEncounterPage />} />
-                <Route path="test/:id" element={<TestDetailPage />} />
-                <Route path="edit-test/:id" element={<EditTestPage />} />
-                <Route path="settings" element={<SettingsPage />} />
+  // Ensure QueryClientProvider is used correctly
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              
+              {/* Protected routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/app" element={<Layout />}>
+                  <Route path="dashboard" element={<DashboardPage />} />
+                  <Route path="test-locations" element={<TestLocationsPage />} />
+                  <Route path="test-locations/:id" element={<TestLocationDetailPage />} />
+                  <Route path="calendar" element={<CalendarPage />} />
+                  <Route path="new-encounter" element={<NewEncounterPage />} />
+                  <Route path="new-test" element={<NewTestPage />} />
+                  <Route path="encounter/:id" element={<EncounterDetailPage />} />
+                  <Route path="edit-encounter/:id" element={<EditEncounterPage />} />
+                  <Route path="test/:id" element={<TestDetailPage />} />
+                  <Route path="edit-test/:id" element={<EditTestPage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                </Route>
               </Route>
-            </Route>
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </React.StrictMode>
 );
 
 export default App;

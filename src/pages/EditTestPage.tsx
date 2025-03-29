@@ -49,6 +49,7 @@ const EditTestPage: React.FC = () => {
         }, {} as Record<string, boolean>);
 
         // Parse specific results if available - handle both cases where it might be a column or not
+        // Use optional chaining to safely access the property, which might not exist
         const specificResults = data.specific_results || {};
 
         setInitialData({
@@ -192,11 +193,25 @@ const EditTestPage: React.FC = () => {
         <p className="text-muted-foreground">Aggiorna i dettagli del test registrato</p>
       </section>
 
-      <TestForm 
-        onSubmit={handleSubmit} 
-        initialData={initialData as FormData}
-        isSubmitting={isSubmitting} 
-      />
+      {isLoading ? (
+        <div className="h-64 w-full rounded-lg bg-secondary/30 animate-pulse"></div>
+      ) : !initialData ? (
+        <div className="space-y-8">
+          <p className="text-muted-foreground">Test non trovato</p>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => navigate('/app/calendar')}
+          >
+            Torna al calendario
+          </button>
+        </div>
+      ) : (
+        <TestForm 
+          onSubmit={handleSubmit} 
+          initialData={initialData as FormData}
+          isSubmitting={isSubmitting} 
+        />
+      )}
     </div>
   );
 };
