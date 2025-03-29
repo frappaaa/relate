@@ -49,18 +49,6 @@ const NewTestPage: React.FC = () => {
       // For each selected test type, create a test entry
       const testType = selectedTestTypes.join(', ');
       
-      // Process specific results
-      let specificResults = {};
-      
-      if (data.status === 'completed' && data.result === 'positive') {
-        // Only include results for selected test types
-        specificResults = selectedTestTypes.reduce((acc, typeId) => {
-          const result = data.specificResults[typeId] || 'pending';
-          acc[typeId] = result;
-          return acc;
-        }, {} as Record<string, string>);
-      }
-      
       const { error } = await supabase
         .from('tests')
         .insert({
@@ -69,7 +57,6 @@ const NewTestPage: React.FC = () => {
           test_type: testType,
           status: data.status,
           result: data.status === 'completed' ? data.result : null,
-          specific_results: data.status === 'completed' && data.result === 'positive' ? specificResults : null,
           location: data.location || null,
           notes: data.notes || null
         });
