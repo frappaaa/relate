@@ -28,7 +28,6 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
         setIsLoading(true);
         try {
           const fetchedLocations = await fetchLocations();
-          // Ensure we set a valid array even if the API returns null or undefined
           setLocations(Array.isArray(fetchedLocations) ? fetchedLocations : []);
         } catch (error) {
           console.error('Error loading locations:', error);
@@ -43,12 +42,12 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
   }, [open]);
 
   // Ensure filteredLocations is always a valid array
-  const filteredLocations = searchQuery && locations && locations.length > 0
+  const filteredLocations = searchQuery && locations.length > 0
     ? locations.filter(location => 
         location.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
         location.address.toLowerCase().includes(searchQuery.toLowerCase())
       )
-    : locations || [];
+    : locations;
 
   const handleSelect = (currentValue: string) => {
     if (currentValue === value) {

@@ -9,7 +9,7 @@ import { formSchema, FormData } from './types';
 import DateField from './DateField';
 import StatusField from './StatusField';
 import STISelector from './STISelector';
-import LocationSearchField from './LocationSearchField';
+import LocationField from './LocationField';
 import ResultField from './ResultField';
 import SpecificResultsSelector from './SpecificResultsSelector';
 import NotesField from './NotesField';
@@ -58,7 +58,7 @@ const TestForm: React.FC<TestFormProps> = ({
           <ResultField form={form} />
           <SpecificResultsSelector form={form} />
           
-          <LocationSearchField form={form} />
+          <LocationField form={form} />
           <NotesField form={form} />
           
           <div className="flex justify-end">
