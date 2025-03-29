@@ -158,6 +158,7 @@ export type Database = {
           location: string | null
           notes: string | null
           result: Database["public"]["Enums"]["test_result"] | null
+          specific_results: Json | null
           status: Database["public"]["Enums"]["test_status"]
           test_type: string
           updated_at: string
@@ -170,6 +171,7 @@ export type Database = {
           location?: string | null
           notes?: string | null
           result?: Database["public"]["Enums"]["test_result"] | null
+          specific_results?: Json | null
           status?: Database["public"]["Enums"]["test_status"]
           test_type: string
           updated_at?: string
@@ -182,6 +184,7 @@ export type Database = {
           location?: string | null
           notes?: string | null
           result?: Database["public"]["Enums"]["test_result"] | null
+          specific_results?: Json | null
           status?: Database["public"]["Enums"]["test_status"]
           test_type?: string
           updated_at?: string
