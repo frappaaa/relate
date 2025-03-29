@@ -9,7 +9,7 @@ import { formSchema, FormData } from './types';
 import DateField from './DateField';
 import StatusField from './StatusField';
 import STISelector from './STISelector';
-import LocationField from './LocationField';
+import LocationSearchField from './LocationSearchField';
 import ResultField from './ResultField';
 import SpecificResultsSelector from './SpecificResultsSelector';
 import NotesField from './NotesField';
@@ -55,13 +55,10 @@ const TestForm: React.FC<TestFormProps> = ({
           
           <STISelector form={form} />
           
-          {/* ResultField no longer needs isVisible prop */}
           <ResultField form={form} />
-
-          {/* New component for specific results */}
           <SpecificResultsSelector form={form} />
           
-          <LocationField form={form} />
+          <LocationSearchField form={form} />
           <NotesField form={form} />
           
           <div className="flex justify-end">

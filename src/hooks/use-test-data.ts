@@ -47,7 +47,18 @@ export const useTestData = (testId: string | undefined) => {
         }, {} as Record<string, boolean>);
 
         // Parse specific results if available
-        const specificResults = data.specific_results || {};
+        let specificResults: Record<string, "negative" | "positive" | "pending"> = {};
+        
+        if (data.specific_results && typeof data.specific_results === 'object') {
+          // Make sure we convert any string values to the correct enum type
+          for (const [key, value] of Object.entries(data.specific_results)) {
+            if (typeof value === 'string' && ['negative', 'positive', 'pending'].includes(value)) {
+              specificResults[key] = value as "negative" | "positive" | "pending";
+            } else {
+              specificResults[key] = 'pending';
+            }
+          }
+        }
 
         setInitialData({
           date: new Date(data.date),
