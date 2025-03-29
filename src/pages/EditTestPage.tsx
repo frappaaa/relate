@@ -48,8 +48,8 @@ const EditTestPage: React.FC = () => {
           return acc;
         }, {} as Record<string, boolean>);
 
-        // Parse specific results if available - handle both cases where it might be a column or not
-        // Use optional chaining to safely access the property, which might not exist
+        // Parse specific results if available
+        // Handle it as an optional field that might not be present in the data
         const specificResults = data.specific_results || {};
 
         setInitialData({

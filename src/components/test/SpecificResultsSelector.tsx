@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { UseFormReturn } from 'react-hook-form';
-import { FormData } from './types';
+import { FormData, stiOptions } from './types';
 import { Label } from '@/components/ui/label';
 
 interface SpecificResultsSelectorProps {
@@ -60,15 +60,10 @@ const SpecificResultsSelector: React.FC<SpecificResultsSelectorProps> = ({ form 
                     <FormLabel>
                       Risultato per {
                         // Find the label for this test type
-                        form.getValues().testTypes[typeId] ? 
                         (() => {
-                          const option = (() => {
-                            const fromImport = require('./types').stiOptions;
-                            return fromImport.find((opt: any) => opt.id === typeId);
-                          })();
+                          const option = stiOptions.find(opt => opt.id === typeId);
                           return option ? option.label : typeId;
-                        })() : 
-                        typeId
+                        })()
                       }
                     </FormLabel>
                     <FormControl>
