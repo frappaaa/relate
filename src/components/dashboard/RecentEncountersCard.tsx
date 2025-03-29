@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Heart } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,6 +18,12 @@ interface RecentEncountersCardProps {
 }
 
 const RecentEncountersCard: React.FC<RecentEncountersCardProps> = ({ recentEncounters }) => {
+  const navigate = useNavigate();
+  
+  const handleEncounterClick = (encounterId: string) => {
+    navigate(`/app/encounter/${encounterId}`);
+  };
+
   return (
     <Card className="shadow-card">
       <CardHeader className="pb-2">
@@ -31,7 +37,11 @@ const RecentEncountersCard: React.FC<RecentEncountersCardProps> = ({ recentEncou
         {recentEncounters.length > 0 ? (
           <div className="space-y-3">
             {recentEncounters.map(encounter => (
-              <div key={encounter.id} className="flex items-center justify-between group">
+              <div 
+                key={encounter.id} 
+                className="flex items-center justify-between group hover:bg-muted/50 p-2 rounded-md cursor-pointer transition-colors"
+                onClick={() => handleEncounterClick(encounter.id)}
+              >
                 <div className="flex items-center space-x-3">
                   <div className={`w-2 h-2 rounded-full ${getRiskColor(encounter.risk)}`} />
                   <div>
