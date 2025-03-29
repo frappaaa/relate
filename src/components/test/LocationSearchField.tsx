@@ -21,14 +21,15 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
   const [isLoading, setIsLoading] = useState(false);
   const value = form.watch('location') || '';
 
+  // Only fetch locations when the popover is open
   useEffect(() => {
-    // Only fetch locations when the popover is open
     if (open) {
       const loadLocations = async () => {
         setIsLoading(true);
         try {
           const fetchedLocations = await fetchLocations();
-          setLocations(fetchedLocations);
+          // Ensure we set a valid array even if the API returns null or undefined
+          setLocations(fetchedLocations || []);
         } catch (error) {
           console.error('Error loading locations:', error);
           // Ensure we always have a valid array even if there's an error
@@ -42,8 +43,8 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
     }
   }, [open]);
 
-  // Make sure filteredLocations is always an array
-  const filteredLocations = searchQuery && locations.length > 0
+  // Ensure filteredLocations is always an array
+  const filteredLocations = searchQuery 
     ? locations.filter(location => 
         location.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
         location.address.toLowerCase().includes(searchQuery.toLowerCase())
@@ -103,7 +104,7 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
                     <CommandEmpty>Nessun risultato. Continua a digitare per aggiungere un nuovo luogo.</CommandEmpty>
                     {filteredLocations.length > 0 && (
                       <CommandGroup heading="Centri disponibili">
-                        {filteredLocations.slice(0, 5).map((location) => (
+                        {filteredLocations.map((location) => (
                           <CommandItem
                             key={location.id}
                             value={location.name}
