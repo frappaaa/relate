@@ -7,10 +7,11 @@ import { FormData } from './types';
 
 interface ResultFieldProps {
   form: UseFormReturn<FormData>;
-  isVisible: boolean;
 }
 
-const ResultField: React.FC<ResultFieldProps> = ({ form, isVisible }) => {
+const ResultField: React.FC<ResultFieldProps> = ({ form }) => {
+  const isVisible = form.watch('status') === 'completed';
+  
   if (!isVisible) return null;
   
   return (

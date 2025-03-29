@@ -55,9 +55,8 @@ const TestForm: React.FC<TestFormProps> = ({
           
           <STISelector form={form} />
           
-          {form.watch('status') === 'completed' && (
-            <ResultField form={form} />
-          )}
+          {/* ResultField no longer needs isVisible prop */}
+          <ResultField form={form} />
 
           {/* New component for specific results */}
           <SpecificResultsSelector form={form} />

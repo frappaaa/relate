@@ -48,7 +48,7 @@ const EditTestPage: React.FC = () => {
           return acc;
         }, {} as Record<string, boolean>);
 
-        // Parse specific results if available
+        // Parse specific results if available - handle both cases where it might be a column or not
         const specificResults = data.specific_results || {};
 
         setInitialData({
