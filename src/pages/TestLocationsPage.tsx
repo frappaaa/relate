@@ -14,8 +14,8 @@ const TestLocationsPage: React.FC = () => {
   const [allLocations, setAllLocations] = useState<TestLocation[]>([]);
   const [isLocating, setIsLocating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [availableServices, setAvailableServices] = useState<string[]>([]);
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,11 +26,11 @@ const TestLocationsPage: React.FC = () => {
         setAllLocations(data);
         setFilteredLocations(data);
 
-        const services = new Set<string>();
+        const categories = new Set<string>();
         data.forEach(location => {
-          location.testTypes.forEach(type => services.add(type));
+          location.testTypes.forEach(type => categories.add(type));
         });
-        setAvailableServices(Array.from(services).sort());
+        setAvailableCategories(Array.from(categories).sort());
       } catch (error) {
         console.error('Error fetching test locations:', error);
         toast({
@@ -52,27 +52,27 @@ const TestLocationsPage: React.FC = () => {
       filtered = filtered.filter(location => location.name.toLowerCase().includes(searchQuery.toLowerCase()) || location.address.toLowerCase().includes(searchQuery.toLowerCase()) || (location.city?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) || (location.region?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) || location.testTypes.some(type => type.toLowerCase().includes(searchQuery.toLowerCase())));
     }
 
-    if (selectedServices.length > 0) {
-      filtered = filtered.filter(location => selectedServices.every(service => location.testTypes.includes(service)));
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(location => selectedCategories.every(category => location.testTypes.includes(category)));
     }
     setFilteredLocations(filtered);
   };
 
   useEffect(() => {
     applyFilters();
-  }, [searchQuery, selectedServices, allLocations]);
+  }, [searchQuery, selectedCategories, allLocations]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     applyFilters();
   };
 
-  const handleServiceToggle = (service: string) => {
-    setSelectedServices(prev => {
-      if (prev.includes(service)) {
-        return prev.filter(s => s !== service);
+  const handleCategoryToggle = (category: string) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(category)) {
+        return prev.filter(c => c !== category);
       }
-      return [...prev, service];
+      return [...prev, category];
     });
   };
 
@@ -158,9 +158,9 @@ const TestLocationsPage: React.FC = () => {
       />
       
       <ServiceFilterTags 
-        availableServices={availableServices} 
-        selectedServices={selectedServices} 
-        onServiceToggle={handleServiceToggle} 
+        availableServices={availableCategories} 
+        selectedServices={selectedCategories} 
+        onServiceToggle={handleCategoryToggle} 
       />
 
       <LocationList 
