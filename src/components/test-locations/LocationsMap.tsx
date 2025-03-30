@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MapPin, Loader2, Locate } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import mapboxgl from 'mapbox-gl';
-import { geocodeAddress } from '@/hooks/use-mapbox';
+import { geocodeAddress, getMapboxToken } from '@/hooks/use-mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { TestLocation } from '@/services/locations';
 
@@ -26,9 +26,33 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
   const markers = useRef<mapboxgl.Marker[]>([]);
   const [mapError, setMapError] = useState<boolean>(false);
   const [pendingGeocode, setPendingGeocode] = useState<boolean>(false);
+  const [mapboxToken, setMapboxToken] = useState<string | null>(null);
+  const [isTokenLoading, setIsTokenLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (!mapContainer.current) return;
+    async function fetchToken() {
+      try {
+        setIsTokenLoading(true);
+        const token = await getMapboxToken();
+        setMapboxToken(token);
+        if (token) {
+          mapboxgl.accessToken = token;
+        } else {
+          setMapError(true);
+        }
+      } catch (error) {
+        console.error('Failed to fetch Mapbox token:', error);
+        setMapError(true);
+      } finally {
+        setIsTokenLoading(false);
+      }
+    }
+    
+    fetchToken();
+  }, []);
+
+  useEffect(() => {
+    if (!mapContainer.current || !mapboxToken || isTokenLoading) return;
     
     try {
       map.current = new mapboxgl.Map({
@@ -54,9 +78,8 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
       setMapError(true);
       return undefined;
     }
-  }, []);
+  }, [mapboxToken, isTokenLoading]);
   
-  // Geocode locations without coordinates
   useEffect(() => {
     const geocodeLocations = async () => {
       if (isLoading || !map.current) return;
@@ -85,7 +108,6 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
     geocodeLocations();
   }, [locations, isLoading]);
   
-  // Update markers when locations change
   useEffect(() => {
     if (!map.current || isLoading || mapError || pendingGeocode) return;
     
@@ -147,12 +169,13 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
     <div className="w-full h-full relative">
       <div ref={mapContainer} className="w-full h-full" />
       
-      {(isLoading || pendingGeocode) && (
+      {(isLoading || pendingGeocode || isTokenLoading) && (
         <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-10">
           <div className="flex flex-col items-center">
             <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
             <p className="text-sm text-muted-foreground">
-              {pendingGeocode ? 'Geocodifica degli indirizzi in corso...' : 'Caricamento centri...'}
+              {isTokenLoading ? 'Caricamento mappa...' : 
+               pendingGeocode ? 'Geocodifica degli indirizzi in corso...' : 'Caricamento centri...'}
             </p>
           </div>
         </div>
@@ -171,7 +194,7 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
           variant="default"
           className="shadow-md bg-white text-black hover:bg-gray-100 rounded-full w-10 h-10 p-0 flex items-center justify-center"
           onClick={findNearMe}
-          disabled={isLoading || pendingGeocode}
+          disabled={isLoading || pendingGeocode || isTokenLoading}
         >
           {isLocating ? (
             <Loader2 className="h-4 w-4 animate-spin" />

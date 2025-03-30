@@ -1,10 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
-import { MAPBOX_TOKEN } from './constants';
-
-// Inizializza il token Mapbox con un valore fisso
-mapboxgl.accessToken = MAPBOX_TOKEN;
+import { MAPBOX_TOKEN, getMapboxToken } from './constants';
 
 interface UseMapboxProps {
   container: HTMLDivElement | null;
@@ -22,10 +19,35 @@ export function useMapbox({
   const [map, setMap] = useState<mapboxgl.Map | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(MAPBOX_TOKEN);
+  
+  // Fetch token if not available
+  useEffect(() => {
+    async function fetchToken() {
+      try {
+        const mapboxToken = await getMapboxToken();
+        if (mapboxToken) {
+          setToken(mapboxToken);
+          mapboxgl.accessToken = mapboxToken;
+        } else {
+          setError('Impossibile recuperare il token Mapbox');
+        }
+      } catch (err) {
+        console.error('Failed to fetch Mapbox token:', err);
+        setError('Errore nel caricamento del token Mapbox');
+      }
+    }
+    
+    if (!token) {
+      fetchToken();
+    } else {
+      mapboxgl.accessToken = token;
+    }
+  }, [token]);
   
   // Create and initialize the map
   useEffect(() => {
-    if (!container || !coordinates) return;
+    if (!container || !coordinates || !token) return;
     
     try {
       const mapInstance = new mapboxgl.Map({
@@ -56,7 +78,7 @@ export function useMapbox({
       setError('Impossibile inizializzare la mappa');
       return undefined;
     }
-  }, [container, coordinates, zoom, interactive]);
+  }, [container, coordinates, zoom, interactive, token]);
   
   return { map, isLoaded, error };
 }
