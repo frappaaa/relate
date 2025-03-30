@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
 import { UseFormReturn } from 'react-hook-form';
@@ -7,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { fetchLocations, TestLocation } from '@/services/locations';
+import { fetchLocations, TestLocation } from '@/services/locationService';
 
 interface LocationSearchFieldProps {
   form: UseFormReturn<FormData>;
@@ -20,6 +21,7 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
   const [isLoading, setIsLoading] = useState(false);
   const value = form.watch('location') || '';
 
+  // Only load locations when the popover is opened
   useEffect(() => {
     if (open) {
       const loadLocations = async () => {
@@ -39,6 +41,7 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
     }
   }, [open]);
 
+  // Ensure filteredLocations is always a valid array
   const filteredLocations = searchQuery && locations.length > 0
     ? locations.filter(location => 
         location.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -57,6 +60,7 @@ const LocationSearchField: React.FC<LocationSearchFieldProps> = ({ form }) => {
 
   const handleInputChange = (input: string) => {
     setSearchQuery(input);
+    // If user is typing, update the form value
     form.setValue('location', input);
   };
 

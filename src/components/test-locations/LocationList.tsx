@@ -1,7 +1,19 @@
+
 import React from 'react';
 import { Loader2 } from 'lucide-react';
 import LocationCard from './LocationCard';
-import { TestLocation } from '@/services/locations';
+
+interface TestLocation {
+  id: string;
+  name: string;
+  address: string;
+  city?: string;
+  region?: string;
+  testTypes: string[];
+  distance?: string;
+  coordinates?: [number, number];
+  category?: string;
+}
 
 interface LocationListProps {
   isLoading: boolean;

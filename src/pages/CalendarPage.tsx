@@ -6,31 +6,34 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
 import EventsTable, { CalendarEvent } from '@/components/calendar/EventsTable';
 import CalendarTabsFilter from '@/components/calendar/CalendarTabsFilter';
+
 const CalendarPage: React.FC = () => {
   const navigate = useNavigate();
-  const {
-    user
-  } = useAuth();
+  const { user } = useAuth();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [activeTab, setActiveTab] = useState<'all' | 'encounters' | 'tests'>('all');
   const [isLoading, setIsLoading] = useState(true);
+
   const fetchEvents = async () => {
     if (!user) return;
+
     try {
       setIsLoading(true);
 
       // Fetch encounters
-      const {
-        data: encounters,
-        error: encountersError
-      } = await supabase.from('encounters').select('id, date, encounter_type, risk_level, notes').eq('user_id', user.id);
+      const { data: encounters, error: encountersError } = await supabase
+        .from('encounters')
+        .select('id, date, encounter_type, risk_level, notes')
+        .eq('user_id', user.id);
+
       if (encountersError) throw encountersError;
 
       // Fetch tests
-      const {
-        data: tests,
-        error: testsError
-      } = await supabase.from('tests').select('id, date, test_type, result, status').eq('user_id', user.id);
+      const { data: tests, error: testsError } = await supabase
+        .from('tests')
+        .select('id, date, test_type, result, status')
+        .eq('user_id', user.id);
+
       if (testsError) throw testsError;
 
       // Format encounters as CalendarEvents
@@ -39,7 +42,9 @@ const CalendarPage: React.FC = () => {
         date: new Date(encounter.date),
         type: 'encounter',
         details: {
-          encounterType: encounter.encounter_type === 'oral' ? 'Orale' : encounter.encounter_type === 'vaginal' ? 'Vaginale' : encounter.encounter_type === 'anal' ? 'Anale' : 'Altro',
+          encounterType: encounter.encounter_type === 'oral' ? 'Orale' :
+                          encounter.encounter_type === 'vaginal' ? 'Vaginale' :
+                          encounter.encounter_type === 'anal' ? 'Anale' : 'Altro',
           risk: encounter.risk_level
         }
       }));
@@ -75,6 +80,7 @@ const CalendarPage: React.FC = () => {
   const handleAddEvent = (date: Date) => {
     navigate(`/app/new-encounter?date=${date.toISOString()}`);
   };
+
   const handleViewEvent = (event: CalendarEvent) => {
     if (event.type === 'encounter') {
       navigate(`/app/encounter/${event.id}`);
@@ -82,26 +88,32 @@ const CalendarPage: React.FC = () => {
       navigate(`/app/test/${event.id}`);
     }
   };
+
   useEffect(() => {
     fetchEvents();
-
+    
     // Set up realtime subscription for encounters and tests
     if (user) {
-      const eventsChannel = supabase.channel('calendar-changes').on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'encounters',
-        filter: `user_id=eq.${user.id}`
-      }, () => {
-        fetchEvents();
-      }).on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'tests',
-        filter: `user_id=eq.${user.id}`
-      }, () => {
-        fetchEvents();
-      }).subscribe();
+      const eventsChannel = supabase
+        .channel('calendar-changes')
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'encounters',
+          filter: `user_id=eq.${user.id}`
+        }, () => {
+          fetchEvents();
+        })
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'tests',
+          filter: `user_id=eq.${user.id}`
+        }, () => {
+          fetchEvents();
+        })
+        .subscribe();
+
       return () => {
         supabase.removeChannel(eventsChannel);
       };
@@ -117,24 +129,44 @@ const CalendarPage: React.FC = () => {
   });
 
   // Sort events by date (most recent first)
-  const sortedEvents = [...filteredEvents].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  const sortedEvents = [...filteredEvents].sort((a, b) => 
+    new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
   if (!user) {
-    return <div className="space-y-8">
+    return (
+      <div className="space-y-8">
         <section className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">Calendario</h1>
           <p className="text-muted-foreground">Accedi per visualizzare i tuoi eventi</p>
         </section>
-      </div>;
+      </div>
+    );
   }
-  return <div className="space-y-8 py-[12px] px-[16px]">
+
+  return (
+    <div className="space-y-8">
       <section className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Calendario</h1>
         <p className="text-muted-foreground">Visualizza e gestisci i tuoi rapporti e test</p>
       </section>
 
-      <WeekCalendar events={events} onAddEvent={handleAddEvent} onViewEvent={handleViewEvent} isLoading={isLoading} />
+      <WeekCalendar
+        events={events}
+        onAddEvent={handleAddEvent}
+        onViewEvent={handleViewEvent}
+        isLoading={isLoading}
+      />
 
-      <CalendarTabsFilter activeTab={activeTab} setActiveTab={setActiveTab} events={sortedEvents} onViewEvent={handleViewEvent} isLoading={isLoading} />
-    </div>;
+      <CalendarTabsFilter
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        events={sortedEvents}
+        onViewEvent={handleViewEvent}
+        isLoading={isLoading}
+      />
+    </div>
+  );
 };
+
 export default CalendarPage;

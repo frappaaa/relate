@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { fetchLocationById, TestLocation } from '@/services/locations';
+import { fetchLocationById, TestLocation } from '@/services/locationService';
 import LocationDetailHeader from '@/components/test-locations/LocationDetailHeader';
 import LocationDetailMap from '@/components/test-locations/LocationDetailMap';
 import LocationDetailsCard from '@/components/test-locations/LocationDetailsCard';
@@ -60,17 +60,15 @@ const TestLocationDetailPage: React.FC = () => {
     return <LocationNotFound onBack={handleBack} />;
   }
 
-  // Costruisci l'indirizzo completo per la geocodifica
-  const fullAddress = `${location.address}, ${location.city || location.region || 'Italia'}`;
-
   return (
     <div className="space-y-6">
       <LocationDetailHeader onBack={handleBack} />
-      <LocationDetailMap 
-        coordinates={location.coordinates} 
-        locationName={location.name}
-        address={fullAddress}
-      />
+      {location?.coordinates && (
+        <LocationDetailMap 
+          coordinates={location.coordinates} 
+          locationName={location.name}
+        />
+      )}
       <LocationDetailsCard 
         location={{
           name: location.name,
