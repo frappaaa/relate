@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import LocationsMap from '@/components/test-locations/LocationsMap';
 import LeftPanel from '@/components/test-locations/LeftPanel';
 import { useLocationFilter } from '@/hooks/use-location-filter';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const TestLocationsPage: React.FC = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const {
     searchQuery,
     setSearchQuery,
