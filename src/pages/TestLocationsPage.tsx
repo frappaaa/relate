@@ -186,8 +186,8 @@ const TestLocationsPage: React.FC = () => {
 
   return (
     <div className="relative h-[calc(100vh-64px)] md:h-[calc(100vh-80px)] overflow-hidden">
-      {/* Map container - takes up full screen */}
-      <div className="w-full h-full">
+      {/* Map container - takes up full screen but with lower z-index */}
+      <div className="absolute inset-0 z-0">
         <LocationsMap 
           locations={filteredLocations}
           isLoading={isLoading}
@@ -197,10 +197,10 @@ const TestLocationsPage: React.FC = () => {
         />
       </div>
       
-      {/* Left panel overlay */}
+      {/* Left panel overlay with higher z-index */}
       <div className={`
-        absolute top-0 left-0 bottom-0 
-        ${isMobile ? 'w-full bg-white p-4' : 'w-[400px] bg-white/95 shadow-lg p-6 overflow-y-auto'}
+        absolute top-0 left-0 bottom-0 z-10
+        ${isMobile ? 'w-full bg-white p-4' : 'w-[400px] bg-white/95 shadow-lg p-6 overflow-y-auto rounded-r-lg'}
       `}>
         <div className="space-y-4">
           <h1 className="text-2xl font-bold tracking-tight">Dove fare i test</h1>
@@ -218,11 +218,13 @@ const TestLocationsPage: React.FC = () => {
             isCategories={true}
           />
 
-          <LocationList 
-            isLoading={isLoading} 
-            filteredLocations={filteredLocations} 
-            handleViewDetails={handleViewDetails} 
-          />
+          <div className="rounded-lg overflow-hidden">
+            <LocationList 
+              isLoading={isLoading} 
+              filteredLocations={filteredLocations} 
+              handleViewDetails={handleViewDetails} 
+            />
+          </div>
         </div>
       </div>
     </div>
