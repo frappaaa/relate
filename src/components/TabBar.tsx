@@ -20,7 +20,7 @@ const TabBar: React.FC = () => {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t shadow-lg">
         <nav className="flex items-center justify-around h-16">
           {navItems.map((item) => (
             <NavLink

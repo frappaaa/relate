@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { MapPin, Loader2 } from 'lucide-react';
+import { MapPin, Loader2, Locate } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -140,24 +140,18 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
         </div>
       )}
       
-      <div className="absolute bottom-4 right-4 z-10">
+      <div className="absolute top-4 left-4 z-10">
         <Button 
           size="sm" 
           variant="default"
-          className="shadow-md bg-white text-black hover:bg-gray-100"
+          className="shadow-md bg-white text-black hover:bg-gray-100 rounded-full w-10 h-10 p-0 flex items-center justify-center"
           onClick={findNearMe}
           disabled={isLocating}
         >
           {isLocating ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Localizzando...
-            </>
+            <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
-            <>
-              <MapPin className="mr-2 h-4 w-4" />
-              Trova vicino a me
-            </>
+            <Locate className="h-5 w-5" />
           )}
         </Button>
       </div>

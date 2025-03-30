@@ -42,8 +42,8 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         onOpenChange={() => {}}
       >
         <DrawerContent 
-          className={`${isDrawerExpanded ? 'h-[80vh]' : 'h-[15vh]'} transition-all duration-300 pb-0 pt-2`}
-          style={{ maxHeight: isDrawerExpanded ? '80vh' : '15vh' }}
+          className={`${isDrawerExpanded ? 'h-[70vh]' : 'h-[15vh]'} transition-all duration-300 pb-0 pt-2`}
+          style={{ maxHeight: isDrawerExpanded ? '70vh' : '15vh' }}
         >
           <div className="flex justify-center mb-2">
             <Button 

@@ -1,12 +1,16 @@
+
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import TabBar from './TabBar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+
 const Layout: React.FC = () => {
   const isMobile = useIsMobile();
-  return <div className="min-h-screen bg-background flex flex-col overflow-hidden">
+  
+  return (
+    <div className="min-h-screen bg-background flex flex-col overflow-hidden">
       <Navbar />
       
       <main className={cn("flex-1 overflow-y-auto", isMobile ? "pb-20" : "pb-16")}>
@@ -15,7 +19,10 @@ const Layout: React.FC = () => {
         </div>
       </main>
 
+      {/* TabBar fixed at the bottom with highest z-index */}
       <TabBar />
-    </div>;
+    </div>
+  );
 };
+
 export default Layout;
