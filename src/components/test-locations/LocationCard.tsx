@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-react';
 
 interface LocationCardProps {
   id: string;
@@ -23,40 +23,34 @@ const LocationCard: React.FC<LocationCardProps> = ({
   distance,
   handleViewDetails,
 }) => {
+  // Use the first test type as the category
+  const category = testTypes && testTypes.length > 0 ? testTypes[0] : "Test";
+
   return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-xl">{name}</CardTitle>
-            <CardDescription className="mt-1">
-              {address}{city ? `, ${city}` : ''}
-            </CardDescription>
-          </div>
+    <Card 
+      className="p-4 hover:shadow-md transition-shadow cursor-pointer relative flex flex-col"
+      onClick={() => handleViewDetails(id)}
+    >
+      <div className="space-y-2">
+        <h3 className="font-semibold text-lg">{name}</h3>
+        <div className="flex items-center text-muted-foreground text-sm">
+          <span className="truncate">
+            {address}{city ? `, ${city}` : ''}
+          </span>
           {distance && (
-            <Badge variant="outline" className="ml-2">
+            <Badge variant="outline" className="ml-2 bg-gray-100 font-normal">
               {distance}
             </Badge>
           )}
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-wrap gap-2">
-          {testTypes.map((type) => (
-            <Badge key={type} variant="secondary">
-              {type}
-            </Badge>
-          ))}
-        </div>
-        <Button 
-          className="mt-4" 
-          variant="outline" 
-          size="sm"
-          onClick={() => handleViewDetails(id)}
-        >
-          Vedi dettagli
-        </Button>
-      </CardContent>
+      </div>
+      
+      <div className="flex justify-between items-center mt-4">
+        <Badge variant="outline" className="rounded-full px-3 border-red-200 bg-red-50 text-red-700">
+          {category}
+        </Badge>
+        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+      </div>
     </Card>
   );
 };
