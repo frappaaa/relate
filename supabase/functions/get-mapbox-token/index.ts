@@ -16,9 +16,29 @@ serve(async (req) => {
   }
 
   try {
+    // Verifica che il token esista
+    if (!MAPBOX_TOKEN) {
+      console.error('Mapbox token not found in environment variables');
+      return new Response(
+        JSON.stringify({ 
+          error: 'Mapbox token not found in environment variables',
+          status: 'error' 
+        }),
+        { 
+          status: 500, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json' 
+          }
+        },
+      );
+    }
+    
+    console.log('Returning Mapbox token successfully');
+    
     // Ritorna il token come risposta JSON
     return new Response(
-      JSON.stringify({ token: MAPBOX_TOKEN }),
+      JSON.stringify({ token: MAPBOX_TOKEN, status: 'success' }),
       { 
         headers: { 
           ...corsHeaders, 
@@ -30,7 +50,7 @@ serve(async (req) => {
     console.error('Error retrieving Mapbox token:', error);
     
     return new Response(
-      JSON.stringify({ error: 'Error retrieving Mapbox token' }),
+      JSON.stringify({ error: 'Error retrieving Mapbox token', status: 'error' }),
       { 
         status: 500, 
         headers: { 

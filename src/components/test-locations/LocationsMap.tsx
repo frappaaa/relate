@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import mapboxgl from 'mapbox-gl';
 import { initializeMapbox } from '@/hooks/use-mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface TestLocation {
   id: string;
@@ -21,6 +22,7 @@ interface LocationsMapProps {
   findNearMe: () => void;
   isLocating: boolean;
   onSelectLocation: (locationId: string) => void;
+  onError?: (error: string) => void;
 }
 
 const LocationsMap: React.FC<LocationsMapProps> = ({
@@ -28,13 +30,15 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
   isLoading,
   findNearMe,
   isLocating,
-  onSelectLocation
+  onSelectLocation,
+  onError
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<mapboxgl.Marker[]>([]);
   const [mapError, setMapError] = useState<boolean>(false);
   const [mapInitialized, setMapInitialized] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   // Inizializza Mapbox e la mappa
   useEffect(() => {
@@ -42,46 +46,79 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
     
     const initMap = async () => {
       try {
+        console.log("Initializing map...");
         const initialized = await initializeMapbox();
         
         if (!initialized) {
-          console.error('Failed to initialize Mapbox token');
+          const error = 'Failed to initialize Mapbox token';
+          console.error(error);
+          setErrorMessage('Impossibile ottenere il token Mapbox');
           setMapError(true);
+          if (onError) onError(error);
           return;
         }
         
-        setMapInitialized(true);
-        
-        map.current = new mapboxgl.Map({
-          container: mapContainer.current,
-          style: 'mapbox://styles/mapbox/streets-v12',
-          center: [12.4964, 41.9028], // Default center (Rome, Italy)
-          zoom: 5
-        });
-        
-        map.current.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
-        
-        // Gestione errori mappa
-        map.current.on('error', (e) => {
-          console.error('Mapbox error:', e);
+        try {
+          map.current = new mapboxgl.Map({
+            container: mapContainer.current,
+            style: 'mapbox://styles/mapbox/streets-v12',
+            center: [12.4964, 41.9028], // Default center (Rome, Italy)
+            zoom: 5
+          });
+          
+          map.current.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+          
+          map.current.on('load', () => {
+            console.log('Map loaded successfully');
+            setMapInitialized(true);
+          });
+          
+          // Gestione errori mappa
+          map.current.on('error', (e) => {
+            console.error('Mapbox error:', e);
+            setErrorMessage('Si è verificato un errore durante il caricamento della mappa');
+            setMapError(true);
+            if (onError) onError(`Map error: ${e.error?.message || 'Unknown error'}`);
+          });
+        } catch (mapInitError) {
+          console.error('Map initialization error:', mapInitError);
+          setErrorMessage('Errore nell\'inizializzazione della mappa');
           setMapError(true);
-        });
-      } catch (error) {
-        console.error('Failed to initialize map:', error);
+          if (onError) onError(`Map initialization error: ${(mapInitError as Error).message || 'Unknown error'}`);
+        }
+      } catch (tokenError) {
+        console.error('Failed to initialize map:', tokenError);
+        setErrorMessage('Impossibile inizializzare la mappa');
         setMapError(true);
+        if (onError) onError(`Token error: ${(tokenError as Error).message || 'Unknown error'}`);
       }
     };
     
     initMap();
     
     return () => {
-      map.current?.remove();
+      if (map.current) {
+        console.log('Cleaning up map');
+        map.current.remove();
+        map.current = null;
+        setMapInitialized(false);
+      }
     };
-  }, []);
+  }, [onError]);
   
   // Aggiorna i marker quando cambiano le locations
   useEffect(() => {
-    if (!map.current || isLoading || mapError || !mapInitialized) return;
+    if (!map.current || isLoading || mapError || !mapInitialized) {
+      console.log('Skipping marker update', { 
+        mapExists: !!map.current, 
+        isLoading, 
+        mapError, 
+        mapInitialized 
+      });
+      return;
+    }
+    
+    console.log('Updating markers', { locationCount: locations.length });
     
     // Rimuovi marker esistenti
     markers.current.forEach(marker => marker.remove());
@@ -89,6 +126,7 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
     
     // Aggiungi marker per le posizioni con coordinate
     const locationsWithCoords = locations.filter(loc => loc.coordinates);
+    console.log('Locations with coordinates:', locationsWithCoords.length);
     
     if (locationsWithCoords.length === 0) return;
     
@@ -146,7 +184,14 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
         {mapError && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/80">
             <MapPin className="h-8 w-8 text-gray-400 mb-2" />
-            <p className="text-sm text-muted-foreground">Errore di caricamento mappa</p>
+            <p className="text-sm text-muted-foreground">{errorMessage || 'Errore di caricamento mappa'}</p>
+            {errorMessage === 'Impossibile ottenere il token Mapbox' && (
+              <Alert variant="warning" className="mt-2 max-w-md">
+                <AlertDescription>
+                  Verifica che il token Mapbox sia configurato correttamente nell'Edge Function.
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
         )}
         
@@ -156,7 +201,7 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
             variant="secondary" 
             className="shadow-md"
             onClick={findNearMe}
-            disabled={isLocating}
+            disabled={isLocating || mapError}
           >
             {isLocating ? (
               <>

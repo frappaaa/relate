@@ -14,6 +14,7 @@ interface UseMapboxProps {
 // Funzione per ottenere il token Mapbox dall'edge function
 async function getMapboxToken(): Promise<string | null> {
   try {
+    console.log('Fetching Mapbox token...');
     const { data, error } = await supabase.functions.invoke('get-mapbox-token');
     
     if (error) {
@@ -26,7 +27,18 @@ async function getMapboxToken(): Promise<string | null> {
       return null;
     }
     
-    return data?.token;
+    if (!data?.token) {
+      console.error('No token received from edge function');
+      toast({
+        title: "Errore",
+        description: "Token Mapbox non disponibile",
+        variant: "destructive" 
+      });
+      return null;
+    }
+    
+    console.log('Mapbox token received successfully');
+    return data.token;
   } catch (error) {
     console.error('Exception fetching Mapbox token:', error);
     toast({
@@ -49,11 +61,17 @@ export async function initializeMapbox(): Promise<boolean> {
   const token = await tokenPromise;
   
   if (!token) {
+    console.error('Failed to get Mapbox token');
     return false;
   }
   
-  mapboxgl.accessToken = token;
-  return true;
+  try {
+    mapboxgl.accessToken = token;
+    return true;
+  } catch (error) {
+    console.error('Error setting Mapbox token:', error);
+    return false;
+  }
 }
 
 export function useMapbox({ 

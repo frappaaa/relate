@@ -17,6 +17,7 @@ const TestLocationsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [mapInitError, setMapInitError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -90,6 +91,16 @@ const TestLocationsPage: React.FC = () => {
 
   const handleViewDetails = (locationId: string) => {
     navigate(`/app/test-locations/${locationId}`);
+  };
+
+  const handleMapError = (error: string) => {
+    console.error('Map initialization error:', error);
+    setMapInitError(error);
+    toast({
+      title: "Errore mappa",
+      description: `Impossibile inizializzare la mappa: ${error}`,
+      variant: "destructive"
+    });
   };
 
   const findNearMe = () => {
@@ -166,7 +177,8 @@ const TestLocationsPage: React.FC = () => {
         isLoading={isLoading} 
         findNearMe={findNearMe} 
         isLocating={isLocating} 
-        onSelectLocation={handleViewDetails} 
+        onSelectLocation={handleViewDetails}
+        onError={handleMapError}
       />
       
       <ServiceFilterTags 

@@ -21,6 +21,7 @@ const LocationDetailMap: React.FC<LocationDetailMapProps> = ({ coordinates, loca
     
     const initMap = async () => {
       try {
+        console.log('Initializing detail map...');
         const initialized = await initializeMapbox();
         
         if (!initialized) {
@@ -28,30 +29,36 @@ const LocationDetailMap: React.FC<LocationDetailMapProps> = ({ coordinates, loca
           return;
         }
         
-        map.current = new mapboxgl.Map({
-          container: mapContainer.current,
-          style: 'mapbox://styles/mapbox/streets-v12',
-          center: [coordinates[1], coordinates[0]], // Mapbox usa [lng, lat]
-          zoom: 14
-        });
-        
-        map.current.on('load', () => {
-          setIsLoaded(true);
+        try {
+          map.current = new mapboxgl.Map({
+            container: mapContainer.current,
+            style: 'mapbox://styles/mapbox/streets-v12',
+            center: [coordinates[1], coordinates[0]], // Mapbox usa [lng, lat]
+            zoom: 14
+          });
           
-          // Aggiungi marker per la posizione
-          addMapMarker(map.current!, coordinates, `<h3>${locationName}</h3>`);
+          map.current.on('load', () => {
+            console.log('Detail map loaded successfully');
+            setIsLoaded(true);
+            
+            // Aggiungi marker per la posizione
+            addMapMarker(map.current!, coordinates, `<h3>${locationName}</h3>`);
+            
+            // Aggiungi controlli di navigazione
+            addMapNavigation(map.current!);
+          });
           
-          // Aggiungi controlli di navigazione
-          addMapNavigation(map.current!);
-        });
-        
-        map.current.on('error', (e) => {
-          console.error('Map error:', e);
-          setError('Si è verificato un errore durante il caricamento della mappa');
-        });
-      } catch (error) {
-        console.error('Failed to initialize map:', error);
-        setError('Impossibile inizializzare la mappa');
+          map.current.on('error', (e) => {
+            console.error('Map error:', e);
+            setError('Si è verificato un errore durante il caricamento della mappa');
+          });
+        } catch (mapError) {
+          console.error('Failed to initialize map:', mapError);
+          setError('Impossibile inizializzare la mappa');
+        }
+      } catch (tokenError) {
+        console.error('Failed to get token:', tokenError);
+        setError('Impossibile ottenere il token per la mappa');
       }
     };
     
@@ -59,6 +66,7 @@ const LocationDetailMap: React.FC<LocationDetailMapProps> = ({ coordinates, loca
     
     return () => {
       if (map.current) {
+        console.log('Cleaning up detail map');
         map.current.remove();
         map.current = null;
         setIsLoaded(false);
