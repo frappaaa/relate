@@ -1,8 +1,6 @@
-
 import React from 'react';
 import LocationSearchBar from './LocationSearchBar';
 import ServiceFilterTags from './ServiceFilterTags';
-
 interface LocationSearchProps {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -11,7 +9,6 @@ interface LocationSearchProps {
   selectedCategories: string[];
   handleCategoryToggle: (category: string) => void;
 }
-
 const LocationSearch: React.FC<LocationSearchProps> = ({
   searchQuery,
   setSearchQuery,
@@ -20,26 +17,14 @@ const LocationSearch: React.FC<LocationSearchProps> = ({
   selectedCategories,
   handleCategoryToggle
 }) => {
-  return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold tracking-tight">Dove fare i test</h1>
+  return <div className="space-y-4">
       
-      <LocationSearchBar 
-        searchQuery={searchQuery} 
-        setSearchQuery={setSearchQuery} 
-        handleSearch={handleSearch} 
-      />
+      
+      <LocationSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleSearch={handleSearch} />
       
       <div className="w-full mt-3">
-        <ServiceFilterTags 
-          availableServices={availableCategories} 
-          selectedServices={selectedCategories} 
-          onServiceToggle={handleCategoryToggle}
-          isCategories={true}
-        />
+        <ServiceFilterTags availableServices={availableCategories} selectedServices={selectedCategories} onServiceToggle={handleCategoryToggle} isCategories={true} />
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default LocationSearch;
