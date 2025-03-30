@@ -58,7 +58,7 @@ const STISelector: React.FC<STISelectorProps> = ({ form }) => {
                             variant="outline"
                             className={`py-2 px-3 flex items-center gap-2 text-sm transition-all ${
                               field.value 
-                                ? 'bg-primary/20 border-primary/30 text-primary-foreground hover:bg-primary/30' 
+                                ? 'bg-primary/40 border-primary/50 text-primary-foreground hover:bg-primary/50' 
                                 : 'hover:bg-secondary/80'
                             }`}
                           >
