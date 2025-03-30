@@ -42,8 +42,11 @@ const EncounterForm: React.FC<EncounterFormProps> = ({
     // Check if any symptoms are present
     const hasSymptoms = Object.values(data.symptoms).some(value => value);
     
+    // Handle both array and single type
+    const types = Array.isArray(data.type) ? data.type : [data.type];
+    
     const score = calculateRiskScore({
-      type: data.type,
+      type: types[0], // Use first type for calculation
       protection: data.protection,
       partnerStatus: data.partnerStatus,
       symptoms: hasSymptoms,

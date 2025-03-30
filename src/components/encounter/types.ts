@@ -13,10 +13,11 @@ export const symptomsOptions = [
   { id: "urination", label: "Problemi di minzione" },
 ] as const;
 
+// Adjusted to make type accept both string array and enum
 export const formSchema = z.object({
   date: z.date({ required_error: "La data è obbligatoria" }),
   type: z.union([
-    z.string().array().min(1, "Seleziona almeno un tipo di rapporto"),
+    z.array(z.enum(['oral', 'vaginal', 'anal'])).min(1, "Seleziona almeno un tipo di rapporto"),
     z.enum(['oral', 'vaginal', 'anal']),
   ]),
   protection: z.enum(['none', 'partial', 'full'], { required_error: "Il livello di protezione è obbligatorio" }),

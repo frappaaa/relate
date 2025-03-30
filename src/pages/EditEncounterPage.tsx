@@ -5,7 +5,7 @@ import { toast } from '@/hooks/use-toast';
 import EncounterForm from '@/components/encounter/EncounterForm';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { FormData, symptomsOptions } from './types';
+import { FormData, symptomsOptions } from '@/components/encounter/types';
 
 const EditEncounterPage: React.FC = () => {
   const { id } = useParams();
@@ -53,7 +53,7 @@ const EditEncounterPage: React.FC = () => {
         // Convert encounter_type to array if it contains multiple types
         const encounterTypes = data.encounter_type.includes(',')
           ? data.encounter_type.split(',')
-          : data.encounter_type;
+          : [data.encounter_type];
         
         // Convert protection_used to form data protection level
         let protectionLevel: 'none' | 'partial' | 'full' = 'none';
@@ -69,7 +69,7 @@ const EditEncounterPage: React.FC = () => {
 
         setInitialData({
           date: new Date(data.date),
-          type: encounterTypes,
+          type: encounterTypes as any,
           protection: protectionLevel,
           partnerStatus: 'unknown', // Default, as we don't store this
           symptoms: symptomsObject,
@@ -129,7 +129,7 @@ const EditEncounterPage: React.FC = () => {
         .from('encounters')
         .update({
           date: data.date.toISOString(),
-          encounter_type: encounterType,
+          encounter_type: encounterType as any,
           protection_used: protectionUsed,
           risk_level: data.riskLevel,
           notes: notes || null,
@@ -206,15 +206,3 @@ const EditEncounterPage: React.FC = () => {
 };
 
 export default EditEncounterPage;
-
-// List of symptoms that can be selected - must match the ones in the form
-const symptomsOptions = [
-  { id: "itching", label: "Prurito" },
-  { id: "pain", label: "Dolore o fastidio" },
-  { id: "discharge", label: "Perdite insolite" },
-  { id: "rash", label: "Eruzioni cutanee" },
-  { id: "fever", label: "Febbre" },
-  { id: "swelling", label: "Gonfiore" },
-  { id: "odor", label: "Odore insolito" },
-  { id: "urination", label: "Problemi di minzione" },
-] as const;
