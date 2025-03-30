@@ -12,6 +12,7 @@ interface LocationCardProps {
   testTypes: string[];
   distance?: string;
   handleViewDetails: (locationId: string) => void;
+  category?: string;
 }
 
 const LocationCard: React.FC<LocationCardProps> = ({
@@ -22,9 +23,10 @@ const LocationCard: React.FC<LocationCardProps> = ({
   testTypes,
   distance,
   handleViewDetails,
+  category,
 }) => {
-  // Use the first test type as the category
-  const category = testTypes && testTypes.length > 0 ? testTypes[0] : "Test";
+  // Use the category if available, otherwise fallback to the first test type
+  const displayCategory = category || (testTypes && testTypes.length > 0 ? testTypes[0] : "Test");
 
   return (
     <Card 
@@ -47,9 +49,14 @@ const LocationCard: React.FC<LocationCardProps> = ({
       
       <div className="flex justify-between items-center mt-4">
         <Badge variant="outline" className="rounded-full px-3 border-red-200 bg-red-50 text-red-700">
-          {category}
+          {displayCategory}
         </Badge>
-        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+        <ChevronRight className="h-5 w-5 text-relate-700" />
+      </div>
+
+      {/* Absolute positioned chevron to center it vertically */}
+      <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+        <ChevronRight className="h-5 w-5 text-relate-700" />
       </div>
     </Card>
   );

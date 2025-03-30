@@ -12,6 +12,7 @@ interface TestLocation {
   testTypes: string[];
   distance?: string;
   coordinates?: [number, number];
+  category?: string;
 }
 
 interface LocationListProps {
@@ -54,6 +55,7 @@ const LocationList: React.FC<LocationListProps> = ({
           testTypes={location.testTypes}
           distance={location.distance}
           handleViewDetails={handleViewDetails}
+          category={location.category}
         />
       ))}
     </div>
