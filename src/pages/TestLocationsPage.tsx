@@ -25,8 +25,8 @@ const TestLocationsPage: React.FC = () => {
   };
 
   return (
-    <div className="relative h-[calc(100vh-64px)] md:h-[calc(100vh-80px)] overflow-hidden">
-      {/* Map container - takes up full screen but with lower z-index */}
+    <div className="fixed inset-0 flex h-[calc(100vh-64px)] md:h-[calc(100vh-80px)]">
+      {/* Map container - takes up full screen with lower z-index */}
       <div className="absolute inset-0 z-0">
         <LocationsMap 
           locations={filteredLocations}
