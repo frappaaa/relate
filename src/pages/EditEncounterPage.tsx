@@ -5,7 +5,7 @@ import { toast } from '@/hooks/use-toast';
 import EncounterForm from '@/components/encounter/EncounterForm';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { FormData } from '@/components/encounter/types';
+import { FormData, symptomsOptions } from './types';
 
 const EditEncounterPage: React.FC = () => {
   const { id } = useParams();
@@ -50,8 +50,10 @@ const EditEncounterPage: React.FC = () => {
           ? data.notes.replace(/\n\nSintomi: .*/, '').replace(/^Sintomi: .*/, '') 
           : '';
 
-        // Convert encounter_type to form data type
-        const formDataType = data.encounter_type as 'oral' | 'vaginal' | 'anal';
+        // Convert encounter_type to array if it contains multiple types
+        const encounterTypes = data.encounter_type.includes(',')
+          ? data.encounter_type.split(',')
+          : data.encounter_type;
         
         // Convert protection_used to form data protection level
         let protectionLevel: 'none' | 'partial' | 'full' = 'none';
@@ -67,7 +69,7 @@ const EditEncounterPage: React.FC = () => {
 
         setInitialData({
           date: new Date(data.date),
-          type: formDataType,
+          type: encounterTypes,
           protection: protectionLevel,
           partnerStatus: 'unknown', // Default, as we don't store this
           symptoms: symptomsObject,
@@ -105,8 +107,10 @@ const EditEncounterPage: React.FC = () => {
       // Map form protection level to boolean
       const protectionUsed = data.protection !== 'none';
 
-      // Map form type to encounter_type enum
-      let encounterType = data.type as 'oral' | 'vaginal' | 'anal';
+      // Handle multiple encounter types or single type
+      let encounterType = Array.isArray(data.type) 
+        ? data.type.join(',') 
+        : data.type;
       
       // Map symptoms to notes, only if symptoms are actually selected
       const symptomsSelected = Object.entries(data.symptoms)

@@ -34,8 +34,10 @@ const NewEncounterPage: React.FC = () => {
       // Map form protection level to boolean
       const protectionUsed = data.protection !== 'none';
 
-      // Map form type to encounter_type enum
-      let encounterType = data.type as 'oral' | 'vaginal' | 'anal';
+      // Handle multiple encounter types or single type
+      let encounterType = Array.isArray(data.type) 
+        ? data.type.join(',') 
+        : data.type;
       
       // Map symptoms to notes, only if symptoms are actually selected
       const symptomsSelected = Object.entries(data.symptoms)

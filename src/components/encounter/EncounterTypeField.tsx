@@ -1,15 +1,30 @@
 
 import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UseFormReturn } from 'react-hook-form';
 import { FormData } from './types';
+import BadgeSelector, { BadgeOption } from './BadgeSelector';
 
 interface EncounterTypeFieldProps {
   form: UseFormReturn<FormData>;
 }
 
+const encounterTypeOptions: BadgeOption[] = [
+  { id: "oral", label: "Orale" },
+  { id: "vaginal", label: "Vaginale" },
+  { id: "anal", label: "Anale" },
+];
+
 const EncounterTypeField: React.FC<EncounterTypeFieldProps> = ({ form }) => {
+  const value = form.watch('type') || [];
+  
+  const handleChange = (selectedTypes: string[]) => {
+    // Ensure we have at least one selection
+    if (selectedTypes.length > 0) {
+      form.setValue('type', selectedTypes as any, { shouldValidate: true });
+    }
+  };
+
   return (
     <FormField
       control={form.control}
@@ -17,20 +32,14 @@ const EncounterTypeField: React.FC<EncounterTypeFieldProps> = ({ form }) => {
       render={({ field }) => (
         <FormItem>
           <FormLabel>Tipo di rapporto</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder="Seleziona il tipo di rapporto" />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="oral">Orale</SelectItem>
-                <SelectItem value="vaginal">Vaginale</SelectItem>
-                <SelectItem value="anal">Anale</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <FormControl>
+            <BadgeSelector
+              options={encounterTypeOptions}
+              selectedValues={Array.isArray(value) ? value : [value]}
+              onChange={handleChange}
+              multiSelect={true}
+            />
+          </FormControl>
           <FormDescription>
             Il tipo di rapporto è importante per valutare il rischio
           </FormDescription>

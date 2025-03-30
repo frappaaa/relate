@@ -1,15 +1,29 @@
 
 import React from 'react';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { UseFormReturn } from 'react-hook-form';
 import { FormData } from './types';
+import BadgeSelector, { BadgeOption } from './BadgeSelector';
 
 interface ProtectionLevelFieldProps {
   form: UseFormReturn<FormData>;
 }
 
+const protectionOptions: BadgeOption[] = [
+  { id: "none", label: "Nessuna protezione" },
+  { id: "partial", label: "Protezione parziale" },
+  { id: "full", label: "Protezione completa" },
+];
+
 const ProtectionLevelField: React.FC<ProtectionLevelFieldProps> = ({ form }) => {
+  const value = form.watch('protection');
+  
+  const handleChange = (selected: string[]) => {
+    if (selected.length > 0) {
+      form.setValue('protection', selected[0] as any, { shouldValidate: true });
+    }
+  };
+
   return (
     <FormField
       control={form.control}
@@ -18,36 +32,12 @@ const ProtectionLevelField: React.FC<ProtectionLevelFieldProps> = ({ form }) => 
         <FormItem className="space-y-3">
           <FormLabel>Livello di protezione</FormLabel>
           <FormControl>
-            <RadioGroup
-              onValueChange={field.onChange}
-              defaultValue={field.value}
-              className="flex flex-col space-y-1"
-            >
-              <FormItem className="flex items-center space-x-3 space-y-0">
-                <FormControl>
-                  <RadioGroupItem value="none" />
-                </FormControl>
-                <FormLabel className="font-normal cursor-pointer">
-                  Nessuna protezione
-                </FormLabel>
-              </FormItem>
-              <FormItem className="flex items-center space-x-3 space-y-0">
-                <FormControl>
-                  <RadioGroupItem value="partial" />
-                </FormControl>
-                <FormLabel className="font-normal cursor-pointer">
-                  Protezione parziale
-                </FormLabel>
-              </FormItem>
-              <FormItem className="flex items-center space-x-3 space-y-0">
-                <FormControl>
-                  <RadioGroupItem value="full" />
-                </FormControl>
-                <FormLabel className="font-normal cursor-pointer">
-                  Protezione completa
-                </FormLabel>
-              </FormItem>
-            </RadioGroup>
+            <BadgeSelector
+              options={protectionOptions}
+              selectedValues={[value]}
+              onChange={handleChange}
+              multiSelect={false}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>

@@ -15,7 +15,10 @@ export const symptomsOptions = [
 
 export const formSchema = z.object({
   date: z.date({ required_error: "La data è obbligatoria" }),
-  type: z.enum(['oral', 'vaginal', 'anal'], { required_error: "Il tipo è obbligatorio" }),
+  type: z.union([
+    z.string().array().min(1, "Seleziona almeno un tipo di rapporto"),
+    z.enum(['oral', 'vaginal', 'anal']),
+  ]),
   protection: z.enum(['none', 'partial', 'full'], { required_error: "Il livello di protezione è obbligatorio" }),
   partnerStatus: z.enum(['unknown', 'negative', 'positive']).default('unknown'),
   symptoms: z.record(z.boolean()).default({}),
