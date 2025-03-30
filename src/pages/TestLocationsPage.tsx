@@ -8,6 +8,7 @@ import LocationList from '@/components/test-locations/LocationList';
 import ServiceFilterTags from '@/components/test-locations/ServiceFilterTags';
 import { calculateDistance, formatDistance } from '@/utils/locationUtils';
 import { fetchLocations, TestLocation } from '@/services/locationService';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const TestLocationsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -15,9 +16,10 @@ const TestLocationsPage: React.FC = () => {
   const [allLocations, setAllLocations] = useState<TestLocation[]>([]);
   const [isLocating, setIsLocating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [availableServices, setAvailableServices] = useState<string[]>([]);
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const loadLocations = async () => {
@@ -27,12 +29,17 @@ const TestLocationsPage: React.FC = () => {
         setAllLocations(data);
         setFilteredLocations(data);
         
-        // Estrai tutti i servizi disponibili dalle sedi
-        const services = new Set<string>();
+        // Extract all unique categories from locations
+        const categories = new Set<string>();
         data.forEach(location => {
-          location.testTypes.forEach(type => services.add(type));
+          if (location.category) {
+            categories.add(location.category);
+          } else if (location.testTypes && location.testTypes.length > 0) {
+            // Use first test type as fallback category if no category is specified
+            categories.add(location.testTypes[0]);
+          }
         });
-        setAvailableServices(Array.from(services).sort());
+        setAvailableCategories(Array.from(categories).sort());
       } catch (error) {
         console.error('Error fetching test locations:', error);
         toast({
@@ -51,7 +58,7 @@ const TestLocationsPage: React.FC = () => {
   const applyFilters = () => {
     let filtered = [...allLocations];
     
-    // Filtro per query di ricerca
+    // Filter by search query
     if (searchQuery) {
       filtered = filtered.filter(
         location => 
@@ -63,34 +70,34 @@ const TestLocationsPage: React.FC = () => {
       );
     }
     
-    // Filtro per servizi selezionati
-    if (selectedServices.length > 0) {
-      filtered = filtered.filter(location => 
-        selectedServices.every(service => location.testTypes.includes(service))
-      );
+    // Filter by selected categories
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(location => {
+        const locationCategory = location.category || 
+                              (location.testTypes && location.testTypes.length > 0 ? location.testTypes[0] : "");
+        return selectedCategories.includes(locationCategory);
+      });
     }
     
     setFilteredLocations(filtered);
   };
 
-  // Applica i filtri quando cambiano i parametri di ricerca o i servizi selezionati
+  // Apply filters when search parameters or categories change
   useEffect(() => {
     applyFilters();
-  }, [searchQuery, selectedServices, allLocations]);
+  }, [searchQuery, selectedCategories, allLocations]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     applyFilters();
   };
 
-  const handleServiceToggle = (service: string) => {
-    setSelectedServices(prev => {
-      // Se il servizio è già selezionato, rimuovilo
-      if (prev.includes(service)) {
-        return prev.filter(s => s !== service);
+  const handleCategoryToggle = (category: string) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(category)) {
+        return prev.filter(c => c !== category);
       }
-      // Altrimenti, aggiungilo
-      return [...prev, service];
+      return [...prev, category];
     });
   };
 
@@ -178,37 +185,46 @@ const TestLocationsPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8">
-      <section className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Dove fare i test</h1>
-        <p className="text-muted-foreground">Trova centri medici e laboratori vicino a te</p>
-      </section>
-
-      <LocationsMap 
-        locations={filteredLocations}
-        isLoading={isLoading}
-        findNearMe={findNearMe} 
-        isLocating={isLocating}
-        onSelectLocation={handleViewDetails}
-      />
-
-      <LocationSearchBar 
-        searchQuery={searchQuery} 
-        setSearchQuery={setSearchQuery} 
-        handleSearch={handleSearch} 
-      />
+    <div className="relative h-[calc(100vh-64px)] md:h-[calc(100vh-80px)] overflow-hidden">
+      {/* Map container - takes up full screen */}
+      <div className="w-full h-full">
+        <LocationsMap 
+          locations={filteredLocations}
+          isLoading={isLoading}
+          findNearMe={findNearMe} 
+          isLocating={isLocating}
+          onSelectLocation={handleViewDetails}
+        />
+      </div>
       
-      <ServiceFilterTags 
-        availableServices={availableServices} 
-        selectedServices={selectedServices} 
-        onServiceToggle={handleServiceToggle} 
-      />
+      {/* Left panel overlay */}
+      <div className={`
+        absolute top-0 left-0 bottom-0 
+        ${isMobile ? 'w-full bg-white p-4' : 'w-[400px] bg-white/95 shadow-lg p-6 overflow-y-auto'}
+      `}>
+        <div className="space-y-4">
+          <h1 className="text-2xl font-bold tracking-tight">Dove fare i test</h1>
+          
+          <LocationSearchBar 
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery} 
+            handleSearch={handleSearch} 
+          />
+          
+          <ServiceFilterTags 
+            availableServices={availableCategories} 
+            selectedServices={selectedCategories} 
+            onServiceToggle={handleCategoryToggle}
+            isCategories={true}
+          />
 
-      <LocationList 
-        isLoading={isLoading} 
-        filteredLocations={filteredLocations} 
-        handleViewDetails={handleViewDetails} 
-      />
+          <LocationList 
+            isLoading={isLoading} 
+            filteredLocations={filteredLocations} 
+            handleViewDetails={handleViewDetails} 
+          />
+        </div>
+      </div>
     </div>
   );
 };

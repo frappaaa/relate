@@ -1,46 +1,41 @@
 
 import React from 'react';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Filter } from 'lucide-react';
 
 interface ServiceFilterTagsProps {
   availableServices: string[];
   selectedServices: string[];
   onServiceToggle: (service: string) => void;
+  isCategories?: boolean;
 }
 
 const ServiceFilterTags: React.FC<ServiceFilterTagsProps> = ({
   availableServices,
   selectedServices,
   onServiceToggle,
+  isCategories = false
 }) => {
-  if (!availableServices.length) return null;
+  if (!availableServices.length) {
+    return null;
+  }
 
   return (
-    <div className="mb-6">
-      <div className="flex items-center gap-2 mb-2">
-        <Filter className="h-4 w-4 text-muted-foreground" />
-        <span className="text-sm text-muted-foreground">Filtra per servizi:</span>
-      </div>
-
-      <ScrollArea className="w-full whitespace-nowrap pb-2">
-        <div className="flex space-x-2 p-1">
-          {availableServices.map((service) => {
-            const isSelected = selectedServices.includes(service);
-            return (
-              <Badge
-                key={service}
-                variant={isSelected ? "default" : "outline"}
-                className="cursor-pointer hover:bg-secondary/80 transition-colors px-3 py-1"
-                onClick={() => onServiceToggle(service)}
-              >
-                {service}
-              </Badge>
-            );
-          })}
-        </div>
-      </ScrollArea>
+    <div className="flex flex-wrap gap-2">
+      {availableServices.map((service) => (
+        <Badge
+          key={service}
+          variant="outline"
+          className={`
+            cursor-pointer px-3 py-1 rounded-full text-sm transition-all
+            ${selectedServices.includes(service)
+              ? 'bg-red-100 border-red-200 text-red-800 hover:bg-red-200'
+              : 'bg-gray-100 border-gray-200 text-gray-700 hover:bg-gray-200'}
+          `}
+          onClick={() => onServiceToggle(service)}
+        >
+          {service}
+        </Badge>
+      ))}
     </div>
   );
 };
