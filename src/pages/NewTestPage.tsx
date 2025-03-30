@@ -107,7 +107,7 @@ const NewTestPage: React.FC = () => {
       setIsSubmitting(false);
     }
   };
-  return <div className="space-y-8 px-[16px]">
+  return <div className="space-y-8 px-[16px] py-[12px]">
       <section className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Registra un nuovo test</h1>
         <p className="text-muted-foreground">Inserisci i dettagli per programmare o registrare un test per IST</p>
