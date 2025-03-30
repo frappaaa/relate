@@ -1,6 +1,5 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/hooks/use-toast';
 
 export interface TestLocation {
   id: string;
@@ -70,105 +69,11 @@ export const fetchLocations = async (): Promise<TestLocation[]> => {
       return (newData || []).map(transformLocationData);
     }
     
-    const locations = data.map(transformLocationData);
-    
-    // Check for locations without coordinates and try to retrieve them
-    await updateMissingCoordinates(locations, data);
-    
-    return locations;
+    // Trasforma i dati per adattarli al formato dell'applicazione
+    return data.map(transformLocationData);
   } catch (error) {
     console.error('Error fetching test locations:', error);
     throw error;
-  }
-};
-
-// New function to update locations missing coordinates
-export const updateMissingCoordinates = async (
-  locations: TestLocation[], 
-  rawData: any[]
-): Promise<void> => {
-  const locationsWithoutCoords = locations.filter(
-    loc => !loc.coordinates && loc.address
-  );
-  
-  if (locationsWithoutCoords.length === 0) return;
-  
-  console.log(`Found ${locationsWithoutCoords.length} locations without coordinates`);
-  
-  // Process up to 5 locations at a time to avoid overwhelming the API
-  const locationsToProcess = locationsWithoutCoords.slice(0, 5);
-  
-  let failureCount = 0;
-  const failedLocations: string[] = [];
-  
-  for (const location of locationsToProcess) {
-    try {
-      console.log(`Attempting to geocode address for: ${location.name}`);
-      
-      // Costruisce un indirizzo più completo per migliorare i risultati
-      const fullAddress = [
-        location.address,
-        location.city,
-        location.region,
-        'Italy'
-      ].filter(Boolean).join(', ');
-      
-      // Use the geocode-address edge function to get coordinates
-      const { data, error } = await supabase.functions.invoke('geocode-address', {
-        body: { address: fullAddress }
-      });
-      
-      if (error) {
-        console.error(`Error geocoding address for ${location.name}:`, error);
-        failedLocations.push(location.name);
-        failureCount++;
-        continue;
-      }
-      
-      if (data?.coordinates) {
-        console.log(`Retrieved coordinates for ${location.name}:`, data.coordinates);
-        
-        // Find the raw data item to update
-        const rawItem = rawData.find(item => item.id === location.id);
-        if (rawItem) {
-          // Update coordinates in the database
-          const { error: updateError } = await supabase
-            .from('test_locations')
-            .update({ coordinates: data.coordinates })
-            .eq('id', location.id);
-          
-          if (updateError) {
-            console.error(`Error updating coordinates for ${location.name}:`, updateError);
-            failedLocations.push(location.name);
-          } else {
-            // Update in the current location object
-            location.coordinates = data.coordinates;
-            console.log(`Updated coordinates for ${location.name}`);
-            
-            toast({
-              title: "Coordinate aggiornate",
-              description: `Coordinate aggiornate per ${location.name}`
-            });
-          }
-        }
-      } else {
-        failedLocations.push(location.name);
-        failureCount++;
-      }
-    } catch (geocodeError) {
-      console.error(`Error processing geocoding for ${location.name}:`, geocodeError);
-      failedLocations.push(location.name);
-      failureCount++;
-    }
-  }
-  
-  if (failureCount > 0) {
-    console.log(`Failed to geocode ${failureCount} locations: ${failedLocations.join(', ')}`);
-    toast({
-      title: "Attenzione",
-      description: `Non è stato possibile recuperare le coordinate per ${failureCount} luoghi`,
-      variant: "warning"
-    });
   }
 };
 
