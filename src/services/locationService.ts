@@ -1,5 +1,5 @@
-
 import { supabase } from '@/integrations/supabase/client';
+import { geocodeAddress } from '@/hooks/use-mapbox';
 
 export interface TestLocation {
   id: string;
@@ -70,7 +70,32 @@ export const fetchLocations = async (): Promise<TestLocation[]> => {
     }
     
     // Trasforma i dati per adattarli al formato dell'applicazione
-    return data.map(transformLocationData);
+    const locations = await Promise.all(data.map(async (loc) => {
+      const transformedLocation = transformLocationData(loc);
+      
+      // Se le coordinate non sono disponibili, prova a geocodificare l'indirizzo
+      if (!transformedLocation.coordinates) {
+        const fullAddress = `${transformedLocation.address}, ${transformedLocation.city || transformedLocation.region || 'Italia'}`;
+        try {
+          const coordinates = await geocodeAddress(fullAddress);
+          if (coordinates) {
+            transformedLocation.coordinates = coordinates;
+            
+            // Aggiorna le coordinate nel database per usi futuri
+            await supabase
+              .from('test_locations')
+              .update({ coordinates: [coordinates[0], coordinates[1]] })
+              .eq('id', transformedLocation.id);
+          }
+        } catch (error) {
+          console.error('Geocoding failed for address:', fullAddress, error);
+        }
+      }
+      
+      return transformedLocation;
+    }));
+    
+    return locations;
   } catch (error) {
     console.error('Error fetching test locations:', error);
     throw error;

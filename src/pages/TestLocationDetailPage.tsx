@@ -60,15 +60,17 @@ const TestLocationDetailPage: React.FC = () => {
     return <LocationNotFound onBack={handleBack} />;
   }
 
+  // Costruisci l'indirizzo completo per la geocodifica
+  const fullAddress = `${location.address}, ${location.city || location.region || 'Italia'}`;
+
   return (
     <div className="space-y-6">
       <LocationDetailHeader onBack={handleBack} />
-      {location?.coordinates && (
-        <LocationDetailMap 
-          coordinates={location.coordinates} 
-          locationName={location.name}
-        />
-      )}
+      <LocationDetailMap 
+        coordinates={location.coordinates} 
+        locationName={location.name}
+        address={fullAddress}
+      />
       <LocationDetailsCard 
         location={{
           name: location.name,

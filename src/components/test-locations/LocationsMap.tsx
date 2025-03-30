@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MapPin, Loader2, Locate } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import mapboxgl from 'mapbox-gl';
+import { geocodeAddress } from '@/hooks/use-mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface TestLocation {
@@ -35,6 +36,7 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<mapboxgl.Marker[]>([]);
   const [mapError, setMapError] = useState<boolean>(false);
+  const [pendingGeocode, setPendingGeocode] = useState<boolean>(false);
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -65,9 +67,38 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
     }
   }, []);
   
+  // Geocode locations without coordinates
+  useEffect(() => {
+    const geocodeLocations = async () => {
+      if (isLoading || !map.current) return;
+      
+      const locationsWithoutCoords = locations.filter(loc => !loc.coordinates);
+      
+      if (locationsWithoutCoords.length === 0) return;
+      
+      setPendingGeocode(true);
+      
+      for (const location of locationsWithoutCoords) {
+        const fullAddress = `${location.address}, ${location.city || location.region || 'Italia'}`;
+        try {
+          const coordinates = await geocodeAddress(fullAddress);
+          if (coordinates) {
+            location.coordinates = coordinates;
+          }
+        } catch (error) {
+          console.error('Geocoding failed for:', fullAddress);
+        }
+      }
+      
+      setPendingGeocode(false);
+    };
+    
+    geocodeLocations();
+  }, [locations, isLoading]);
+  
   // Update markers when locations change
   useEffect(() => {
-    if (!map.current || isLoading || mapError) return;
+    if (!map.current || isLoading || mapError || pendingGeocode) return;
     
     // Clear existing markers
     markers.current.forEach(marker => marker.remove());
@@ -121,15 +152,20 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
         maxZoom: 15
       });
     }
-  }, [locations, isLoading, onSelectLocation, mapError]);
+  }, [locations, isLoading, onSelectLocation, mapError, pendingGeocode]);
 
   return (
     <div className="w-full h-full relative">
       <div ref={mapContainer} className="w-full h-full" />
       
-      {isLoading && (
+      {(isLoading || pendingGeocode) && (
         <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-10">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="flex flex-col items-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+            <p className="text-sm text-muted-foreground">
+              {pendingGeocode ? 'Geocodifica degli indirizzi in corso...' : 'Caricamento centri...'}
+            </p>
+          </div>
         </div>
       )}
       
@@ -146,7 +182,7 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
           variant="default"
           className="shadow-md bg-white text-black hover:bg-gray-100 rounded-full w-10 h-10 p-0 flex items-center justify-center"
           onClick={findNearMe}
-          disabled={isLocating}
+          disabled={isLoading || pendingGeocode}
         >
           {isLocating ? (
             <Loader2 className="h-4 w-4 animate-spin" />
