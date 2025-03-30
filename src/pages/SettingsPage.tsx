@@ -59,7 +59,7 @@ const SettingsPage = () => {
       });
     }
   };
-  return <div className="container mx-auto py-[12px] px-0">
+  return <div className="container mx-auto py-[12px] px-[16px]">
       <h1 className="text-2xl font-bold mb-6">Impostazioni</h1>
       
       <div className="grid gap-6">
