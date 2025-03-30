@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MapPin, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import mapboxgl from 'mapbox-gl';
+import { initializeMapbox } from '@/hooks/use-mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface TestLocation {
@@ -33,45 +34,60 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<mapboxgl.Marker[]>([]);
   const [mapError, setMapError] = useState<boolean>(false);
+  const [mapInitialized, setMapInitialized] = useState<boolean>(false);
 
+  // Inizializza Mapbox e la mappa
   useEffect(() => {
     if (!mapContainer.current) return;
     
-    try {
-      map.current = new mapboxgl.Map({
-        container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/streets-v12',
-        center: [12.4964, 41.9028], // Default center (Rome, Italy)
-        zoom: 5
-      });
-      
-      map.current.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
-      
-      // Gestione errori mappa
-      map.current.on('error', (e) => {
-        console.error('Mapbox error:', e);
+    const initMap = async () => {
+      try {
+        const initialized = await initializeMapbox();
+        
+        if (!initialized) {
+          console.error('Failed to initialize Mapbox token');
+          setMapError(true);
+          return;
+        }
+        
+        setMapInitialized(true);
+        
+        map.current = new mapboxgl.Map({
+          container: mapContainer.current,
+          style: 'mapbox://styles/mapbox/streets-v12',
+          center: [12.4964, 41.9028], // Default center (Rome, Italy)
+          zoom: 5
+        });
+        
+        map.current.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+        
+        // Gestione errori mappa
+        map.current.on('error', (e) => {
+          console.error('Mapbox error:', e);
+          setMapError(true);
+        });
+      } catch (error) {
+        console.error('Failed to initialize map:', error);
         setMapError(true);
-      });
-      
-      return () => {
-        map.current?.remove();
-      };
-    } catch (error) {
-      console.error('Failed to initialize map:', error);
-      setMapError(true);
-      return undefined;
-    }
+      }
+    };
+    
+    initMap();
+    
+    return () => {
+      map.current?.remove();
+    };
   }, []);
   
-  // Update markers when locations change
+  // Aggiorna i marker quando cambiano le locations
   useEffect(() => {
-    if (!map.current || isLoading || mapError) return;
+    if (!map.current || isLoading || mapError || !mapInitialized) return;
     
-    // Clear existing markers
+    // Rimuovi marker esistenti
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
     
-    // Add markers for locations with coordinates
+    // Aggiungi marker per le posizioni con coordinate
     const locationsWithCoords = locations.filter(loc => loc.coordinates);
     
     if (locationsWithCoords.length === 0) return;
@@ -81,7 +97,7 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
     locationsWithCoords.forEach(location => {
       if (!location.coordinates || !map.current) return;
       
-      // Create popup content
+      // Crea contenuto popup
       const cityOrRegion = location.city || location.region || '';
       const popupHtml = `
         <div class="p-2">
@@ -90,31 +106,31 @@ const LocationsMap: React.FC<LocationsMapProps> = ({
         </div>
       `;
       
-      // Create marker
+      // Crea marker
       const marker = new mapboxgl.Marker({ color: '#0ea5e9' })
         .setLngLat([location.coordinates[1], location.coordinates[0]])
         .setPopup(new mapboxgl.Popup().setHTML(popupHtml))
         .addTo(map.current);
       
-      // Add click handler
+      // Aggiungi handler click
       marker.getElement().addEventListener('click', () => {
         onSelectLocation(location.id);
       });
       
       markers.current.push(marker);
       
-      // Extend bounds to include this location
+      // Estendi i bounds per includere questa posizione
       bounds.extend([location.coordinates[1], location.coordinates[0]]);
     });
     
-    // Fit map to bounds with padding
+    // Adatta la mappa ai bounds con padding
     if (!bounds.isEmpty()) {
       map.current.fitBounds(bounds, {
         padding: 50,
         maxZoom: 15
       });
     }
-  }, [locations, isLoading, onSelectLocation, mapError]);
+  }, [locations, isLoading, onSelectLocation, mapError, mapInitialized]);
 
   return (
     <div className="space-y-4">

@@ -1,18 +1,59 @@
 
 import { useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
-
-// Utilizziamo un token fisso per Mapbox
-const MAPBOX_TOKEN = 'pk.eyJ1IjoiZnJhbmNlc2NvbHVwcGkiLCJhIjoiY204c2sya3cwMDEwODJtcjdweGZtbXNwaSJ9.HCFiHD-mZ1aSqnGzCYlIwg';
-
-// Inizializza il token Mapbox con un valore fisso
-mapboxgl.accessToken = MAPBOX_TOKEN;
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 interface UseMapboxProps {
   container: HTMLDivElement | null;
   coordinates?: [number, number]; // [latitude, longitude]
   zoom?: number;
   interactive?: boolean;
+}
+
+// Funzione per ottenere il token Mapbox dall'edge function
+async function getMapboxToken(): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.functions.invoke('get-mapbox-token');
+    
+    if (error) {
+      console.error('Error fetching Mapbox token:', error);
+      toast({
+        title: "Errore",
+        description: "Impossibile ottenere il token per la mappa",
+        variant: "destructive"
+      });
+      return null;
+    }
+    
+    return data?.token;
+  } catch (error) {
+    console.error('Exception fetching Mapbox token:', error);
+    toast({
+      title: "Errore",
+      description: "Impossibile ottenere il token per la mappa",
+      variant: "destructive"
+    });
+    return null;
+  }
+}
+
+let tokenPromise: Promise<string | null> | null = null;
+
+// Funzione per inizializzare il token Mapbox
+export async function initializeMapbox(): Promise<boolean> {
+  if (!tokenPromise) {
+    tokenPromise = getMapboxToken();
+  }
+  
+  const token = await tokenPromise;
+  
+  if (!token) {
+    return false;
+  }
+  
+  mapboxgl.accessToken = token;
+  return true;
 }
 
 export function useMapbox({ 
@@ -25,39 +66,53 @@ export function useMapbox({
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Create and initialize the map
+  // Inizializza la mappa dopo aver recuperato il token
   useEffect(() => {
     if (!container || !coordinates) return;
     
-    try {
-      const mapInstance = new mapboxgl.Map({
-        container,
-        style: 'mapbox://styles/mapbox/streets-v12',
-        center: [coordinates[1], coordinates[0]], // Mapbox uses [lng, lat]
-        zoom,
-        interactive
-      });
+    let mapInstance: mapboxgl.Map | null = null;
+    
+    const initMap = async () => {
+      const initialized = await initializeMapbox();
       
-      mapInstance.on('load', () => {
-        setIsLoaded(true);
-        setMap(mapInstance);
-      });
+      if (!initialized) {
+        setError('Impossibile inizializzare il token Mapbox');
+        return;
+      }
       
-      mapInstance.on('error', (e) => {
-        console.error('Map error:', e);
-        setError('Si è verificato un errore durante il caricamento della mappa');
-      });
-      
-      return () => {
+      try {
+        mapInstance = new mapboxgl.Map({
+          container,
+          style: 'mapbox://styles/mapbox/streets-v12',
+          center: [coordinates[1], coordinates[0]], // Mapbox usa [lng, lat]
+          zoom,
+          interactive
+        });
+        
+        mapInstance.on('load', () => {
+          setIsLoaded(true);
+          setMap(mapInstance);
+        });
+        
+        mapInstance.on('error', (e) => {
+          console.error('Map error:', e);
+          setError('Si è verificato un errore durante il caricamento della mappa');
+        });
+      } catch (error) {
+        console.error('Failed to initialize map:', error);
+        setError('Impossibile inizializzare la mappa');
+      }
+    };
+    
+    initMap();
+    
+    return () => {
+      if (mapInstance) {
         mapInstance.remove();
         setMap(null);
         setIsLoaded(false);
-      };
-    } catch (error) {
-      console.error('Failed to initialize map:', error);
-      setError('Impossibile inizializzare la mappa');
-      return undefined;
-    }
+      }
+    };
   }, [container, coordinates, zoom, interactive]);
   
   return { map, isLoaded, error };
@@ -83,5 +138,3 @@ export function addMapMarker(
 export function addMapNavigation(map: mapboxgl.Map, position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' = 'bottom-right') {
   map.addControl(new mapboxgl.NavigationControl(), position);
 }
-
-// Rimuoviamo la funzione setMapboxToken poiché non è più necessaria

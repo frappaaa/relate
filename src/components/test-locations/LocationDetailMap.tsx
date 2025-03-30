@@ -1,8 +1,9 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { MapPin, Loader2 } from 'lucide-react';
-import { useMapbox, addMapMarker, addMapNavigation } from '@/hooks/use-mapbox';
+import { initializeMapbox, addMapMarker, addMapNavigation } from '@/hooks/use-mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import mapboxgl from 'mapbox-gl';
 
 interface LocationDetailMapProps {
   coordinates?: [number, number];
@@ -11,22 +12,59 @@ interface LocationDetailMapProps {
 
 const LocationDetailMap: React.FC<LocationDetailMapProps> = ({ coordinates, locationName }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const { map, isLoaded, error } = useMapbox({
-    container: mapContainer.current,
-    coordinates,
-    zoom: 14
-  });
+  const map = useRef<mapboxgl.Map | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
-  // Aggiungi marker e controlli di navigazione quando la mappa è caricata
-  React.useEffect(() => {
-    if (isLoaded && map && coordinates) {
-      // Aggiungi marker per la posizione
-      addMapMarker(map, coordinates, `<h3>${locationName}</h3>`);
-      
-      // Aggiungi controlli di navigazione
-      addMapNavigation(map);
-    }
-  }, [isLoaded, map, coordinates, locationName]);
+  useEffect(() => {
+    if (!mapContainer.current || !coordinates) return;
+    
+    const initMap = async () => {
+      try {
+        const initialized = await initializeMapbox();
+        
+        if (!initialized) {
+          setError('Impossibile inizializzare il token Mapbox');
+          return;
+        }
+        
+        map.current = new mapboxgl.Map({
+          container: mapContainer.current,
+          style: 'mapbox://styles/mapbox/streets-v12',
+          center: [coordinates[1], coordinates[0]], // Mapbox usa [lng, lat]
+          zoom: 14
+        });
+        
+        map.current.on('load', () => {
+          setIsLoaded(true);
+          
+          // Aggiungi marker per la posizione
+          addMapMarker(map.current!, coordinates, `<h3>${locationName}</h3>`);
+          
+          // Aggiungi controlli di navigazione
+          addMapNavigation(map.current!);
+        });
+        
+        map.current.on('error', (e) => {
+          console.error('Map error:', e);
+          setError('Si è verificato un errore durante il caricamento della mappa');
+        });
+      } catch (error) {
+        console.error('Failed to initialize map:', error);
+        setError('Impossibile inizializzare la mappa');
+      }
+    };
+    
+    initMap();
+    
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+        setIsLoaded(false);
+      }
+    };
+  }, [coordinates, locationName]);
 
   if (!coordinates) {
     return (
