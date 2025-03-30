@@ -1,6 +1,7 @@
+
 import React, { useRef, useEffect, useState } from 'react';
 import { MapPin, Loader2 } from 'lucide-react';
-import { useMapbox, addMapMarker, addMapNavigation, geocodeAddress, getMapboxToken } from '@/hooks/use-mapbox';
+import { useMapbox, addMapMarker, addMapNavigation, geocodeAddress, getMapboxToken } from '@/hooks/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import mapboxgl from 'mapbox-gl';
 

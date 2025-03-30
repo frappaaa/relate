@@ -1,8 +1,9 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { MapPin, Loader2, Locate } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import mapboxgl from 'mapbox-gl';
-import { geocodeAddress, getMapboxToken } from '@/hooks/use-mapbox';
+import { geocodeAddress, getMapboxToken } from '@/hooks/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { TestLocation } from '@/services/locations';
 

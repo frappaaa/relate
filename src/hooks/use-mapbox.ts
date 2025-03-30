@@ -5,5 +5,6 @@ export {
   addMapMarker, 
   addMapNavigation, 
   geocodeAddress, 
-  MAPBOX_TOKEN 
+  MAPBOX_TOKEN,
+  getMapboxToken
 } from './mapbox';
