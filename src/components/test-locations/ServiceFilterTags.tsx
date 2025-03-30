@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -44,7 +43,7 @@ const ServiceFilterTags: React.FC<ServiceFilterTagsProps> = ({
       <div className="mx-6 overflow-hidden">
         <div 
           ref={scrollRef}
-          className="flex space-x-2 p-1 overflow-x-auto scrollbar-hide"
+          className="flex space-x-2 p-1 overflow-x-auto"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {availableServices.map(service => {
@@ -75,8 +74,8 @@ const ServiceFilterTags: React.FC<ServiceFilterTagsProps> = ({
         <ChevronRight className="h-5 w-5 text-gray-600" />
       </button>
       
-      <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
+      <style jsx global>{`
+        div[class*="overflow-x-auto"]::-webkit-scrollbar {
           display: none;
         }
       `}</style>

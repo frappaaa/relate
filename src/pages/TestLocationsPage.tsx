@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
@@ -26,9 +27,12 @@ const TestLocationsPage: React.FC = () => {
         setAllLocations(data);
         setFilteredLocations(data);
 
+        // Extract unique categories from locations
         const categories = new Set<string>();
         data.forEach(location => {
-          location.testTypes.forEach(type => categories.add(type));
+          if (location.category) {
+            categories.add(location.category);
+          }
         });
         setAvailableCategories(Array.from(categories).sort());
       } catch (error) {
@@ -49,11 +53,19 @@ const TestLocationsPage: React.FC = () => {
     let filtered = [...allLocations];
 
     if (searchQuery) {
-      filtered = filtered.filter(location => location.name.toLowerCase().includes(searchQuery.toLowerCase()) || location.address.toLowerCase().includes(searchQuery.toLowerCase()) || (location.city?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) || (location.region?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) || location.testTypes.some(type => type.toLowerCase().includes(searchQuery.toLowerCase())));
+      filtered = filtered.filter(location => 
+        location.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        location.address.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (location.city?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) || 
+        (location.region?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) || 
+        location.testTypes.some(type => type.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
     }
 
     if (selectedCategories.length > 0) {
-      filtered = filtered.filter(location => selectedCategories.every(category => location.testTypes.includes(category)));
+      filtered = filtered.filter(location => 
+        location.category && selectedCategories.includes(location.category)
+      );
     }
     setFilteredLocations(filtered);
   };
