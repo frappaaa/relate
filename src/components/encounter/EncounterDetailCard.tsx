@@ -16,12 +16,18 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
   const encounterDate = new Date(encounter.date);
   const formattedDate = format(encounterDate, 'd MMMM yyyy', { locale: it });
   
-  const encounterTypeLabels = {
+  const encounterTypeLabels: { [key: string]: string } = {
     oral: 'Orale',
     vaginal: 'Vaginale',
     anal: 'Anale',
     other: 'Altro'
   };
+
+  // Handle multiple encounter types
+  const encounterTypes = encounter.encounter_type.split(',');
+  const encounterTypeDisplay = encounterTypes.map(type => 
+    encounterTypeLabels[type] || type
+  ).join(', ');
 
   return (
     <Card>
@@ -30,7 +36,7 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
           <div className="flex items-center gap-2">
             <Heart className="h-5 w-5 text-pink-500" />
             <CardTitle>
-              Rapporto {encounterTypeLabels[encounter.encounter_type as keyof typeof encounterTypeLabels]}
+              Rapporto {encounterTypeDisplay}
             </CardTitle>
           </div>
           <Badge 

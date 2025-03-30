@@ -34,8 +34,8 @@ const NewEncounterPage: React.FC = () => {
       // Map form protection level to boolean
       const protectionUsed = data.protection !== 'none';
 
-      // Handle multiple encounter types or single type
-      let encounterType = Array.isArray(data.type) 
+      // Handle multiple encounter types
+      const encounterType = Array.isArray(data.type) 
         ? data.type.join(',') 
         : data.type;
       
@@ -57,7 +57,7 @@ const NewEncounterPage: React.FC = () => {
         .insert({
           user_id: user.id,
           date: data.date.toISOString(),
-          encounter_type: encounterType as any, // Type assertion to handle string vs array
+          encounter_type: encounterType,
           protection_used: protectionUsed,
           risk_level: data.riskLevel,
           notes: notes || null
