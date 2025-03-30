@@ -74,7 +74,7 @@ const ServiceFilterTags: React.FC<ServiceFilterTagsProps> = ({
         <ChevronRight className="h-5 w-5 text-gray-600" />
       </button>
       
-      <style jsx global>{`
+      <style>{`
         div[class*="overflow-x-auto"]::-webkit-scrollbar {
           display: none;
         }
