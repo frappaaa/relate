@@ -98,17 +98,30 @@ export const updateMissingCoordinates = async (
   // Process up to 5 locations at a time to avoid overwhelming the API
   const locationsToProcess = locationsWithoutCoords.slice(0, 5);
   
+  let failureCount = 0;
+  const failedLocations: string[] = [];
+  
   for (const location of locationsToProcess) {
     try {
       console.log(`Attempting to geocode address for: ${location.name}`);
       
+      // Costruisce un indirizzo più completo per migliorare i risultati
+      const fullAddress = [
+        location.address,
+        location.city,
+        location.region,
+        'Italy'
+      ].filter(Boolean).join(', ');
+      
       // Use the geocode-address edge function to get coordinates
       const { data, error } = await supabase.functions.invoke('geocode-address', {
-        body: { address: `${location.address}, ${location.region || location.city || 'Italy'}` }
+        body: { address: fullAddress }
       });
       
       if (error) {
         console.error(`Error geocoding address for ${location.name}:`, error);
+        failedLocations.push(location.name);
+        failureCount++;
         continue;
       }
       
@@ -126,6 +139,7 @@ export const updateMissingCoordinates = async (
           
           if (updateError) {
             console.error(`Error updating coordinates for ${location.name}:`, updateError);
+            failedLocations.push(location.name);
           } else {
             // Update in the current location object
             location.coordinates = data.coordinates;
@@ -137,10 +151,24 @@ export const updateMissingCoordinates = async (
             });
           }
         }
+      } else {
+        failedLocations.push(location.name);
+        failureCount++;
       }
     } catch (geocodeError) {
       console.error(`Error processing geocoding for ${location.name}:`, geocodeError);
+      failedLocations.push(location.name);
+      failureCount++;
     }
+  }
+  
+  if (failureCount > 0) {
+    console.log(`Failed to geocode ${failureCount} locations: ${failedLocations.join(', ')}`);
+    toast({
+      title: "Attenzione",
+      description: `Non è stato possibile recuperare le coordinate per ${failureCount} luoghi`,
+      variant: "warning"
+    });
   }
 };
 

@@ -30,6 +30,7 @@ serve(async (req) => {
     }
 
     if (!MAPBOX_TOKEN) {
+      console.error('Mapbox token not configured');
       return new Response(
         JSON.stringify({ error: 'Mapbox token not configured' }),
         { 
@@ -39,15 +40,29 @@ serve(async (req) => {
       );
     }
 
-    // Encode the address for the URL
-    const encodedAddress = encodeURIComponent(address + ', Italy');
+    // Migliorata la formattazione dell'indirizzo per aumentare la probabilità di match
+    const enhancedAddress = address.includes('Italy') ? address : `${address}, Italy`;
+    const encodedAddress = encodeURIComponent(enhancedAddress);
     
-    // Make request to Mapbox Geocoding API
-    const mapboxUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${MAPBOX_TOKEN}&limit=1&country=it`;
+    // Make request to Mapbox Geocoding API with improved parameters
+    const mapboxUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${MAPBOX_TOKEN}&limit=1&country=it&types=address,place&language=it`;
     
-    console.log(`Geocoding address: ${address}`);
+    console.log(`Geocoding address: ${enhancedAddress}`);
     
     const response = await fetch(mapboxUrl);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Mapbox API error (${response.status}): ${errorText}`);
+      return new Response(
+        JSON.stringify({ error: `Mapbox API error: ${response.status}` }),
+        { 
+          status: 502, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        },
+      );
+    }
+    
     const data = await response.json();
     
     // Check if we got valid coordinates
@@ -55,6 +70,7 @@ serve(async (req) => {
       const [lng, lat] = data.features[0].center;
       
       console.log(`Found coordinates for "${address}": [${lat}, ${lng}]`);
+      console.log(`Place name: ${data.features[0].place_name}`);
       
       return new Response(
         JSON.stringify({ 
@@ -67,6 +83,35 @@ serve(async (req) => {
       );
     } else {
       console.log(`No coordinates found for address: ${address}`);
+      
+      // Prova con una ricerca più generica se non ci sono risultati
+      const cityMatch = address.match(/(?:,\s*)([^,]+?)(?:,|\s+\(|\s+[A-Z]{2}|$)/);
+      if (cityMatch && cityMatch[1]) {
+        const city = cityMatch[1].trim();
+        const fallbackUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(city)}.json?access_token=${MAPBOX_TOKEN}&limit=1&country=it&types=place&language=it`;
+        
+        console.log(`Trying fallback geocoding with city: ${city}`);
+        
+        const fallbackResponse = await fetch(fallbackUrl);
+        const fallbackData = await fallbackResponse.json();
+        
+        if (fallbackData.features && fallbackData.features.length > 0) {
+          const [fLng, fLat] = fallbackData.features[0].center;
+          
+          console.log(`Found city coordinates for "${city}": [${fLat}, ${fLng}]`);
+          
+          return new Response(
+            JSON.stringify({ 
+              coordinates: [fLat, fLng],
+              address: fallbackData.features[0].place_name,
+              approximated: true
+            }),
+            { 
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+            },
+          );
+        }
+      }
       
       return new Response(
         JSON.stringify({ error: 'No coordinates found for this address' }),

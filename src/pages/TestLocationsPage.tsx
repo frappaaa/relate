@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
@@ -18,6 +17,7 @@ const TestLocationsPage: React.FC = () => {
   const [isGeocodingActive, setIsGeocodingActive] = useState(false);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,6 +40,14 @@ const TestLocationsPage: React.FC = () => {
         // Check if there are locations without coordinates
         const locationsWithoutCoords = data.filter(loc => !loc.coordinates);
         setIsGeocodingActive(locationsWithoutCoords.length > 0);
+        
+        // Se ci sono ancora luoghi senza coordinate e abbiamo provato meno di 3 volte,
+        // ricarica dopo 5 secondi per un nuovo tentativo
+        if (locationsWithoutCoords.length > 0 && retryCount < 3) {
+          setTimeout(() => {
+            setRetryCount(prev => prev + 1);
+          }, 5000);
+        }
       } catch (error) {
         console.error('Error fetching test locations:', error);
         toast({
@@ -52,7 +60,7 @@ const TestLocationsPage: React.FC = () => {
       }
     };
     loadLocations();
-  }, []);
+  }, [retryCount]);
 
   const applyFilters = () => {
     let filtered = [...allLocations];
