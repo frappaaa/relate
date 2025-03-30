@@ -41,7 +41,10 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
         modal={false}
         onOpenChange={() => {}}
       >
-        <DrawerContent className={`max-h-[${isDrawerExpanded ? '80' : '15'}vh] transition-all duration-300 pb-0 pt-2`}>
+        <DrawerContent 
+          className={`${isDrawerExpanded ? 'h-[80vh]' : 'h-[15vh]'} transition-all duration-300 pb-0 pt-2`}
+          style={{ maxHeight: isDrawerExpanded ? '80vh' : '15vh' }}
+        >
           <div className="flex justify-center mb-2">
             <Button 
               variant="ghost" 
@@ -53,7 +56,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             </Button>
           </div>
 
-          <div className="px-4 pb-2">
+          <div className={`px-4 pb-2 ${isDrawerExpanded ? 'block' : 'hidden'}`}>
             <LocationSearch 
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
@@ -64,7 +67,7 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
             />
           </div>
           
-          <div className="flex-1 overflow-y-auto px-4 pb-6">
+          <div className={`px-4 pb-6 ${isDrawerExpanded ? 'flex-1 overflow-y-auto' : 'hidden'}`}>
             <LocationListContainer
               isLoading={isLoading}
               filteredLocations={filteredLocations}
