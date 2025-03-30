@@ -5,8 +5,9 @@ import { it } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Heart, Shield, ShieldAlert, ShieldCheck, CalendarClock } from 'lucide-react';
+import { Heart, Shield, ShieldAlert, ShieldCheck, CalendarClock, AlertCircle } from 'lucide-react';
 import { getRiskColor, getRiskLabel } from '@/utils/riskCalculator';
+import { symptomsOptions } from './types';
 
 interface EncounterDetailCardProps {
   encounter: any;
@@ -28,6 +29,17 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
   const encounterTypeDisplay = encounterTypes.map(type => 
     encounterTypeLabels[type] || type
   ).join(', ');
+
+  // Get symptoms from the symptoms field or parse from notes for backward compatibility
+  const symptoms = encounter.symptoms || {};
+  
+  // Get symptom labels for active symptoms
+  const activeSymptoms = Object.entries(symptoms)
+    .filter(([_, active]) => active)
+    .map(([id]) => symptomsOptions.find(s => s.id === id)?.label || id);
+  
+  // Check if there are any symptoms to display
+  const hasSymptoms = activeSymptoms.length > 0;
 
   return (
     <Card>
@@ -69,6 +81,23 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
             )}
           </div>
         </div>
+
+        {hasSymptoms && (
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">Sintomi</h3>
+            <div className="flex flex-wrap gap-2">
+              {activeSymptoms.map((symptom) => (
+                <Badge 
+                  key={symptom} 
+                  variant="outline" 
+                  className="bg-yellow-500 bg-opacity-15 text-yellow-700 border-yellow-300"
+                >
+                  {symptom}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
 
         {encounter.partner_name && (
           <div>

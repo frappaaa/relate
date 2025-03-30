@@ -37,14 +37,30 @@ export function useEncounterData(id: string | undefined, user: User | null) {
           return;
         }
 
-        // Parse notes to extract symptoms if they exist
-        const symptomsRegex = /Sintomi: (.*?)($|\n)/;
-        const symptomsMatch = data.notes ? data.notes.match(symptomsRegex) : null;
+        // Initialize symptoms object from stored symptoms or parse from notes for backwards compatibility
+        let symptomsObject = {};
         
-        const symptoms = symptomsMatch ? symptomsMatch[1].split(', ') : [];
-        const notesWithoutSymptoms = data.notes 
-          ? data.notes.replace(/\n\nSintomi: .*/, '').replace(/^Sintomi: .*/, '') 
-          : '';
+        if (data.symptoms && Object.keys(data.symptoms).length > 0) {
+          // Use symptoms from the dedicated column if available
+          symptomsObject = data.symptoms;
+        } else {
+          // Parse notes to extract symptoms for backward compatibility
+          const symptomsRegex = /Sintomi: (.*?)($|\n)/;
+          const symptomsMatch = data.notes ? data.notes.match(symptomsRegex) : null;
+          
+          const symptoms = symptomsMatch ? symptomsMatch[1].split(', ') : [];
+          
+          // Initialize symptoms object from parsed notes
+          symptomsObject = symptomsOptions.reduce((acc, symptom) => {
+            acc[symptom.id] = symptoms.includes(symptom.id);
+            return acc;
+          }, {} as Record<string, boolean>);
+          
+          // Clean notes from symptoms section if it was parsed from there
+          if (symptomsMatch && data.notes) {
+            data.notes = data.notes.replace(/\n\nSintomi: .*/, '').replace(/^Sintomi: .*/, '').trim();
+          }
+        }
 
         // Convert encounter_type to array if it contains multiple types
         const encounterTypes = data.encounter_type.includes(',')
@@ -57,19 +73,13 @@ export function useEncounterData(id: string | undefined, user: User | null) {
           protectionLevel = 'full'; // Default to full when protection is used
         }
 
-        // Initialize symptoms object
-        const symptomsObject = symptomsOptions.reduce((acc, symptom) => {
-          acc[symptom.id] = symptoms.includes(symptom.id);
-          return acc;
-        }, {} as Record<string, boolean>);
-
         setInitialData({
           date: new Date(data.date),
           type: encounterTypes as any,
           protection: protectionLevel,
           partnerStatus: 'unknown', // Default, as we don't store this
           symptoms: symptomsObject,
-          notes: notesWithoutSymptoms.trim() // Trim any extra whitespace
+          notes: data.notes || '' // Use cleaned notes
         });
       } catch (error) {
         console.error('Error fetching encounter:', error);

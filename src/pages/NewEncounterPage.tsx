@@ -39,18 +39,8 @@ const NewEncounterPage: React.FC = () => {
         ? data.type.join(',') 
         : data.type;
       
-      // Map symptoms to notes, only if symptoms are actually selected
-      const symptomsSelected = Object.entries(data.symptoms)
-        .filter(([_, value]) => value)
-        .map(([key]) => key);
-      
-      let notes = data.notes || '';
-      
-      // Only add symptoms to notes if any symptoms were selected
-      if (symptomsSelected.length > 0) {
-        const symptomsText = symptomsSelected.join(', ');
-        notes = notes ? `${notes}\n\nSintomi: ${symptomsText}` : `Sintomi: ${symptomsText}`;
-      }
+      // Store symptoms directly in the symptoms column
+      const symptomsData = data.symptoms || {};
 
       const { error } = await supabase
         .from('encounters')
@@ -60,7 +50,8 @@ const NewEncounterPage: React.FC = () => {
           encounter_type: encounterType,
           protection_used: protectionUsed,
           risk_level: data.riskLevel,
-          notes: notes || null
+          notes: data.notes || null,
+          symptoms: symptomsData
         });
         
       if (error) throw error;

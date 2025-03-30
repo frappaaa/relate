@@ -19,6 +19,7 @@ export type Database = {
           partner_name: string | null
           protection_used: boolean
           risk_level: Database["public"]["Enums"]["risk_level"]
+          symptoms: Json | null
           updated_at: string
           user_id: string
         }
@@ -31,6 +32,7 @@ export type Database = {
           partner_name?: string | null
           protection_used?: boolean
           risk_level?: Database["public"]["Enums"]["risk_level"]
+          symptoms?: Json | null
           updated_at?: string
           user_id: string
         }
@@ -43,6 +45,7 @@ export type Database = {
           partner_name?: string | null
           protection_used?: boolean
           risk_level?: Database["public"]["Enums"]["risk_level"]
+          symptoms?: Json | null
           updated_at?: string
           user_id?: string
         }
