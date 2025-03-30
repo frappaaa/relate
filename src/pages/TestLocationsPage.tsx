@@ -7,6 +7,7 @@ import LocationList from '@/components/test-locations/LocationList';
 import ServiceFilterTags from '@/components/test-locations/ServiceFilterTags';
 import { calculateDistance, formatDistance } from '@/utils/locationUtils';
 import { fetchLocations, TestLocation } from '@/services/locationService';
+
 const TestLocationsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredLocations, setFilteredLocations] = useState<TestLocation[]>([]);
@@ -16,6 +17,7 @@ const TestLocationsPage: React.FC = () => {
   const [availableServices, setAvailableServices] = useState<string[]>([]);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const navigate = useNavigate();
+
   useEffect(() => {
     const loadLocations = async () => {
       try {
@@ -24,7 +26,6 @@ const TestLocationsPage: React.FC = () => {
         setAllLocations(data);
         setFilteredLocations(data);
 
-        // Estrai tutti i servizi disponibili dalle sedi
         const services = new Set<string>();
         data.forEach(location => {
           location.testTypes.forEach(type => services.add(type));
@@ -43,42 +44,42 @@ const TestLocationsPage: React.FC = () => {
     };
     loadLocations();
   }, []);
+
   const applyFilters = () => {
     let filtered = [...allLocations];
 
-    // Filtro per query di ricerca
     if (searchQuery) {
       filtered = filtered.filter(location => location.name.toLowerCase().includes(searchQuery.toLowerCase()) || location.address.toLowerCase().includes(searchQuery.toLowerCase()) || (location.city?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) || (location.region?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) || location.testTypes.some(type => type.toLowerCase().includes(searchQuery.toLowerCase())));
     }
 
-    // Filtro per servizi selezionati
     if (selectedServices.length > 0) {
       filtered = filtered.filter(location => selectedServices.every(service => location.testTypes.includes(service)));
     }
     setFilteredLocations(filtered);
   };
 
-  // Applica i filtri quando cambiano i parametri di ricerca o i servizi selezionati
   useEffect(() => {
     applyFilters();
   }, [searchQuery, selectedServices, allLocations]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     applyFilters();
   };
+
   const handleServiceToggle = (service: string) => {
     setSelectedServices(prev => {
-      // Se il servizio è già selezionato, rimuovilo
       if (prev.includes(service)) {
         return prev.filter(s => s !== service);
       }
-      // Altrimenti, aggiungilo
       return [...prev, service];
     });
   };
+
   const handleViewDetails = (locationId: string) => {
     navigate(`/app/test-locations/${locationId}`);
   };
+
   const findNearMe = () => {
     setIsLocating(true);
     if (!navigator.geolocation) {
@@ -137,19 +138,38 @@ const TestLocationsPage: React.FC = () => {
       maximumAge: 0
     });
   };
-  return <div className="space-y-8">
+
+  return (
+    <div className="space-y-8">
       <section className="space-y-2">
-        
-        
+        <LocationSearchBar 
+          searchQuery={searchQuery} 
+          setSearchQuery={setSearchQuery} 
+          handleSearch={handleSearch} 
+        />
       </section>
 
-      <LocationsMap locations={filteredLocations} isLoading={isLoading} findNearMe={findNearMe} isLocating={isLocating} onSelectLocation={handleViewDetails} />
-
-      <LocationSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleSearch={handleSearch} />
+      <LocationsMap 
+        locations={filteredLocations} 
+        isLoading={isLoading} 
+        findNearMe={findNearMe} 
+        isLocating={isLocating} 
+        onSelectLocation={handleViewDetails} 
+      />
       
-      <ServiceFilterTags availableServices={availableServices} selectedServices={selectedServices} onServiceToggle={handleServiceToggle} />
+      <ServiceFilterTags 
+        availableServices={availableServices} 
+        selectedServices={selectedServices} 
+        onServiceToggle={handleServiceToggle} 
+      />
 
-      <LocationList isLoading={isLoading} filteredLocations={filteredLocations} handleViewDetails={handleViewDetails} />
-    </div>;
+      <LocationList 
+        isLoading={isLoading} 
+        filteredLocations={filteredLocations} 
+        handleViewDetails={handleViewDetails} 
+      />
+    </div>
+  );
 };
+
 export default TestLocationsPage;

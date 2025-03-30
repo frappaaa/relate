@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -15,19 +15,38 @@ const LocationSearchBar: React.FC<LocationSearchBarProps> = ({
   setSearchQuery,
   handleSearch,
 }) => {
+  const handleClearSearch = () => {
+    setSearchQuery('');
+  };
+
   return (
-    <form onSubmit={handleSearch} className="flex w-full max-w-sm items-center space-x-2 mb-6">
-      <Input
-        type="text"
-        placeholder="Cerca per nome, indirizzo o tipo di test"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="flex-1"
-      />
-      <Button type="submit" size="icon">
-        <Search className="h-4 w-4" />
-      </Button>
-    </form>
+    <div className="relative w-full max-w-md mx-auto mb-6">
+      <form onSubmit={handleSearch} className="relative">
+        <div className="relative flex items-center w-full">
+          <div className="absolute left-3 flex items-center pointer-events-none text-muted-foreground">
+            <Search className="h-4 w-4" />
+          </div>
+          <Input
+            type="text"
+            placeholder="Cerca per nome, indirizzo o tipo di test"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 pr-10 py-2 bg-background border border-input shadow-sm rounded-full focus-visible:ring-1"
+          />
+          {searchQuery && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={handleClearSearch}
+              className="absolute right-1 h-8 w-8 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+      </form>
+    </div>
   );
 };
 
