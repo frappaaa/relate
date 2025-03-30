@@ -47,7 +47,7 @@ const EditEncounterPage: React.FC = () => {
         
         const symptoms = symptomsMatch ? symptomsMatch[1].split(', ') : [];
         const notesWithoutSymptoms = data.notes 
-          ? data.notes.replace(/\n\nSintomi: .*/, '') 
+          ? data.notes.replace(/\n\nSintomi: .*/, '').replace(/^Sintomi: .*/, '') 
           : '';
 
         // Convert encounter_type to form data type
@@ -71,7 +71,7 @@ const EditEncounterPage: React.FC = () => {
           protection: protectionLevel,
           partnerStatus: 'unknown', // Default, as we don't store this
           symptoms: symptomsObject,
-          notes: notesWithoutSymptoms
+          notes: notesWithoutSymptoms.trim() // Trim any extra whitespace
         });
       } catch (error) {
         console.error('Error fetching encounter:', error);
@@ -108,15 +108,18 @@ const EditEncounterPage: React.FC = () => {
       // Map form type to encounter_type enum
       let encounterType = data.type as 'oral' | 'vaginal' | 'anal';
       
-      // Map symptoms to notes
+      // Map symptoms to notes, only if symptoms are actually selected
       const symptomsSelected = Object.entries(data.symptoms)
         .filter(([_, value]) => value)
-        .map(([key]) => key)
-        .join(', ');
+        .map(([key]) => key);
       
-      const notes = data.notes 
-        ? `${data.notes}\n\nSintomi: ${symptomsSelected}` 
-        : `Sintomi: ${symptomsSelected}`;
+      let notes = data.notes || '';
+      
+      // Only add symptoms to notes if any symptoms were selected
+      if (symptomsSelected.length > 0) {
+        const symptomsText = symptomsSelected.join(', ');
+        notes = notes ? `${notes}\n\nSintomi: ${symptomsText}` : `Sintomi: ${symptomsText}`;
+      }
 
       const { error } = await supabase
         .from('encounters')
@@ -125,7 +128,7 @@ const EditEncounterPage: React.FC = () => {
           encounter_type: encounterType,
           protection_used: protectionUsed,
           risk_level: data.riskLevel,
-          notes: notes,
+          notes: notes || null,
           updated_at: new Date().toISOString()
         })
         .eq('id', id)
