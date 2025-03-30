@@ -72,7 +72,7 @@ const NewEncounterPage: React.FC = () => {
       setIsSubmitting(false);
     }
   };
-  return <div className="space-y-8 px-[16px]">
+  return <div className="space-y-8 px-[16px] py-[13px]">
       <section className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Registra un nuovo rapporto</h1>
         <p className="text-muted-foreground">Inserisci i dettagli per valutare il rischio e ricevere raccomandazioni</p>
