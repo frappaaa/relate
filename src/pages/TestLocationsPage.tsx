@@ -15,6 +15,7 @@ const TestLocationsPage: React.FC = () => {
   const [allLocations, setAllLocations] = useState<TestLocation[]>([]);
   const [isLocating, setIsLocating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isGeocodingActive, setIsGeocodingActive] = useState(false);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const navigate = useNavigate();
@@ -35,6 +36,10 @@ const TestLocationsPage: React.FC = () => {
           }
         });
         setAvailableCategories(Array.from(categories).sort());
+        
+        // Check if there are locations without coordinates
+        const locationsWithoutCoords = data.filter(loc => !loc.coordinates);
+        setIsGeocodingActive(locationsWithoutCoords.length > 0);
       } catch (error) {
         console.error('Error fetching test locations:', error);
         toast({
@@ -159,6 +164,12 @@ const TestLocationsPage: React.FC = () => {
           setSearchQuery={setSearchQuery} 
           handleSearch={handleSearch} 
         />
+        {isGeocodingActive && (
+          <div className="text-sm text-muted-foreground flex items-center">
+            <span className="mr-2 h-2 w-2 rounded-full bg-amber-400 animate-pulse"></span>
+            Recupero coordinate mancanti in corso...
+          </div>
+        )}
       </section>
 
       <LocationsMap 
