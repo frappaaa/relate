@@ -2,13 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
-import LocationSearchBar from '@/components/test-locations/LocationSearchBar';
 import LocationsMap from '@/components/test-locations/LocationsMap';
-import LocationList from '@/components/test-locations/LocationList';
-import ServiceFilterTags from '@/components/test-locations/ServiceFilterTags';
+import LeftPanel from '@/components/test-locations/LeftPanel';
 import { calculateDistance, formatDistance } from '@/utils/locationUtils';
 import { fetchLocations, TestLocation } from '@/services/locationService';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 const TestLocationsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,7 +16,6 @@ const TestLocationsPage: React.FC = () => {
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
 
   useEffect(() => {
     const loadLocations = async () => {
@@ -197,36 +193,18 @@ const TestLocationsPage: React.FC = () => {
         />
       </div>
       
-      {/* Left panel overlay with higher z-index */}
-      <div className={`
-        absolute top-0 left-0 bottom-0 z-10
-        ${isMobile ? 'w-full bg-white p-4' : 'w-[400px] bg-white/95 shadow-lg p-6 overflow-y-auto rounded-r-lg'}
-      `}>
-        <div className="space-y-4">
-          <h1 className="text-2xl font-bold tracking-tight">Dove fare i test</h1>
-          
-          <LocationSearchBar 
-            searchQuery={searchQuery} 
-            setSearchQuery={setSearchQuery} 
-            handleSearch={handleSearch} 
-          />
-          
-          <ServiceFilterTags 
-            availableServices={availableCategories} 
-            selectedServices={selectedCategories} 
-            onServiceToggle={handleCategoryToggle}
-            isCategories={true}
-          />
-
-          <div className="rounded-lg overflow-hidden">
-            <LocationList 
-              isLoading={isLoading} 
-              filteredLocations={filteredLocations} 
-              handleViewDetails={handleViewDetails} 
-            />
-          </div>
-        </div>
-      </div>
+      {/* Left panel overlay with search and locations list */}
+      <LeftPanel 
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        handleSearch={handleSearch}
+        availableCategories={availableCategories}
+        selectedCategories={selectedCategories}
+        handleCategoryToggle={handleCategoryToggle}
+        isLoading={isLoading}
+        filteredLocations={filteredLocations}
+        handleViewDetails={handleViewDetails}
+      />
     </div>
   );
 };
