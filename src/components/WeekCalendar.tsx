@@ -8,7 +8,9 @@ import {
   isSameDay, 
   addWeeks, 
   subWeeks,
-  isToday 
+  isToday,
+  isAfter,
+  startOfDay 
 } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Plus, Heart, Beaker } from 'lucide-react';
@@ -17,6 +19,8 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { getRiskColor } from '@/utils/riskCalculator';
 import { Skeleton } from '@/components/ui/skeleton';
+import CalendarDialog from '@/components/calendar/CalendarDialog';
+import { useNavigate } from 'react-router-dom';
 
 interface CalendarEvent {
   id: string;
@@ -44,7 +48,10 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({
   isLoading = false
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const navigate = useNavigate();
+  
   const nextWeek = () => {
     setCurrentDate(addWeeks(currentDate, 1));
   };
@@ -63,6 +70,35 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({
 
   const getEventsForDay = (date: Date) => {
     return events.filter((event) => isSameDay(new Date(event.date), date));
+  };
+  
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date);
+    
+    const today = startOfDay(new Date());
+    const isFutureDate = isAfter(startOfDay(date), today);
+    
+    if (isFutureDate) {
+      // For future dates, navigate directly to new test form
+      navigate(`/app/new-test?date=${date.toISOString()}`);
+    } else {
+      // For today or past dates, show the dialog
+      setIsDialogOpen(true);
+    }
+  };
+  
+  const handleNavigateToEncounter = () => {
+    if (selectedDate) {
+      navigate(`/app/new-encounter?date=${selectedDate.toISOString()}`);
+      setIsDialogOpen(false);
+    }
+  };
+
+  const handleNavigateToTest = () => {
+    if (selectedDate) {
+      navigate(`/app/new-test?date=${selectedDate.toISOString()}`);
+      setIsDialogOpen(false);
+    }
   };
 
   if (isLoading) {
@@ -118,7 +154,7 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({
                 {format(date, 'EEE', { locale: it })}
               </div>
               <button
-                onClick={() => onAddEvent(date)}
+                onClick={() => handleDateClick(date)}
                 className={cn(
                   "flex flex-col items-center justify-center w-10 h-10 rounded-full",
                   isCurrentDay ? "bg-primary text-primary-foreground" : "hover:bg-secondary"
@@ -174,6 +210,16 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({
           );
         })}
       </div>
+      
+      {/* Calendar Dialog */}
+      <CalendarDialog 
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        selectedDate={selectedDate}
+        isFutureDate={false} // Always false since we only show this for non-future dates
+        onNavigateToEncounter={handleNavigateToEncounter}
+        onNavigateToTest={handleNavigateToTest}
+      />
     </div>
   );
 };

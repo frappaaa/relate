@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import WeekCalendar from '@/components/WeekCalendar';
@@ -76,6 +75,8 @@ const CalendarPage: React.FC = () => {
     }
   };
 
+  // This function is no longer used directly by WeekCalendar
+  // but we keep it for compatibility with other components
   const handleAddEvent = (date: Date) => {
     navigate(`/app/new-encounter?date=${date.toISOString()}`);
   };
