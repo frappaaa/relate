@@ -44,7 +44,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   // Limitare il numero di rapporti recenti a 3
   const limitedRecentEncounters = recentEncounters.slice(0, 3);
-  return <div className="space-y-8 px-[16px] py-[12px]">
+  return <div className="space-y-8 py-[12px] px-[48px]">
       <section className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">La tua dashboard</h1>
         <p className="text-muted-foreground">Gestisci la tua salute sessuale in modo semplice e consapevole</p>
