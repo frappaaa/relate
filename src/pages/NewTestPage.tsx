@@ -49,25 +49,35 @@ const NewTestPage: React.FC = () => {
       // For each selected test type, create a test entry
       const testType = selectedTestTypes.join(', ');
       
+      // Determina lo stato del test in base alla data
+      const testDate = new Date(data.date);
+      const isInFuture = testDate.setHours(0, 0, 0, 0) > new Date().setHours(0, 0, 0, 0);
+      const status = isInFuture ? 'scheduled' : 'completed';
+      
       // Process specific results
       let specificResults = {};
+      let result = 'pending';
       
-      if (data.status === 'completed' && data.result === 'positive') {
-        // Only include results for selected test types
+      if (!isInFuture) {
+        // Solo per i test completati (data non futura)
         specificResults = selectedTestTypes.reduce((acc, typeId) => {
-          const result = data.specificResults[typeId] || 'pending';
-          acc[typeId] = result;
+          const testResult = data.specificResults[typeId] || 'pending';
+          acc[typeId] = testResult;
           return acc;
         }, {} as Record<string, string>);
+        
+        // Determina il risultato generale in base ai risultati specifici
+        const hasPositive = Object.values(specificResults).includes('positive');
+        result = hasPositive ? 'positive' : 'negative';
       }
       
       console.log("Saving test with data:", {
         user_id: user.id,
         date: data.date.toISOString(),
         test_type: testType,
-        status: data.status,
-        result: data.status === 'completed' ? data.result : null,
-        specific_results: data.status === 'completed' && data.result === 'positive' ? specificResults : null,
+        status: status,
+        result: status === 'completed' ? result : null,
+        specific_results: status === 'completed' ? specificResults : null,
         location: data.location || null,
         notes: data.notes || null
       });
@@ -78,9 +88,9 @@ const NewTestPage: React.FC = () => {
           user_id: user.id,
           date: data.date.toISOString(),
           test_type: testType,
-          status: data.status,
-          result: data.status === 'completed' ? data.result : null,
-          specific_results: data.status === 'completed' && data.result === 'positive' ? specificResults : null,
+          status: status,
+          result: status === 'completed' ? result : null,
+          specific_results: status === 'completed' ? specificResults : null,
           location: data.location || null,
           notes: data.notes || null
         });

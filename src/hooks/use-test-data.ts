@@ -62,10 +62,8 @@ export const useTestData = (testId: string | undefined) => {
 
         setInitialData({
           date: new Date(data.date),
-          status: data.status,
           testTypes: testTypesObject,
           location: data.location || '',
-          result: data.result || 'pending',
           specificResults,
           notes: data.notes || ''
         });

@@ -7,10 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { formSchema, FormData } from './types';
 import DateField from './DateField';
-import StatusField from './StatusField';
 import STISelector from './STISelector';
 import LocationField from './LocationField';
-import ResultField from './ResultField';
 import SpecificResultsSelector from './SpecificResultsSelector';
 import NotesField from './NotesField';
 
@@ -31,14 +29,16 @@ const TestForm: React.FC<TestFormProps> = ({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       date: initialDate,
-      status: 'scheduled',
       testTypes: {},
       location: '',
-      result: 'pending',
       specificResults: {},
       notes: ''
     }
   });
+  
+  // Determina se la data è nel passato/presente o nel futuro
+  const selectedDate = form.watch('date');
+  const isPastOrToday = selectedDate && new Date(selectedDate).setHours(0, 0, 0, 0) <= new Date().setHours(0, 0, 0, 0);
 
   const handleSubmit = (data: FormData) => {
     onSubmit(data);
@@ -48,15 +48,12 @@ const TestForm: React.FC<TestFormProps> = ({
     <Card className="p-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <DateField form={form} />
-            <StatusField form={form} />
-          </div>
+          <DateField form={form} />
           
           <STISelector form={form} />
           
-          <ResultField form={form} />
-          <SpecificResultsSelector form={form} />
+          {/* Mostra i risultati specifici solo se la data è nel passato o oggi */}
+          {isPastOrToday && <SpecificResultsSelector form={form} />}
           
           <LocationField form={form} />
           <NotesField form={form} />

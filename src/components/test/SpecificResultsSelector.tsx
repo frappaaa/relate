@@ -12,21 +12,7 @@ interface SpecificResultsSelectorProps {
 
 const SpecificResultsSelector: React.FC<SpecificResultsSelectorProps> = ({ form }) => {
   const testTypes = form.watch('testTypes');
-  const status = form.watch('status');
-  const result = form.watch('result');
   
-  // Reset specific results when status or result changes
-  useEffect(() => {
-    if (status !== 'completed' || result !== 'positive') {
-      form.setValue('specificResults', {});
-    }
-  }, [status, result, form]);
-
-  // Skip if not completed or not positive
-  if (status !== 'completed' || result !== 'positive') {
-    return null;
-  }
-
   // Get selected test types
   const selectedTestTypes = Object.entries(testTypes || {})
     .filter(([_, value]) => value)
@@ -43,9 +29,9 @@ const SpecificResultsSelector: React.FC<SpecificResultsSelectorProps> = ({ form 
       render={() => (
         <FormItem>
           <div className="mb-4">
-            <FormLabel className="text-base">Risultati specifici</FormLabel>
+            <FormLabel className="text-base">Risultati dei test</FormLabel>
             <FormDescription>
-              Specifica quali IST hanno dato risultato positivo
+              Indica i risultati per ciascun test effettuato
             </FormDescription>
           </div>
           

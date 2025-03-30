@@ -48,16 +48,26 @@ const TestEditForm: React.FC<TestEditFormProps> = ({ testId, initialData }) => {
       // For each selected test type, create a test entry
       const testType = selectedTestTypes.join(', ');
       
+      // Determina lo stato del test in base alla data
+      const testDate = new Date(data.date);
+      const isInFuture = testDate.setHours(0, 0, 0, 0) > new Date().setHours(0, 0, 0, 0);
+      const status = isInFuture ? 'scheduled' : 'completed';
+      
       // Process specific results
       let specificResults = {};
+      let result = 'pending';
       
-      if (data.status === 'completed' && data.result === 'positive') {
-        // Only include results for selected test types
+      if (!isInFuture) {
+        // Solo per i test completati (data non futura)
         specificResults = selectedTestTypes.reduce((acc, typeId) => {
-          const result = data.specificResults[typeId] || 'pending';
-          acc[typeId] = result;
+          const testResult = data.specificResults[typeId] || 'pending';
+          acc[typeId] = testResult;
           return acc;
         }, {} as Record<string, string>);
+        
+        // Determina il risultato generale in base ai risultati specifici
+        const hasPositive = Object.values(specificResults).includes('positive');
+        result = hasPositive ? 'positive' : 'negative';
       }
       
       const { error } = await supabase
@@ -65,9 +75,9 @@ const TestEditForm: React.FC<TestEditFormProps> = ({ testId, initialData }) => {
         .update({
           date: data.date.toISOString(),
           test_type: testType,
-          status: data.status,
-          result: data.status === 'completed' ? data.result : null,
-          specific_results: data.status === 'completed' && data.result === 'positive' ? specificResults : null,
+          status: status,
+          result: status === 'completed' ? result : null,
+          specific_results: status === 'completed' ? specificResults : null,
           location: data.location || null,
           notes: data.notes || null,
           updated_at: new Date().toISOString()
