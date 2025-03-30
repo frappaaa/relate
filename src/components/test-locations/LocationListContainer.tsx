@@ -1,7 +1,6 @@
-
 import React from 'react';
 import LocationList from './LocationList';
-import { TestLocation } from '@/services/locationService';
+import { TestLocation } from '@/services/locations';
 
 interface LocationListContainerProps {
   isLoading: boolean;

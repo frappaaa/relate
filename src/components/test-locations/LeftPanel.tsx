@@ -2,7 +2,7 @@
 import React from 'react';
 import LocationSearch from './LocationSearch';
 import LocationListContainer from './LocationListContainer';
-import { TestLocation } from '@/services/locationService';
+import { TestLocation } from '@/services/locations';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { ArrowUp, ArrowDown } from 'lucide-react';

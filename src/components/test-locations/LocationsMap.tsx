@@ -1,21 +1,10 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { MapPin, Loader2, Locate } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import mapboxgl from 'mapbox-gl';
 import { geocodeAddress } from '@/hooks/use-mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
-
-interface TestLocation {
-  id: string;
-  name: string;
-  address: string;
-  city?: string;
-  region?: string;
-  coordinates?: [number, number];
-  category?: string;
-  testTypes: string[];
-}
+import { TestLocation } from '@/services/locations';
 
 interface LocationsMapProps {
   locations: TestLocation[];

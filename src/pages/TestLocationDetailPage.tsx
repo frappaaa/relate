@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
-import { fetchLocationById, TestLocation } from '@/services/locationService';
+import { fetchLocationById, TestLocation } from '@/services/locations';
 import LocationDetailHeader from '@/components/test-locations/LocationDetailHeader';
 import LocationDetailMap from '@/components/test-locations/LocationDetailMap';
 import LocationDetailsCard from '@/components/test-locations/LocationDetailsCard';

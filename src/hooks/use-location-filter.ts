@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
-import { TestLocation, fetchLocations } from '@/services/locationService';
+import { TestLocation, fetchLocations } from '@/services/locations';
 import { calculateDistance, formatDistance } from '@/utils/locationUtils';
 
 export function useLocationFilter() {
