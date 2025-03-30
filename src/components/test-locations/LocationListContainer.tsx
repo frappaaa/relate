@@ -15,7 +15,7 @@ const LocationListContainer: React.FC<LocationListContainerProps> = ({
   handleViewDetails
 }) => {
   return (
-    <div className="rounded-lg overflow-hidden">
+    <div className="rounded-lg w-full h-full">
       <LocationList 
         isLoading={isLoading} 
         filteredLocations={filteredLocations} 

@@ -33,9 +33,10 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
   return (
     <div className={`
       absolute top-0 left-0 bottom-0 z-10
-      ${isMobile ? 'w-full bg-white p-4' : 'w-[400px] bg-white/95 shadow-lg p-6 overflow-y-auto rounded-r-lg'}
+      ${isMobile ? 'w-full bg-white p-4' : 'w-[400px] bg-white/95 shadow-lg rounded-r-lg flex flex-col'}
     `}>
-      <div className="space-y-4">
+      {/* Search and filters section - fixed at the top */}
+      <div className="p-6 pb-4">
         <LocationSearch 
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -44,7 +45,10 @@ const LeftPanel: React.FC<LeftPanelProps> = ({
           selectedCategories={selectedCategories}
           handleCategoryToggle={handleCategoryToggle}
         />
-        
+      </div>
+      
+      {/* Location list - scrollable */}
+      <div className="flex-1 overflow-y-auto px-6 pb-6">
         <LocationListContainer
           isLoading={isLoading}
           filteredLocations={filteredLocations}

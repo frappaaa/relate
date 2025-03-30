@@ -30,7 +30,7 @@ const LocationSearch: React.FC<LocationSearchProps> = ({
         handleSearch={handleSearch} 
       />
       
-      <div className="w-full">
+      <div className="w-full mt-3">
         <ServiceFilterTags 
           availableServices={availableCategories} 
           selectedServices={selectedCategories} 

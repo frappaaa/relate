@@ -21,7 +21,7 @@ const ServiceFilterTags: React.FC<ServiceFilterTagsProps> = ({
   }
 
   return (
-    <ScrollArea className="w-full" orientation="horizontal">
+    <ScrollArea className="w-full">
       <div className="flex space-x-2 pb-2 min-w-max">
         {availableServices.map((service) => (
           <Badge
