@@ -6,9 +6,8 @@ import { transformLocationData } from './testLocations/transformLocationData';
 
 export type { TestLocation } from '@/types/locations';
 
-// Re-export the main functions
+// Re-export the functions from the other files
 export {
-  fetchLocations,
   fetchLocationById,
   transformLocationData
 };
@@ -17,4 +16,3 @@ export {
 export const fetchLocations = async (): Promise<TestLocation[]> => {
   return await fetchTestLocations();
 };
-
