@@ -55,7 +55,7 @@ const TestEditForm: React.FC<TestEditFormProps> = ({ testId, initialData }) => {
       
       // Process specific results
       let specificResults = {};
-      let result = 'pending';
+      let result: 'negative' | 'positive' | 'pending' = 'pending';
       
       if (!isInFuture) {
         // Solo per i test completati (data non futura)

@@ -13,6 +13,14 @@ export const stiOptions = [
   { id: "hepatitisC", label: "Epatite C" },
 ] as const;
 
+// Definizioni di tipo per i risultati specifici
+export const testResultTypes = ['negative', 'positive', 'pending'] as const;
+export type TestResult = typeof testResultTypes[number];
+
+// Status del test
+export const testStatusTypes = ['scheduled', 'completed', 'cancelled'] as const;
+export type TestStatus = typeof testStatusTypes[number];
+
 export const formSchema = z.object({
   date: z.date({ required_error: "La data è obbligatoria" }),
   testTypes: z.record(z.boolean()).default({}),
