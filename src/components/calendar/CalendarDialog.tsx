@@ -42,37 +42,32 @@ const CalendarDialog: React.FC<CalendarDialogProps> = ({
           <DialogDescription>
             {isFutureDate 
               ? "Pianifica un nuovo test per questa data" 
-              : "Scegli cosa vuoi aggiungere per questa data"}
+              : "Cosa vuoi aggiungere per questa data"}
           </DialogDescription>
         </DialogHeader>
         
         <div className={cn(
-          "grid gap-4 mt-4",
+          "grid gap-4 py-4",
           isFutureDate ? "grid-cols-1" : "grid-cols-2"
         )}>
           {!isFutureDate && (
-            <Button 
-              className="flex items-center gap-2 h-auto py-4"
+            <Button
+              variant="outline"
+              className="flex flex-col items-center justify-center h-32 gap-2"
               onClick={onNavigateToEncounter}
             >
-              <Heart className="h-5 w-5" />
-              <div className="text-left">
-                <div className="font-medium">Rapporto</div>
-                <div className="text-xs text-muted-foreground">Registra un nuovo rapporto</div>
-              </div>
+              <Heart className="h-8 w-8 text-relate-500" />
+              <span className="text-sm font-medium">Nuovo rapporto</span>
             </Button>
           )}
           
           <Button
             variant={isFutureDate ? "default" : "outline"}
-            className="flex items-center gap-2 h-auto py-4"
+            className="flex flex-col items-center justify-center h-32 gap-2"
             onClick={onNavigateToTest}
           >
-            <Beaker className="h-5 w-5" />
-            <div className="text-left">
-              <div className="font-medium">Test</div>
-              <div className="text-xs text-muted-foreground">Pianifica un test</div>
-            </div>
+            <Beaker className="h-8 w-8 text-primary" />
+            <span className="text-sm font-medium">Nuovo test</span>
           </Button>
         </div>
       </DialogContent>
