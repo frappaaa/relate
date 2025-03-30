@@ -30,12 +30,14 @@ const LocationSearch: React.FC<LocationSearchProps> = ({
         handleSearch={handleSearch} 
       />
       
-      <ServiceFilterTags 
-        availableServices={availableCategories} 
-        selectedServices={selectedCategories} 
-        onServiceToggle={handleCategoryToggle}
-        isCategories={true}
-      />
+      <div className="w-full">
+        <ServiceFilterTags 
+          availableServices={availableCategories} 
+          selectedServices={selectedCategories} 
+          onServiceToggle={handleCategoryToggle}
+          isCategories={true}
+        />
+      </div>
     </div>
   );
 };
