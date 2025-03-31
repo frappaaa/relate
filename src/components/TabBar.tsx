@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Calendar, Home, Plus, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -9,6 +9,14 @@ import NewEntryModal from './NewEntryModal';
 const TabBar: React.FC = () => {
   const isMobile = useIsMobile();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    // Detect iOS device
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    setIsIOS(isIOSDevice);
+  }, []);
 
   if (!isMobile) return null;
 
@@ -20,7 +28,10 @@ const TabBar: React.FC = () => {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t">
+      <div className={cn(
+        "fixed bottom-0 left-0 right-0 z-40 bg-background border-t",
+        isIOS && "pb-[env(safe-area-inset-bottom)]"
+      )}>
         <nav className="flex items-center justify-around h-16">
           {navItems.map((item) => (
             <NavLink
