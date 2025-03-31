@@ -117,7 +117,7 @@ export default {
 				'slide-out': 'slide-out 0.4s ease-out',
 			},
 			fontFamily: {
-				sans: ['Inter var', 'Inter', 'system-ui', 'sans-serif'],
+				sans: ['Poppins', 'system-ui', 'sans-serif'],
 			},
 			boxShadow: {
 				'subtle': '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1)',

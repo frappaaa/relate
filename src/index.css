@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -151,5 +152,4 @@
   }
 }
 
-/* Import Inter font */
-@import url('https://rsms.me/inter/inter.css');
+/* Removed Inter font import as we're now using Poppins */
