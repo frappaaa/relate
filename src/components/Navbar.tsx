@@ -35,6 +35,13 @@ const Navbar: React.FC = () => {
     avatar_url: string | null;
   } | null>(null);
   const [bgColor, setBgColor] = useState('bg-relate-500');
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    setIsIOS(isIOSDevice);
+  }, []);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -94,16 +101,22 @@ const Navbar: React.FC = () => {
     return 'U';
   };
 
-  const MobileAvatar = () => <div className="fixed top-3 right-4 z-50">
+  const MobileAvatar = () => (
+    <div className={cn(
+      "fixed right-4 z-50",
+      isIOS ? "top-[max(1rem,env(safe-area-inset-top))]" : "top-3"
+    )}>
       <Avatar className="h-8 w-8 cursor-pointer shadow-md border border-white/20" onClick={handleAvatarClick}>
         {profileData?.avatar_url ? <AvatarImage src={profileData.avatar_url} alt="Foto profilo" /> : null}
         <AvatarFallback className={cn("text-white", bgColor)}>
           {getInitial()}
         </AvatarFallback>
       </Avatar>
-    </div>;
+    </div>
+  );
 
-  return <>
+  return (
+    <>
       {isMobile && <MobileAvatar />}
       
       {!isMobile && (
@@ -162,7 +175,8 @@ const Navbar: React.FC = () => {
           </div>
         </header>
       )}
-    </>;
+    </>
+  );
 };
 
 export default Navbar;

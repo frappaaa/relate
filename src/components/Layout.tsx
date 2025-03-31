@@ -26,7 +26,10 @@ const Layout: React.FC = () => {
         isMobile && isIOS ? "pb-[calc(5rem+env(safe-area-inset-bottom))]" : 
         isMobile ? "pb-20" : "pb-16"
       )}>
-        <div className="page-container">
+        <div className={cn(
+          "page-container",
+          isIOS && "pt-[env(safe-area-inset-top)]"
+        )}>
           <Outlet />
         </div>
       </main>
