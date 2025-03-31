@@ -2,7 +2,6 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
 import LocationCard from './LocationCard';
-import { Button } from '@/components/ui/button';
 
 interface TestLocation {
   id: string;
@@ -20,18 +19,12 @@ interface LocationListProps {
   isLoading: boolean;
   filteredLocations: TestLocation[];
   handleViewDetails: (locationId: string) => void;
-  hasMore: boolean;
-  onLoadMore: () => void;
-  loadingMore: boolean;
 }
 
 const LocationList: React.FC<LocationListProps> = ({
   isLoading,
   filteredLocations,
   handleViewDetails,
-  hasMore,
-  onLoadMore,
-  loadingMore,
 }) => {
   if (isLoading && filteredLocations.length === 0) {
     return (
@@ -65,26 +58,6 @@ const LocationList: React.FC<LocationListProps> = ({
           category={location.category}
         />
       ))}
-      
-      {hasMore && (
-        <div className="flex justify-center py-4">
-          <Button 
-            onClick={onLoadMore} 
-            disabled={loadingMore}
-            variant="outline"
-            className="w-full max-w-sm"
-          >
-            {loadingMore ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Caricamento...
-              </>
-            ) : (
-              'Carica altri risultati'
-            )}
-          </Button>
-        </div>
-      )}
     </div>
   );
 };

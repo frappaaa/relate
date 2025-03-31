@@ -16,7 +16,7 @@ export {
 // Main function that maintains backwards compatibility
 export const fetchLocations = async (
   page = 0, 
-  pageSize = 10, 
+  pageSize = 1000, // Default to a large number to get all results
   searchQuery = '', 
   categories: string[] = []
 ): Promise<{ data: TestLocation[], count: number }> => {

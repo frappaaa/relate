@@ -4,42 +4,26 @@ import { toast } from '@/hooks/use-toast';
 import { fetchLocations, TestLocation } from '@/services/locationService';
 import { calculateDistance, formatDistance } from '@/utils/locationUtils';
 
-const ITEMS_PER_PAGE = 10;
-
 export const useLocationData = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredLocations, setFilteredLocations] = useState<TestLocation[]>([]);
   const [isLocating, setIsLocating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [page, setPage] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
   
-  const loadSearchResults = useCallback(async (newSearch: boolean = false) => {
+  const loadSearchResults = useCallback(async () => {
     try {
-      const currentPage = newSearch ? 0 : page;
-      setIsLoading(newSearch);
-      setLoadingMore(!newSearch && page > 0);
+      setIsLoading(true);
       
       const { data, count } = await fetchLocations(
-        currentPage,
-        ITEMS_PER_PAGE,
+        0,
+        1000, // Large number to get all results
         searchQuery,
         selectedCategories
       );
       
-      setTotalCount(count);
-      setHasMore(currentPage * ITEMS_PER_PAGE + data.length < count);
-      
-      if (newSearch) {
-        setFilteredLocations(data);
-        setPage(0);
-      } else {
-        setFilteredLocations(prev => [...prev, ...data]);
-      }
+      setFilteredLocations(data);
       
       // Extract unique categories from locations on first load
       if (availableCategories.length === 0 && data.length > 0) {
@@ -60,21 +44,20 @@ export const useLocationData = () => {
       });
     } finally {
       setIsLoading(false);
-      setLoadingMore(false);
     }
-  }, [page, searchQuery, selectedCategories, availableCategories]);
+  }, [searchQuery, selectedCategories, availableCategories]);
 
   // Initial load
   useEffect(() => {
-    loadSearchResults(true);
+    loadSearchResults();
   }, []);
 
   // When filters change
   useEffect(() => {
     if (!isLoading) {
-      // Apply filters and reset pagination
+      // Apply filters
       const handler = setTimeout(() => {
-        loadSearchResults(true);
+        loadSearchResults();
       }, 300); // Debounce search
       
       return () => clearTimeout(handler);
@@ -83,11 +66,6 @@ export const useLocationData = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    loadSearchResults(true); // Reset and search from page 0
-  };
-
-  const handleLoadMore = () => {
-    setPage(prev => prev + 1);
     loadSearchResults();
   };
 
@@ -115,8 +93,8 @@ export const useLocationData = () => {
       const userLat = position.coords.latitude;
       const userLon = position.coords.longitude;
       
-      // First load all locations to calculate distances
-      fetchLocations(0, 100)
+      // Load all locations to calculate distances
+      fetchLocations(0, 1000)
         .then(({data: allLocations}) => {
           const locationsWithDistance = allLocations.map(location => {
             if (!location.coordinates) return location;
@@ -131,7 +109,6 @@ export const useLocationData = () => {
             return parseFloat(a.distance) - parseFloat(b.distance);
           });
           setFilteredLocations(sortedLocations);
-          setHasMore(false);
           toast({
             title: "Posizione rilevata",
             description: "I centri sono stati ordinati in base alla distanza da te."
@@ -181,12 +158,9 @@ export const useLocationData = () => {
     filteredLocations,
     isLocating,
     isLoading,
-    loadingMore,
     availableCategories,
     selectedCategories,
-    hasMore,
     handleSearch,
-    handleLoadMore,
     handleCategoryToggle,
     findNearMe
   };

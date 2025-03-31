@@ -13,12 +13,9 @@ const TestLocationsPage: React.FC = () => {
     filteredLocations,
     isLocating,
     isLoading,
-    loadingMore,
     availableCategories,
     selectedCategories,
-    hasMore,
     handleSearch,
-    handleLoadMore,
     handleCategoryToggle,
     findNearMe
   } = useLocationData();
@@ -44,9 +41,6 @@ const TestLocationsPage: React.FC = () => {
         isLoading={isLoading} 
         filteredLocations={filteredLocations} 
         handleViewDetails={handleViewDetails}
-        hasMore={hasMore}
-        onLoadMore={handleLoadMore}
-        loadingMore={loadingMore}
       />
     </div>
   );
