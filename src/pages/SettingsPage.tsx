@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -5,6 +6,7 @@ import { toast } from '@/hooks/use-toast';
 import ProfileCard from '@/components/settings/ProfileCard';
 import PersonalInfoForm from '@/components/settings/PersonalInfoForm';
 import PrivacySecurityCard from '@/components/settings/PrivacySecurityCard';
+
 type ProfileData = {
   first_name: string | null;
   last_name: string | null;
@@ -13,21 +15,23 @@ type ProfileData = {
   sexual_orientation: string | null;
   avatar_url: string | null;
 };
+
 const SettingsPage = () => {
-  const {
-    user
-  } = useAuth();
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
+
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!user) return;
       try {
         setIsLoading(true);
-        const {
-          data,
-          error
-        } = await supabase.from('profiles').select('first_name, last_name, gender, pronouns, sexual_orientation, avatar_url').eq('id', user.id).single();
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('first_name, last_name, gender, pronouns, sexual_orientation, avatar_url')
+          .eq('id', user.id)
+          .single();
+        
         if (error) throw error;
         setProfileData(data);
       } catch (error) {
@@ -43,6 +47,7 @@ const SettingsPage = () => {
     };
     fetchProfileData();
   }, [user]);
+
   const handleProfileUpdate = (data: Omit<ProfileData, 'avatar_url'>) => {
     if (profileData) {
       setProfileData({
@@ -51,6 +56,7 @@ const SettingsPage = () => {
       });
     }
   };
+
   const handleAvatarChange = (url: string | null) => {
     if (profileData) {
       setProfileData({
@@ -59,9 +65,9 @@ const SettingsPage = () => {
       });
     }
   };
-  return <div className="container mx-auto py-[12px] px-0">
-      <h1 className="text-2xl font-bold mb-6">Impostazioni</h1>
-      
+
+  return (
+    <div className="py-[12px] px-0">
       <div className="grid gap-6">
         <ProfileCard profileData={profileData} onAvatarChange={handleAvatarChange} />
 
@@ -69,6 +75,8 @@ const SettingsPage = () => {
 
         <PrivacySecurityCard />
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default SettingsPage;

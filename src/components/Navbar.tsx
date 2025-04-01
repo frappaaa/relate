@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Calendar, Home, Plus, MapPin, Heart, Beaker } from 'lucide-react';
@@ -27,30 +28,36 @@ const stringToColor = (str: string) => {
 const Navbar: React.FC = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
-  const {
-    user
-  } = useAuth();
+  const { user } = useAuth();
   const [profileData, setProfileData] = useState<{
     first_name: string | null;
     avatar_url: string | null;
   } | null>(null);
   const [bgColor, setBgColor] = useState('bg-relate-500');
   const [isIOS, setIsIOS] = useState(false);
+  const [currentPage, setCurrentPage] = useState('Dashboard');
 
   useEffect(() => {
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     setIsIOS(isIOSDevice);
+    
+    // Extract current page name from URL
+    const path = window.location.pathname;
+    if (path.includes('/dashboard')) setCurrentPage('Dashboard');
+    else if (path.includes('/test-locations')) setCurrentPage('Dove fare i test');
+    else if (path.includes('/calendar')) setCurrentPage('Calendario');
+    else if (path.includes('/new-test')) setCurrentPage('Nuovo test');
+    else if (path.includes('/new-encounter')) setCurrentPage('Nuovo incontro');
+    else if (path.includes('/settings')) setCurrentPage('Impostazioni');
+    else setCurrentPage('Relate');
   }, []);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!user) return;
       try {
-        const {
-          data,
-          error
-        } = await supabase.from('profiles').select('first_name, avatar_url').eq('id', user.id).single();
+        const { data, error } = await supabase.from('profiles').select('first_name, avatar_url').eq('id', user.id).single();
         if (error) {
           console.error('Error fetching profile data:', error);
           return;
@@ -101,12 +108,14 @@ const Navbar: React.FC = () => {
     return 'U';
   };
 
-  const MobileAvatar = () => (
+  // New page header with avatar for mobile
+  const MobilePageHeader = () => (
     <div className={cn(
-      "fixed right-4 z-50",
-      isIOS ? "top-[max(1rem,env(safe-area-inset-top))]" : "top-3"
+      "flex justify-between items-center px-4 py-3",
+      isIOS ? "pt-[max(1rem,env(safe-area-inset-top))]" : ""
     )}>
-      <Avatar className="h-8 w-8 cursor-pointer shadow-md border border-white/20" onClick={handleAvatarClick}>
+      <h1 className="text-lg font-medium">{currentPage}</h1>
+      <Avatar className="h-9 w-9 cursor-pointer border border-white/20" onClick={handleAvatarClick}>
         {profileData?.avatar_url ? <AvatarImage src={profileData.avatar_url} alt="Foto profilo" /> : null}
         <AvatarFallback className={cn("text-white", bgColor)}>
           {getInitial()}
@@ -117,9 +126,9 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      {isMobile && <MobileAvatar />}
-      
-      {!isMobile && (
+      {isMobile ? (
+        <MobilePageHeader />
+      ) : (
         <header className="sticky top-0 z-40 w-full border-b bg-background/80 backdrop-blur-sm">
           <div className="container flex h-14 items-center">
             <div className="mr-auto flex">
@@ -165,7 +174,7 @@ const Navbar: React.FC = () => {
                 </DropdownMenu>
               </nav>
               
-              <Avatar className="h-8 w-8 cursor-pointer" onClick={handleAvatarClick}>
+              <Avatar className="h-9 w-9 cursor-pointer" onClick={handleAvatarClick}>
                 {profileData?.avatar_url ? <AvatarImage src={profileData.avatar_url} alt="Foto profilo" /> : null}
                 <AvatarFallback className={cn("text-white", bgColor)}>
                   {getInitial()}

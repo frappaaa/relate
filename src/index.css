@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -94,8 +95,6 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-top: env(safe-area-inset-top);
   }
 
   @supports (padding: max(0px)) {
@@ -136,7 +135,7 @@
 
 @layer components {
   .page-container {
-    @apply container mx-auto px-4 sm:px-6 py-8 max-w-7xl animate-fade-in;
+    @apply container mx-auto px-4 sm:px-6 py-2 max-w-7xl animate-fade-in;
   }
 
   .card-hover {

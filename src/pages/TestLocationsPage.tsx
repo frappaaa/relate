@@ -13,8 +13,8 @@ const TestLocationsPage: React.FC = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)]">
-      <div className="absolute z-10 top-4 left-0 right-0 px-4 sm:px-6 max-w-md mx-auto">
+    <div className="h-[calc(100vh-10rem)]">
+      <div className="mb-4">
         <LocationSearchBar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
