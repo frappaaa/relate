@@ -23,8 +23,10 @@ const Layout: React.FC = () => {
       
       <main className={cn(
         "flex-1 overflow-y-auto", 
-        isMobile && isIOS ? "pb-[calc(5rem+env(safe-area-inset-bottom))]" : 
-        isMobile ? "pb-20" : "pb-16"
+        isMobile ? cn(
+          "pt-16",
+          isIOS ? "pb-[calc(5rem+env(safe-area-inset-bottom))]" : "pb-20"
+        ) : "pb-16"
       )}>
         <div className="page-container">
           <Outlet />

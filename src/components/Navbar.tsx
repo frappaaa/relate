@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { Calendar, Home, Plus, MapPin, Heart, Beaker } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -25,9 +25,20 @@ const stringToColor = (str: string) => {
   return colors[Math.abs(hash) % colors.length];
 };
 
+// Define page name mapping for each route
+const routeToPageName: Record<string, string> = {
+  '/app/dashboard': 'Dashboard',
+  '/app/test-locations': 'Dove fare i test',
+  '/app/calendar': 'Calendario',
+  '/app/new-test': 'Nuovo test',
+  '/app/new-encounter': 'Nuovo incontro',
+  '/app/settings': 'Impostazioni'
+};
+
 const Navbar: React.FC = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [profileData, setProfileData] = useState<{
     first_name: string | null;
@@ -36,21 +47,31 @@ const Navbar: React.FC = () => {
   const [bgColor, setBgColor] = useState('bg-relate-500');
   const [isIOS, setIsIOS] = useState(false);
   const [currentPage, setCurrentPage] = useState('Dashboard');
+  
+  // Update current page based on location
+  useEffect(() => {
+    const path = location.pathname;
+    // First try exact match
+    if (routeToPageName[path]) {
+      setCurrentPage(routeToPageName[path]);
+    } else {
+      // For dynamic routes, try to find partial matches
+      if (path.includes('/test-locations')) setCurrentPage('Dove fare i test');
+      else if (path.includes('/calendar')) setCurrentPage('Calendario');
+      else if (path.includes('/new-test')) setCurrentPage('Nuovo test');
+      else if (path.includes('/new-encounter')) setCurrentPage('Nuovo incontro');
+      else if (path.includes('/settings')) setCurrentPage('Impostazioni');
+      else if (path.includes('/dashboard')) setCurrentPage('Dashboard');
+      else if (path.includes('/encounter')) setCurrentPage('Dettagli incontro');
+      else if (path.includes('/test')) setCurrentPage('Dettagli test');
+      else setCurrentPage('Relate');
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     setIsIOS(isIOSDevice);
-    
-    // Extract current page name from URL
-    const path = window.location.pathname;
-    if (path.includes('/dashboard')) setCurrentPage('Dashboard');
-    else if (path.includes('/test-locations')) setCurrentPage('Dove fare i test');
-    else if (path.includes('/calendar')) setCurrentPage('Calendario');
-    else if (path.includes('/new-test')) setCurrentPage('Nuovo test');
-    else if (path.includes('/new-encounter')) setCurrentPage('Nuovo incontro');
-    else if (path.includes('/settings')) setCurrentPage('Impostazioni');
-    else setCurrentPage('Relate');
   }, []);
 
   useEffect(() => {
@@ -108,10 +129,11 @@ const Navbar: React.FC = () => {
     return 'U';
   };
 
-  // New page header with avatar for mobile
+  // Mobile page header with blur effect and fixed position
   const MobilePageHeader = () => (
     <div className={cn(
-      "flex justify-between items-center px-4 py-3",
+      "fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 py-3",
+      "bg-background/80 backdrop-blur-sm border-b border-border/40",
       isIOS ? "pt-[max(1rem,env(safe-area-inset-top))]" : ""
     )}>
       <h1 className="text-lg font-medium">{currentPage}</h1>
