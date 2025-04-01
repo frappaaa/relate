@@ -1,47 +1,27 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import LocationFilters from '@/components/test-locations/LocationFilters';
-import LocationList from '@/components/test-locations/LocationList';
-import { useLocationData } from '@/hooks/use-location-data';
+import React, { useState } from 'react';
+import LocationMap from '@/components/test-locations/LocationMap';
+import LocationSearchBar from '@/components/test-locations/LocationSearchBar';
 
 const TestLocationsPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { 
-    searchQuery,
-    setSearchQuery,
-    filteredLocations,
-    isLocating,
-    isLoading,
-    availableCategories,
-    selectedCategories,
-    handleSearch,
-    handleCategoryToggle,
-    findNearMe
-  } = useLocationData();
-
-  const handleViewDetails = (locationId: string) => {
-    navigate(`/app/test-locations/${locationId}`);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Search functionality can be implemented later if needed
+    console.log('Searching for:', searchQuery);
   };
 
   return (
-    <div className="space-y-8">
-      <LocationFilters
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        handleSearch={handleSearch}
-        availableCategories={availableCategories}
-        selectedCategories={selectedCategories}
-        handleCategoryToggle={handleCategoryToggle}
-        isLocating={isLocating}
-        findNearMe={findNearMe}
-      />
-
-      <LocationList 
-        isLoading={isLoading} 
-        filteredLocations={filteredLocations} 
-        handleViewDetails={handleViewDetails}
-      />
+    <div className="h-[calc(100vh-4rem)]">
+      <div className="absolute z-10 top-4 left-0 right-0 px-4 sm:px-6 max-w-md mx-auto">
+        <LocationSearchBar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleSearch={handleSearch}
+        />
+      </div>
+      <LocationMap />
     </div>
   );
 };

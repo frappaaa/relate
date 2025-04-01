@@ -20,7 +20,7 @@ const LocationSearchBar: React.FC<LocationSearchBarProps> = ({
   };
 
   return (
-    <div className="relative w-full max-w-md mx-auto mb-6">
+    <div className="w-full">
       <form onSubmit={handleSearch} className="relative">
         <div className="relative flex items-center w-full">
           <div className="absolute left-3 flex items-center pointer-events-none text-muted-foreground">
@@ -31,7 +31,7 @@ const LocationSearchBar: React.FC<LocationSearchBarProps> = ({
             placeholder="Cerca per nome, indirizzo o tipo di test"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 pr-10 py-2 bg-background border border-input shadow-sm rounded-full focus-visible:ring-1"
+            className="pl-9 pr-10 py-2 border bg-white/90 backdrop-blur-sm shadow-lg rounded-full focus-visible:ring-1"
           />
           {searchQuery && (
             <Button
