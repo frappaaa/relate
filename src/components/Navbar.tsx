@@ -27,7 +27,7 @@ const stringToColor = (str: string) => {
 
 // Define page name mapping for each route
 const routeToPageName: Record<string, string> = {
-  '/app/dashboard': 'Dashboard',
+  '/app/dashboard': 'Home',
   '/app/test-locations': 'Dove fare i test',
   '/app/calendar': 'Calendario',
   '/app/new-test': 'Nuovo test',
@@ -46,7 +46,7 @@ const Navbar: React.FC = () => {
   } | null>(null);
   const [bgColor, setBgColor] = useState('bg-relate-500');
   const [isIOS, setIsIOS] = useState(false);
-  const [currentPage, setCurrentPage] = useState('Dashboard');
+  const [currentPage, setCurrentPage] = useState('Home');
   
   // Update current page based on location
   useEffect(() => {
@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
       else if (path.includes('/new-test')) setCurrentPage('Nuovo test');
       else if (path.includes('/new-encounter')) setCurrentPage('Nuovo incontro');
       else if (path.includes('/settings')) setCurrentPage('Impostazioni');
-      else if (path.includes('/dashboard')) setCurrentPage('Dashboard');
+      else if (path.includes('/dashboard')) setCurrentPage('Home');
       else if (path.includes('/encounter')) setCurrentPage('Dettagli incontro');
       else if (path.includes('/test')) setCurrentPage('Dettagli test');
       else setCurrentPage('Relate');
@@ -96,7 +96,7 @@ const Navbar: React.FC = () => {
   
   const navItems = [{
     path: '/app/dashboard',
-    label: 'Dashboard',
+    label: 'Home',
     icon: <Home className="h-5 w-5" />
   }, {
     path: '/app/test-locations',
