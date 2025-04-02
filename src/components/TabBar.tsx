@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
 import { Calendar, Home, Plus, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import NewEntryModal from './NewEntryModal';
+import { MobileTabItem } from './navigation/MobileTabItem';
+import { MobileTabAction } from './navigation/MobileTabAction';
 
 const TabBar: React.FC = () => {
   const isMobile = useIsMobile();
@@ -21,7 +22,7 @@ const TabBar: React.FC = () => {
   if (!isMobile) return null;
 
   const navItems = [
-    { path: '/app/dashboard', label: 'Dashboard', icon: <Home className="h-5 w-5" /> },
+    { path: '/app/dashboard', label: 'Home', icon: <Home className="h-5 w-5" /> },
     { path: '/app/test-locations', label: 'Test', icon: <MapPin className="h-5 w-5" /> },
     { path: '/app/calendar', label: 'Calendario', icon: <Calendar className="h-5 w-5" /> },
   ];
@@ -34,28 +35,18 @@ const TabBar: React.FC = () => {
       )}>
         <nav className="flex items-center justify-around h-16">
           {navItems.map((item) => (
-            <NavLink
+            <MobileTabItem
               key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                cn(
-                  "flex flex-col items-center justify-center w-full h-full px-1",
-                  "text-xs font-medium transition-colors",
-                  isActive ? "text-primary" : "text-muted-foreground"
-                )
-              }
-            >
-              <div className="mb-1">{item.icon}</div>
-              <span>{item.label}</span>
-            </NavLink>
+              path={item.path}
+              label={item.label}
+              icon={item.icon}
+            />
           ))}
-          <button
+          <MobileTabAction
             onClick={() => setIsModalOpen(true)}
-            className="flex flex-col items-center justify-center w-full h-full px-1 text-xs font-medium text-muted-foreground"
-          >
-            <div className="mb-1"><Plus className="h-5 w-5" /></div>
-            <span>Nuovo</span>
-          </button>
+            icon={<Plus className="h-5 w-5" />}
+            label="Nuovo"
+          />
         </nav>
       </div>
       
