@@ -16,15 +16,15 @@ const NotesField: React.FC<NotesFieldProps> = ({ form }) => {
       name="notes"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Note (opzionale)</FormLabel>
+          <FormLabel className="text-base md:text-sm">Note (opzionale)</FormLabel>
           <FormControl>
             <Textarea
               placeholder="Aggiungi note o osservazioni..."
-              className="resize-none"
+              className="resize-none text-base md:text-sm"
               {...field}
             />
           </FormControl>
-          <FormDescription>
+          <FormDescription className="text-sm">
             Le note sono private e visibili solo a te
           </FormDescription>
           <FormMessage />
