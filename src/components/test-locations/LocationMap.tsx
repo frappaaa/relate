@@ -5,9 +5,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Loader2 } from 'lucide-react';
 
-// This is a placeholder token - in production, this should be stored securely
-// and loaded from environment variables or a backend service
-const MAPBOX_TOKEN = 'pk.eyJ1IjoicGxhY2Vob2xkZXJ0b2tlbiIsImEiOiJjbHRva2VucGxhY2Vob2xkZXIifQ.tokenplaceholder';
+// Utilizziamo il token Mapbox fornito
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiZnJhbmNlc2NvbHVwcGkiLCJhIjoiY204c2sya3cwMDEwODJtcjdweGZtbXNwaSJ9.HCFiHD-mZ1aSqnGzCYlIwg';
 
 const LocationMap: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -79,10 +78,6 @@ const LocationMap: React.FC = () => {
           </div>
         </div>
       )}
-
-      <div className="absolute bottom-0 left-0 right-0 p-2 text-xs text-center text-muted-foreground bg-background/70">
-        È necessario inserire un token Mapbox valido per visualizzare correttamente la mappa
-      </div>
     </div>
   );
 };
