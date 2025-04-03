@@ -122,10 +122,15 @@
   }
 
   .glassmorphism {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    @apply backdrop-blur-8px border-1 border-white/20;
+  }
+
+  .dark .glassmorphism {
+    @apply bg-black/40 border-white/10;
+  }
+
+  .light .glassmorphism {
+    @apply bg-white/70 border-black/5;
   }
 
   .text-balance {
@@ -158,5 +163,3 @@
     @apply bg-gradient-relate;
   }
 }
-
-/* Removed Inter font import as we're now using Poppins */

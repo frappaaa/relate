@@ -6,6 +6,7 @@ import { toast } from '@/hooks/use-toast';
 import ProfileCard from '@/components/settings/ProfileCard';
 import PersonalInfoForm from '@/components/settings/PersonalInfoForm';
 import PrivacySecurityCard from '@/components/settings/PrivacySecurityCard';
+import ThemeSelector from '@/components/settings/ThemeSelector';
 
 type ProfileData = {
   first_name: string | null;
@@ -72,6 +73,8 @@ const SettingsPage = () => {
         <ProfileCard profileData={profileData} onAvatarChange={handleAvatarChange} />
 
         {profileData && <PersonalInfoForm initialData={profileData} onProfileUpdate={handleProfileUpdate} />}
+        
+        <ThemeSelector />
 
         <PrivacySecurityCard />
       </div>

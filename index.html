@@ -69,6 +69,25 @@
       type="image/png"
       sizes="16x16"
       href="/icons/icon-72x72.png" />
+      
+    <!-- Theme init script to avoid flickering -->
+    <script>
+      (function() {
+        // Check for saved theme preference or use system default
+        const theme = localStorage.getItem('theme') || 'system';
+        const root = document.documentElement;
+        
+        if (theme === 'dark') {
+          root.classList.add('dark');
+        } else if (theme === 'light') {
+          root.classList.add('light');
+        } else {
+          // If theme is system, check system preference
+          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          root.classList.add(systemPrefersDark ? 'dark' : 'light');
+        }
+      })();
+    </script>
   </head>
 
   <body>

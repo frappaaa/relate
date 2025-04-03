@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import Index from "./pages/Index";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -37,36 +38,38 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <AuthProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              
-              {/* Protected routes */}
-              <Route element={<ProtectedRoute />}>
-                <Route path="/app" element={<Layout />}>
-                  <Route path="dashboard" element={<DashboardPage />} />
-                  <Route path="test-locations" element={<TestLocationsPage />} />
-                  <Route path="test-locations/:id" element={<TestLocationDetailPage />} />
-                  <Route path="calendar" element={<CalendarPage />} />
-                  <Route path="new-encounter" element={<NewEncounterPage />} />
-                  <Route path="new-test" element={<NewTestPage />} />
-                  <Route path="encounter/:id" element={<EncounterDetailPage />} />
-                  <Route path="edit-encounter/:id" element={<EditEncounterPage />} />
-                  <Route path="test/:id" element={<TestDetailPage />} />
-                  <Route path="edit-test/:id" element={<EditTestPage />} />
-                  <Route path="settings" element={<SettingsPage />} />
+        <ThemeProvider>
+          <AuthProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                
+                {/* Protected routes */}
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/app" element={<Layout />}>
+                    <Route path="dashboard" element={<DashboardPage />} />
+                    <Route path="test-locations" element={<TestLocationsPage />} />
+                    <Route path="test-locations/:id" element={<TestLocationDetailPage />} />
+                    <Route path="calendar" element={<CalendarPage />} />
+                    <Route path="new-encounter" element={<NewEncounterPage />} />
+                    <Route path="new-test" element={<NewTestPage />} />
+                    <Route path="encounter/:id" element={<EncounterDetailPage />} />
+                    <Route path="edit-encounter/:id" element={<EditEncounterPage />} />
+                    <Route path="test/:id" element={<TestDetailPage />} />
+                    <Route path="edit-test/:id" element={<EditTestPage />} />
+                    <Route path="settings" element={<SettingsPage />} />
+                  </Route>
                 </Route>
-              </Route>
-              
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </AuthProvider>
+                
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </AuthProvider>
+        </ThemeProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
