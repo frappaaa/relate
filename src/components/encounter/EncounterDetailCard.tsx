@@ -40,6 +40,9 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
   
   // Check if there are any symptoms to display
   const hasSymptoms = activeSymptoms.length > 0;
+  
+  // Display custom name if available or default to encounter type
+  const displayTitle = encounter.partner_name || `Rapporto ${encounterTypeDisplay}`;
 
   return (
     <Card>
@@ -48,7 +51,7 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
           <div className="flex items-center gap-2">
             <Heart className="h-5 w-5 text-pink-500" />
             <CardTitle>
-              Rapporto {encounterTypeDisplay}
+              {displayTitle}
             </CardTitle>
           </div>
           <Badge 
@@ -63,6 +66,11 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
         <div className="flex items-center gap-2">
           <CalendarClock className="h-5 w-5 text-muted-foreground" />
           <span>{formattedDate}</span>
+        </div>
+        
+        <div>
+          <h3 className="text-sm font-medium text-muted-foreground mb-1">Tipo</h3>
+          <p>{encounterTypeDisplay}</p>
         </div>
 
         <div>
@@ -96,13 +104,6 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
                 </Badge>
               ))}
             </div>
-          </div>
-        )}
-
-        {encounter.partner_name && (
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-1">Partner</h3>
-            <p>{encounter.partner_name}</p>
           </div>
         )}
 

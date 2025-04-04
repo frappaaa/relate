@@ -51,7 +51,8 @@ const NewEncounterPage: React.FC = () => {
           protection_used: protectionUsed,
           risk_level: data.riskLevel,
           notes: data.notes || null,
-          symptoms: symptomsData
+          symptoms: symptomsData,
+          partner_name: data.customName || null
         });
         
       if (error) throw error;

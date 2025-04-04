@@ -79,7 +79,8 @@ export function useEncounterData(id: string | undefined, user: User | null) {
           protection: protectionLevel,
           partnerStatus: 'unknown', // Default, as we don't store this
           symptoms: symptomsObject,
-          notes: data.notes || '' // Use cleaned notes
+          notes: data.notes || '', // Use cleaned notes
+          customName: data.partner_name || '' // Use partner_name for customName
         });
       } catch (error) {
         console.error('Error fetching encounter:', error);

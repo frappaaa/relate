@@ -20,6 +20,7 @@ export const formSchema = z.object({
     z.array(z.enum(['oral', 'vaginal', 'anal'])).min(1, "Seleziona almeno un tipo di rapporto"),
     z.enum(['oral', 'vaginal', 'anal']),
   ]),
+  customName: z.string().max(50, "Il nome non può superare 50 caratteri").optional(),
   protection: z.enum(['none', 'partial', 'full'], { required_error: "Il livello di protezione è obbligatorio" }),
   partnerStatus: z.enum(['unknown', 'negative', 'positive']).default('unknown'),
   symptoms: z.record(z.boolean()).default({}),

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { calculateRiskScore, getRiskLevel } from '@/utils/riskCalculator';
 
 import DateField from './DateField';
+import CustomNameField from './CustomNameField';
 import EncounterTypeField from './EncounterTypeField';
 import ProtectionLevelField from './ProtectionLevelField';
 import PartnerStatusField from './PartnerStatusField';
@@ -97,6 +98,7 @@ const EncounterForm: React.FC<EncounterFormProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-6">
               <DateField form={form} />
+              <CustomNameField form={form} />
               <EncounterTypeField form={form} />
               <ProtectionLevelField form={form} />
             </div>
