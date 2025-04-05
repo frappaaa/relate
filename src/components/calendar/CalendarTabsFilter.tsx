@@ -1,10 +1,9 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { TabsContent } from '@/components/ui/tabs';
 import EventsTable, { CalendarEvent } from './EventsTable';
+import TabFilter, { TabOption } from '@/components/ui/tab-filter';
+import EventsHeader from './EventsHeader';
 
 interface CalendarTabsFilterProps {
   activeTab: 'all' | 'encounters' | 'tests';
@@ -21,30 +20,21 @@ const CalendarTabsFilter: React.FC<CalendarTabsFilterProps> = ({
   onViewEvent,
   isLoading
 }) => {
-  const navigate = useNavigate();
+  const tabs: TabOption[] = [
+    { value: 'all', label: 'Tutti' },
+    { value: 'encounters', label: 'Rapporti' },
+    { value: 'tests', label: 'Test' }
+  ];
 
   return (
     <div className="mt-8">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Eventi</h2>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => navigate('/app/new-encounter')}
-          className="flex items-center gap-1"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Nuovo</span>
-        </Button>
-      </div>
+      <EventsHeader title="Eventi" buttonPath="/app/new-encounter" />
 
-      <Tabs defaultValue="all" value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-        <TabsList className="mb-4">
-          <TabsTrigger value="all">Tutti</TabsTrigger>
-          <TabsTrigger value="encounters">Rapporti</TabsTrigger>
-          <TabsTrigger value="tests">Test</TabsTrigger>
-        </TabsList>
-        
+      <TabFilter 
+        activeTab={activeTab} 
+        setActiveTab={(value) => setActiveTab(value as 'all' | 'encounters' | 'tests')}
+        tabs={tabs}
+      >
         <TabsContent value="all" className="mt-0">
           <EventsTable events={events} onViewEvent={onViewEvent} isLoading={isLoading} />
         </TabsContent>
@@ -56,7 +46,7 @@ const CalendarTabsFilter: React.FC<CalendarTabsFilterProps> = ({
         <TabsContent value="tests" className="mt-0">
           <EventsTable events={events} onViewEvent={onViewEvent} isLoading={isLoading} />
         </TabsContent>
-      </Tabs>
+      </TabFilter>
     </div>
   );
 };
