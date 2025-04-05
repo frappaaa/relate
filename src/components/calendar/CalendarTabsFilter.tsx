@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
-import EventsTable, { CalendarEvent } from './EventsTable';
+import EventsTable from './EventsTable';
 import TabFilter, { TabOption } from '@/components/ui/tab-filter';
 import EventsHeader from './EventsHeader';
+import { CalendarEvent } from '@/types/calendar';
 
 interface CalendarTabsFilterProps {
   activeTab: 'all' | 'encounters' | 'tests';

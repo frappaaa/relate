@@ -5,8 +5,9 @@ import WeekCalendar from '@/components/WeekCalendar';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
-import EventsTable, { CalendarEvent } from '@/components/calendar/EventsTable';
+import EventsTable from '@/components/calendar/EventsTable';
 import CalendarTabsFilter from '@/components/calendar/CalendarTabsFilter';
+import { CalendarEvent } from '@/types/calendar';
 
 const CalendarPage: React.FC = () => {
   const navigate = useNavigate();

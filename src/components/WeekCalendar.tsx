@@ -20,19 +20,7 @@ import { getRiskColor } from '@/utils/riskCalculator';
 import { Skeleton } from '@/components/ui/skeleton';
 import CalendarDialog from '@/components/calendar/CalendarDialog';
 import { useNavigate } from 'react-router-dom';
-
-interface CalendarEvent {
-  id: string;
-  date: Date;
-  type: 'encounter' | 'test';
-  details?: {
-    encounterType?: string;
-    customName?: string;
-    risk?: 'low' | 'medium' | 'high';
-    testType?: string;
-    result?: string;
-  };
-}
+import { CalendarEvent } from '@/types/calendar';
 
 interface WeekCalendarProps {
   events: CalendarEvent[];
