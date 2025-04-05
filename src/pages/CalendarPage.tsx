@@ -24,7 +24,7 @@ const CalendarPage: React.FC = () => {
       // Fetch encounters
       const { data: encounters, error: encountersError } = await supabase
         .from('encounters')
-        .select('id, date, encounter_type, risk_level, notes, partner_name')
+        .select('id, date, encounter_type, risk_level, notes, encounter_name')
         .eq('user_id', user.id);
 
       if (encountersError) throw encountersError;
@@ -56,7 +56,7 @@ const CalendarPage: React.FC = () => {
           type: 'encounter',
           details: {
             encounterType,
-            customName: encounter.partner_name || null,
+            customName: encounter.encounter_name || null,
             risk: encounter.risk_level
           }
         };

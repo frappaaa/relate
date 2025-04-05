@@ -41,7 +41,7 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
   const hasSymptoms = activeSymptoms.length > 0;
   
   // Display custom name if available or default to encounter type
-  const displayTitle = encounter.partner_name || `Rapporto ${encounterTypeDisplay}`;
+  const displayTitle = encounter.encounter_name || `Rapporto ${encounterTypeDisplay}`;
 
   return (
     <Card>

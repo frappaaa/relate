@@ -13,10 +13,10 @@ export type Database = {
         Row: {
           created_at: string
           date: string
+          encounter_name: string | null
           encounter_type: string
           id: string
           notes: string | null
-          partner_name: string | null
           protection_used: boolean
           risk_level: Database["public"]["Enums"]["risk_level"]
           symptoms: Json | null
@@ -26,10 +26,10 @@ export type Database = {
         Insert: {
           created_at?: string
           date?: string
+          encounter_name?: string | null
           encounter_type: string
           id?: string
           notes?: string | null
-          partner_name?: string | null
           protection_used?: boolean
           risk_level?: Database["public"]["Enums"]["risk_level"]
           symptoms?: Json | null
@@ -39,10 +39,10 @@ export type Database = {
         Update: {
           created_at?: string
           date?: string
+          encounter_name?: string | null
           encounter_type?: string
           id?: string
           notes?: string | null
-          partner_name?: string | null
           protection_used?: boolean
           risk_level?: Database["public"]["Enums"]["risk_level"]
           symptoms?: Json | null

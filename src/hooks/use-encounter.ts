@@ -80,7 +80,7 @@ export function useEncounterData(id: string | undefined, user: User | null) {
           partnerStatus: 'unknown', // Default, as we don't store this
           symptoms: symptomsObject,
           notes: data.notes || '', // Use cleaned notes
-          customName: data.partner_name || '' // Use partner_name for customName
+          customName: data.encounter_name || '' // Use encounter_name for customName
         });
       } catch (error) {
         console.error('Error fetching encounter:', error);

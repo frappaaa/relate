@@ -43,7 +43,7 @@ export function useEncounterSubmit(id: string | undefined, user: User | null) {
           risk_level: data.riskLevel,
           notes: data.notes || null,
           symptoms: symptomsData,
-          partner_name: data.customName || null,
+          encounter_name: data.customName || null,
           updated_at: new Date().toISOString()
         })
         .eq('id', id)

@@ -36,7 +36,7 @@ const DashboardPage: React.FC = () => {
       // Fetch recent encounters
       const { data: encounters, error: encountersError } = await supabase
         .from('encounters')
-        .select('id, date, encounter_type, risk_level, partner_name')
+        .select('id, date, encounter_type, risk_level, encounter_name')
         .eq('user_id', user.id)
         .order('date', { ascending: false })
         .limit(5);
@@ -93,8 +93,8 @@ const DashboardPage: React.FC = () => {
         // Determine display name - use custom name if available, otherwise format encounter type
         let displayName: string;
         
-        if (encounter.partner_name) {
-          displayName = encounter.partner_name;
+        if (encounter.encounter_name) {
+          displayName = encounter.encounter_name;
         } else {
           const encounterType = encounter.encounter_type;
           displayName = encounterType === 'oral' ? 'Rapporto orale' :
