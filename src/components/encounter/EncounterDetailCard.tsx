@@ -20,14 +20,13 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
   const encounterTypeLabels: { [key: string]: string } = {
     oral: 'Orale',
     vaginal: 'Vaginale',
-    anal: 'Anale',
-    other: 'Altro'
+    anal: 'Anale'
   };
 
   // Handle multiple encounter types
   const encounterTypes = encounter.encounter_type.split(',');
   const encounterTypeDisplay = encounterTypes.map(type => 
-    encounterTypeLabels[type] || type
+    encounterTypeLabels[type] || (type !== 'other' ? type : 'Orale')
   ).join(', ');
 
   // Get symptoms from the symptoms field or parse from notes for backward compatibility
@@ -50,7 +49,7 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Heart className="h-5 w-5 text-pink-500" />
-            <CardTitle>
+            <CardTitle className="truncate">
               {displayTitle}
             </CardTitle>
           </div>

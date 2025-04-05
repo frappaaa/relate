@@ -45,7 +45,7 @@ const RecentEncountersCard: React.FC<RecentEncountersCardProps> = ({ recentEncou
                 <div className="flex items-center space-x-3">
                   <div className={`w-2 h-2 rounded-full ${getRiskColor(encounter.risk)}`} />
                   <div>
-                    <p className="text-sm font-medium">{encounter.type}</p>
+                    <p className="text-sm font-medium truncate max-w-[180px]">{encounter.type}</p>
                     <p className="text-xs text-muted-foreground">{formatTimeAgo(encounter.date)}</p>
                   </div>
                 </div>

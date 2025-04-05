@@ -11,6 +11,11 @@ interface CalendarDayEventProps {
 }
 
 export const CalendarDayEvent: React.FC<CalendarDayEventProps> = ({ event, onClick }) => {
+  // Determine event name, prioritizing customName for encounters
+  const eventName = event.type === 'encounter' 
+    ? (event.details?.customName || event.details?.encounterType || 'Rapporto')
+    : (event.details?.testType || 'Test');
+    
   return (
     <div
       className={cn(
@@ -27,12 +32,12 @@ export const CalendarDayEvent: React.FC<CalendarDayEventProps> = ({ event, onCli
       {event.type === 'encounter' ? (
         <div className="flex items-center gap-1">
           <Heart className="h-3 w-3" />
-          <span>{event.details?.encounterType || 'Rapporto'}</span>
+          <span className="truncate max-w-[80px]">{eventName}</span>
         </div>
       ) : (
         <div className="flex items-center gap-1">
           <Beaker className="h-3 w-3" />
-          <span>{event.details?.testType || 'Test'}</span>
+          <span className="truncate max-w-[80px]">{eventName}</span>
         </div>
       )}
     </div>

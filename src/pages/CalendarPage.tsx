@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import WeekCalendar from '@/components/WeekCalendar';
@@ -23,7 +24,7 @@ const CalendarPage: React.FC = () => {
       // Fetch encounters
       const { data: encounters, error: encountersError } = await supabase
         .from('encounters')
-        .select('id, date, encounter_type, risk_level, notes')
+        .select('id, date, encounter_type, risk_level, notes, partner_name')
         .eq('user_id', user.id);
 
       if (encountersError) throw encountersError;
@@ -37,17 +38,29 @@ const CalendarPage: React.FC = () => {
       if (testsError) throw testsError;
 
       // Format encounters as CalendarEvents
-      const encounterEvents: CalendarEvent[] = encounters.map(encounter => ({
-        id: encounter.id,
-        date: new Date(encounter.date),
-        type: 'encounter',
-        details: {
-          encounterType: encounter.encounter_type === 'oral' ? 'Orale' :
-                          encounter.encounter_type === 'vaginal' ? 'Vaginale' :
-                          encounter.encounter_type === 'anal' ? 'Anale' : 'Altro',
-          risk: encounter.risk_level
-        }
-      }));
+      const encounterEvents: CalendarEvent[] = encounters.map(encounter => {
+        const encounterType = encounter.encounter_type.includes(',') 
+          ? encounter.encounter_type.split(',').map(type => {
+              if (type === 'oral') return 'Orale';
+              if (type === 'vaginal') return 'Vaginale';
+              if (type === 'anal') return 'Anale';
+              return type;
+            }).join(', ')
+          : encounter.encounter_type === 'oral' ? 'Orale' :
+            encounter.encounter_type === 'vaginal' ? 'Vaginale' :
+            encounter.encounter_type === 'anal' ? 'Anale' : 'Rapporto';
+
+        return {
+          id: encounter.id,
+          date: new Date(encounter.date),
+          type: 'encounter',
+          details: {
+            encounterType,
+            customName: encounter.partner_name || null,
+            risk: encounter.risk_level
+          }
+        };
+      });
 
       // Format tests as CalendarEvents
       const testEvents: CalendarEvent[] = tests.map(test => ({

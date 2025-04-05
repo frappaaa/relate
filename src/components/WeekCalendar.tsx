@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   format, 
@@ -28,6 +27,7 @@ interface CalendarEvent {
   type: 'encounter' | 'test';
   details?: {
     encounterType?: string;
+    customName?: string;
     risk?: 'low' | 'medium' | 'high';
     testType?: string;
     result?: string;
@@ -79,10 +79,8 @@ const WeekCalendar: React.FC<WeekCalendarProps> = ({
     const isFutureDate = isAfter(startOfDay(date), today);
     
     if (isFutureDate) {
-      // For future dates, navigate directly to new test form
       navigate(`/app/new-test?date=${date.toISOString()}`);
     } else {
-      // For today or past dates, show the dialog
       setIsDialogOpen(true);
     }
   };

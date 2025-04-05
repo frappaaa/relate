@@ -20,6 +20,7 @@ export interface CalendarEvent {
   type: 'encounter' | 'test';
   details?: {
     encounterType?: string;
+    customName?: string;
     risk?: 'low' | 'medium' | 'high';
     testType?: string;
     result?: string;
@@ -100,8 +101,12 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, onViewEvent, isLoadin
                 </div>
               )}
             </TableCell>
-            <TableCell>
-              {event.type === 'encounter' ? event.details?.encounterType : event.details?.testType}
+            <TableCell className="max-w-[150px] truncate">
+              {event.type === 'encounter' ? (
+                event.details?.customName || event.details?.encounterType || 'Rapporto'
+              ) : (
+                event.details?.testType || 'Test'
+              )}
             </TableCell>
             <TableCell>
               {event.type === 'encounter' ? (

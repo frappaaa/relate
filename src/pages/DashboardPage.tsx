@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Dashboard from '@/components/Dashboard';
 import { supabase } from '@/integrations/supabase/client';
@@ -35,7 +36,7 @@ const DashboardPage: React.FC = () => {
       // Fetch recent encounters
       const { data: encounters, error: encountersError } = await supabase
         .from('encounters')
-        .select('id, date, encounter_type, risk_level')
+        .select('id, date, encounter_type, risk_level, partner_name')
         .eq('user_id', user.id)
         .order('date', { ascending: false })
         .limit(5);
@@ -87,15 +88,38 @@ const DashboardPage: React.FC = () => {
       const nextTestDueDate = getNextTestDate(lastTestDate, riskLevel);
       const nextTestDue = formatDate(nextTestDueDate);
 
-      // Format encounters for display
-      const formattedEncounters = encounters.map(encounter => ({
-        id: encounter.id,
-        date: encounter.date,
-        type: encounter.encounter_type === 'oral' ? 'Rapporto orale' :
-              encounter.encounter_type === 'vaginal' ? 'Rapporto vaginale' :
-              encounter.encounter_type === 'anal' ? 'Rapporto anale' : 'Altro',
-        risk: encounter.risk_level
-      }));
+      // Format encounters for display, using custom name when available
+      const formattedEncounters = encounters.map(encounter => {
+        // Determine display name - use custom name if available, otherwise format encounter type
+        let displayName: string;
+        
+        if (encounter.partner_name) {
+          displayName = encounter.partner_name;
+        } else {
+          const encounterType = encounter.encounter_type;
+          displayName = encounterType === 'oral' ? 'Rapporto orale' :
+                        encounterType === 'vaginal' ? 'Rapporto vaginale' :
+                        encounterType === 'anal' ? 'Rapporto anale' : 'Rapporto';
+          
+          // Handle multiple types (comma-separated)
+          if (encounterType.includes(',')) {
+            const types = encounterType.split(',').map(type => {
+              return type === 'oral' ? 'orale' :
+                     type === 'vaginal' ? 'vaginale' :
+                     type === 'anal' ? 'anale' : '';
+            }).filter(Boolean);
+            
+            displayName = `Rapporto ${types.join(', ')}`;
+          }
+        }
+
+        return {
+          id: encounter.id,
+          date: encounter.date,
+          type: displayName,
+          risk: encounter.risk_level
+        };
+      });
 
       setDashboardData({
         lastTest,
