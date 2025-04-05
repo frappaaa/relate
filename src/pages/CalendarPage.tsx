@@ -27,7 +27,10 @@ const CalendarPage: React.FC = () => {
         .select('id, date, encounter_type, risk_level, notes, encounter_name')
         .eq('user_id', user.id);
 
-      if (encountersError) throw encountersError;
+      if (encountersError) {
+        console.error('Error fetching encounters:', encountersError);
+        throw encountersError;
+      }
 
       // Fetch tests
       const { data: tests, error: testsError } = await supabase
@@ -38,7 +41,7 @@ const CalendarPage: React.FC = () => {
       if (testsError) throw testsError;
 
       // Format encounters as CalendarEvents
-      const encounterEvents: CalendarEvent[] = encounters.map(encounter => {
+      const encounterEvents: CalendarEvent[] = encounters ? encounters.map(encounter => {
         const encounterType = encounter.encounter_type.includes(',') 
           ? encounter.encounter_type.split(',').map(type => {
               if (type === 'oral') return 'Orale';
@@ -60,10 +63,10 @@ const CalendarPage: React.FC = () => {
             risk: encounter.risk_level
           }
         };
-      });
+      }) : [];
 
       // Format tests as CalendarEvents
-      const testEvents: CalendarEvent[] = tests.map(test => ({
+      const testEvents: CalendarEvent[] = tests ? tests.map(test => ({
         id: test.id,
         date: new Date(test.date),
         type: 'test',
@@ -72,7 +75,7 @@ const CalendarPage: React.FC = () => {
           result: test.result,
           status: test.status
         }
-      }));
+      })) : [];
 
       // Combine all events
       setEvents([...encounterEvents, ...testEvents]);

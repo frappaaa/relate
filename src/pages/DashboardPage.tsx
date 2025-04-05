@@ -41,7 +41,10 @@ const DashboardPage: React.FC = () => {
         .order('date', { ascending: false })
         .limit(5);
 
-      if (encountersError) throw encountersError;
+      if (encountersError) {
+        console.error('Error fetching encounters:', encountersError);
+        throw encountersError;
+      }
 
       // Fetch tests
       const { data: tests, error: testsError } = await supabase
@@ -53,8 +56,8 @@ const DashboardPage: React.FC = () => {
       if (testsError) throw testsError;
 
       // Get the most recent completed test
-      const completedTests = tests.filter(test => test.status === 'completed');
-      const lastTest = completedTests.length > 0 
+      const completedTests = tests && tests.filter(test => test.status === 'completed');
+      const lastTest = completedTests && completedTests.length > 0 
         ? {
             date: completedTests[0].date,
             result: completedTests[0].result || 'Sconosciuto'
@@ -62,7 +65,7 @@ const DashboardPage: React.FC = () => {
         : null;
 
       // Get upcoming tests
-      const upcomingTests = tests
+      const upcomingTests = tests && tests
         .filter(test => new Date(test.date) >= new Date() && test.status !== 'cancelled')
         .map(test => ({
           id: test.id,
@@ -89,7 +92,7 @@ const DashboardPage: React.FC = () => {
       const nextTestDue = formatDate(nextTestDueDate);
 
       // Format encounters for display, using custom name when available
-      const formattedEncounters = encounters.map(encounter => {
+      const formattedEncounters = encounters ? encounters.map(encounter => {
         // Determine display name - use custom name if available, otherwise format encounter type
         let displayName: string;
         
@@ -119,14 +122,14 @@ const DashboardPage: React.FC = () => {
           type: displayName,
           risk: encounter.risk_level
         };
-      });
+      }) : [];
 
       setDashboardData({
         lastTest,
         riskLevel,
         nextTestDue,
-        recentEncounters: formattedEncounters,
-        upcomingTests
+        recentEncounters: formattedEncounters || [],
+        upcomingTests: upcomingTests || []
       });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
