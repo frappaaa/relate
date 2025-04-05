@@ -42,8 +42,7 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, onViewEvent, isLoadin
           <TableHeader>
             <TableRow>
               <TableHead>Data</TableHead>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Dettagli</TableHead>
+              <TableHead>Evento</TableHead>
               <TableHead>Stato</TableHead>
             </TableRow>
           </TableHeader>
@@ -51,7 +50,6 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, onViewEvent, isLoadin
             {[1, 2, 3].map((i) => (
               <TableRow key={i}>
                 <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                 <TableCell><Skeleton className="h-4 w-40" /></TableCell>
                 <TableCell><Skeleton className="h-6 w-16 rounded-full" /></TableCell>
               </TableRow>
@@ -75,8 +73,7 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, onViewEvent, isLoadin
       <TableHeader>
         <TableRow>
           <TableHead>Data</TableHead>
-          <TableHead>Tipo</TableHead>
-          <TableHead>Dettagli</TableHead>
+          <TableHead>Evento</TableHead>
           <TableHead>Stato</TableHead>
         </TableRow>
       </TableHeader>
@@ -88,25 +85,20 @@ const EventsTable: React.FC<EventsTableProps> = ({ events, onViewEvent, isLoadin
             onClick={() => onViewEvent(event)}
           >
             <TableCell>{formatDate(event.date)}</TableCell>
-            <TableCell>
-              {event.type === 'encounter' ? (
-                <div className="flex items-center gap-1">
-                  <Heart className="h-4 w-4 text-pink-500" />
-                  <span>Rapporto</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1">
-                  <Beaker className="h-4 w-4 text-blue-500" />
-                  <span>Test</span>
-                </div>
-              )}
-            </TableCell>
-            <TableCell className="max-w-[150px] truncate">
-              {event.type === 'encounter' ? (
-                event.details?.customName || event.details?.encounterType || 'Rapporto'
-              ) : (
-                event.details?.testType || 'Test'
-              )}
+            <TableCell className="max-w-[250px]">
+              <div className="flex items-center gap-2">
+                {event.type === 'encounter' ? (
+                  <Heart className="h-4 w-4 text-pink-500 flex-shrink-0" />
+                ) : (
+                  <Beaker className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                )}
+                <span className="truncate">
+                  {event.type === 'encounter' 
+                    ? (event.details?.customName || event.details?.encounterType || 'Rapporto')
+                    : (event.details?.testType || 'Test')
+                  }
+                </span>
+              </div>
             </TableCell>
             <TableCell>
               {event.type === 'encounter' ? (
