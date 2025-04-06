@@ -50,7 +50,8 @@ const UserLocationControl = () => {
 
   useEffect(() => {
     // Add locate control button
-    const locateControl = L.control({ position: 'topright' });
+    // Fix: Use L.Control instead of L.control
+    const locateControl = new L.Control({ position: 'topright' });
     
     locateControl.onAdd = () => {
       const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');

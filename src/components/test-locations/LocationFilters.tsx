@@ -3,8 +3,6 @@ import React from 'react';
 import { Loader2, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import LocationSearchBar from '@/components/test-locations/LocationSearchBar';
-import ServiceFilterTags from '@/components/test-locations/ServiceFilterTags';
-import { toast } from '@/hooks/use-toast';
 
 interface LocationFiltersProps {
   searchQuery: string;
@@ -60,12 +58,6 @@ const LocationFilters: React.FC<LocationFiltersProps> = ({
           </Button>
         </div>
       </div>
-      
-      <ServiceFilterTags 
-        availableServices={availableCategories} 
-        selectedServices={selectedCategories} 
-        onServiceToggle={handleCategoryToggle} 
-      />
     </div>
   );
 };
