@@ -2,26 +2,58 @@
 import React, { useState } from 'react';
 import LocationMap from '@/components/test-locations/LocationMap';
 import LocationSearchBar from '@/components/test-locations/LocationSearchBar';
+import { useLocationData } from '@/hooks/use-location-data';
+import { useNavigate } from 'react-router-dom';
+import LocationFilters from '@/components/test-locations/LocationFilters';
+import LocationList from '@/components/test-locations/LocationList';
 
 const TestLocationsPage: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const {
+    searchQuery,
+    setSearchQuery,
+    filteredLocations,
+    isLocating,
+    isLoading,
+    availableCategories,
+    selectedCategories,
+    handleSearch,
+    handleCategoryToggle,
+    findNearMe
+  } = useLocationData();
   
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Search functionality can be implemented later if needed
-    console.log('Searching for:', searchQuery);
+  const navigate = useNavigate();
+  
+  const handleViewDetails = (locationId: string) => {
+    navigate(`/app/test-locations/${locationId}`);
   };
 
   return (
-    <div className="h-[calc(100vh-12rem)]">
+    <div className="flex flex-col h-[calc(100vh-12rem)]">
       <div className="mb-4">
-        <LocationSearchBar
+        <LocationFilters
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           handleSearch={handleSearch}
+          availableCategories={availableCategories}
+          selectedCategories={selectedCategories}
+          handleCategoryToggle={handleCategoryToggle}
+          isLocating={isLocating}
+          findNearMe={findNearMe}
         />
       </div>
-      <LocationMap />
+      
+      <div className="grid md:grid-cols-2 gap-6 h-full">
+        <div className="h-full min-h-[300px] md:min-h-0">
+          <LocationMap />
+        </div>
+        <div className="overflow-y-auto">
+          <LocationList
+            isLoading={isLoading}
+            filteredLocations={filteredLocations}
+            handleViewDetails={handleViewDetails}
+          />
+        </div>
+      </div>
     </div>
   );
 };

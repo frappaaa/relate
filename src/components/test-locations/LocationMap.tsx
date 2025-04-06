@@ -1,74 +1,102 @@
 
-import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import React, { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import './leaflet-fix.css';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Loader2 } from 'lucide-react';
+import L from 'leaflet';
 
-// Utilizziamo il token Mapbox fornito
-const MAPBOX_TOKEN = 'pk.eyJ1IjoiZnJhbmNlc2NvbHVwcGkiLCJhIjoiY204c2sya3cwMDEwODJtcjdweGZtbXNwaSJ9.HCFiHD-mZ1aSqnGzCYlIwg';
+// Fix for default marker icons in Leaflet
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
-const LocationMap: React.FC = () => {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const isMobile = useIsMobile();
+// Initialize default icon
+const DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
+
+// Component to handle map recenter
+const ChangeMapView = ({ center }: { center: [number, number] }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, map.getZoom());
+  }, [center, map]);
+  return null;
+};
+
+// Component to handle user's location
+const UserLocationControl = () => {
+  const map = useMap();
+  const [position, setPosition] = useState<[number, number] | null>(null);
+
+  const handleLocate = () => {
+    map.locate({ setView: true, maxZoom: 13 });
+    
+    map.on('locationfound', (e) => {
+      setPosition([e.latlng.lat, e.latlng.lng]);
+    });
+    
+    map.on('locationerror', (e) => {
+      console.error('Error finding location:', e.message);
+    });
+  };
 
   useEffect(() => {
-    if (!mapContainer.current) return;
-
-    // Initialize map
-    mapboxgl.accessToken = MAPBOX_TOKEN;
+    // Add locate control button
+    const locateControl = L.control({ position: 'topright' });
     
-    try {
-      map.current = new mapboxgl.Map({
-        container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/streets-v12',
-        center: [12.4964, 41.9028], // Default center on Italy
-        zoom: 5
-      });
-
-      // Add navigation controls
-      map.current.addControl(
-        new mapboxgl.NavigationControl(),
-        'top-right'
-      );
-
-      // Add geolocate control
-      const geolocateControl = new mapboxgl.GeolocateControl({
-        positionOptions: {
-          enableHighAccuracy: true
-        },
-        trackUserLocation: true,
-        showUserHeading: true
-      });
-
-      map.current.addControl(geolocateControl);
-
-      // Map load event
-      map.current.on('load', () => {
-        setMapLoaded(true);
-        
-        // Try to geolocate the user when the map loads (on mobile only)
-        if (isMobile) {
-          setTimeout(() => {
-            geolocateControl.trigger();
-          }, 1000);
-        }
-      });
-    } catch (error) {
-      console.error('Error initializing map:', error);
-    }
-
-    // Cleanup
-    return () => {
-      map.current?.remove();
+    locateControl.onAdd = () => {
+      const div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+      div.innerHTML = '<a class="leaflet-control-locate" href="#" title="Show my location" role="button" aria-label="Show my location" style="display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: white; font-size: 20px;">📍</a>';
+      
+      div.onclick = handleLocate;
+      return div;
     };
-  }, [isMobile]);
+    
+    locateControl.addTo(map);
+    
+    return () => {
+      // Clean up event listeners
+      map.off('locationfound');
+      map.off('locationerror');
+    };
+  }, [map]);
+
+  return position ? 
+    <Marker position={position}>
+      <Popup>Tu sei qui</Popup>
+    </Marker> : null;
+};
+
+const LocationMap: React.FC = () => {
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const isMobile = useIsMobile();
+  const [center] = useState<[number, number]>([41.9028, 12.4964]); // Default center on Italy
 
   return (
     <div className="relative w-full h-full">
-      <div ref={mapContainer} className="absolute inset-0" />
+      <div className="absolute inset-0">
+        <MapContainer 
+          center={center} 
+          zoom={5} 
+          style={{ height: '100%', width: '100%' }}
+          whenReady={() => setMapLoaded(true)}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <ChangeMapView center={center} />
+          <UserLocationControl />
+        </MapContainer>
+      </div>
       
       {!mapLoaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-background/80">
