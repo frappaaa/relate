@@ -1,8 +1,4 @@
-
 import React from 'react';
-import { Loader2, MapPin } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import LocationSearchBar from '@/components/test-locations/LocationSearchBar';
 
 interface LocationFiltersProps {
   searchQuery: string;
@@ -27,37 +23,6 @@ const LocationFilters: React.FC<LocationFiltersProps> = ({
 }) => {
   return (
     <div className="space-y-8">
-      <section className="space-y-2">
-        <LocationSearchBar 
-          searchQuery={searchQuery} 
-          setSearchQuery={setSearchQuery} 
-          handleSearch={handleSearch} 
-        />
-      </section>
-
-      <div className="space-y-4">
-        <div className="flex justify-end">
-          <Button 
-            size="sm" 
-            variant="secondary" 
-            className="shadow-md"
-            onClick={findNearMe}
-            disabled={isLocating}
-          >
-            {isLocating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Localizzando...
-              </>
-            ) : (
-              <>
-                <MapPin className="mr-2 h-4 w-4" />
-                Trova vicino a me
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
     </div>
   );
 };
