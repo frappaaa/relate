@@ -50,7 +50,6 @@ const UserLocationControl = () => {
 
   useEffect(() => {
     // Add locate control button
-    // Fix: Use L.Control instead of L.control
     const locateControl = new L.Control({ position: 'topright' });
     
     locateControl.onAdd = () => {
@@ -83,12 +82,14 @@ const LocationMap: React.FC = () => {
 
   return (
     <div className="relative w-full h-full">
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 z-0"> {/* Added z-0 to ensure map stays behind other elements */}
         <MapContainer 
           center={center} 
           zoom={5} 
           style={{ height: '100%', width: '100%' }}
           whenReady={() => setMapLoaded(true)}
+          zoomControl={true}
+          className="z-0" /* Added className with z-0 to ensure map container stays behind */
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

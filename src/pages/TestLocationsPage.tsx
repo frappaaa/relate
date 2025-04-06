@@ -14,7 +14,7 @@ const TestLocationsPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col h-[calc(100vh-12rem)] -mx-4 sm:-mx-6 -my-2"> {/* Negative margin to counteract the container padding */}
+    <div className="flex flex-col h-[calc(100vh-12rem)] -mx-4 sm:-mx-6 -my-2 relative z-0"> {/* Added z-0 to keep the map below other elements */}
       <div className="h-full min-h-[300px]">
         <LocationMap />
       </div>
