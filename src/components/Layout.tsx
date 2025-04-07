@@ -32,7 +32,7 @@ const Layout: React.FC = () => {
         isMobile ? cn(
           "pt-16",
           // Add extra padding top for iOS PWA to account for safe areas
-          (isIOS && isPWA) ? "pt-28" : "pt-16",
+          (isIOS && isPWA) ? "pt-32" : "pt-16",
           isIOS ? "pb-[calc(5rem+env(safe-area-inset-bottom))]" : "pb-20"
         ) : "pb-16"
       )}>
