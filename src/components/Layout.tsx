@@ -31,8 +31,8 @@ const Layout: React.FC = () => {
         "flex-1 overflow-y-auto", 
         isMobile ? cn(
           "pt-16",
-          // Add extra padding top for iOS PWA to account for safe areas
-          (isIOS && isPWA) ? "pt-32" : "pt-16",
+          // Reduced padding for iOS PWA
+          (isIOS && isPWA) ? "pt-28" : "pt-16",
           isIOS ? "pb-[calc(5rem+env(safe-area-inset-bottom))]" : "pb-20"
         ) : "pb-16"
       )}>

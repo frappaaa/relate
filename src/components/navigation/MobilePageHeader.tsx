@@ -36,8 +36,8 @@ export const MobilePageHeader: React.FC<MobilePageHeaderProps> = ({
         "fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-4 py-3",
         "bg-background/80 backdrop-blur-sm border-b border-border/40",
         isIOS ? "pt-[max(1rem,env(safe-area-inset-top))]" : "",
-        // Add extra padding for iOS PWA
-        (isIOS && isPWA) ? "pt-[max(3rem,calc(env(safe-area-inset-top)+2rem))]" : ""
+        // Add extra padding for iOS PWA but reduced from previous value
+        (isIOS && isPWA) ? "pt-[max(2rem,calc(env(safe-area-inset-top)+1rem))]" : ""
       )}
     >
       <h1 className="text-lg font-medium">{currentPage}</h1>
