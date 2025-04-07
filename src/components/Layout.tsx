@@ -9,12 +9,18 @@ import { cn } from '@/lib/utils';
 const Layout: React.FC = () => {
   const isMobile = useIsMobile();
   const [isIOS, setIsIOS] = useState(false);
+  const [isPWA, setIsPWA] = useState(false);
 
   useEffect(() => {
     // Detect iOS device
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     setIsIOS(isIOSDevice);
+    
+    // Detect if running as PWA (standalone mode)
+    const isRunningAsPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                          (window.navigator as any).standalone === true;
+    setIsPWA(isRunningAsPWA);
   }, []);
 
   return (
@@ -25,6 +31,8 @@ const Layout: React.FC = () => {
         "flex-1 overflow-y-auto", 
         isMobile ? cn(
           "pt-16",
+          // Add extra padding top for iOS PWA to account for safe areas
+          (isIOS && isPWA) ? "pt-24" : "pt-16",
           isIOS ? "pb-[calc(5rem+env(safe-area-inset-bottom))]" : "pb-20"
         ) : "pb-16"
       )}>
