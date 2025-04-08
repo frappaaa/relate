@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import LocationMap from '@/components/test-locations/LocationMap';
 import { useLocationData } from '@/hooks/use-location-data';
@@ -80,7 +79,7 @@ const TestLocationsPage: React.FC = () => {
                 />
               </div>
               <ScrollArea className="h-[calc(85vh-80px)]">
-                <div className="px-4">
+                <div className="px-4 w-full max-w-full">
                   <LocationList 
                     isLoading={isLoading}
                     filteredLocations={filteredLocations}
@@ -105,7 +104,7 @@ const TestLocationsPage: React.FC = () => {
 
       <div className="h-full min-h-[300px]">
         {isViewingList ? (
-          <div className="h-full pt-24 pb-4 px-4 overflow-auto">
+          <div className="h-full pt-24 pb-4 px-4 overflow-auto max-w-full">
             <LocationList 
               isLoading={isLoading}
               filteredLocations={filteredLocations}

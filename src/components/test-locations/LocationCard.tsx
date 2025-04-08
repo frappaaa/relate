@@ -30,17 +30,17 @@ const LocationCard: React.FC<LocationCardProps> = ({
   
   return (
     <Card 
-      className="p-3 hover:bg-gray-50 transition-colors cursor-pointer relative flex items-center border-none shadow-sm" 
+      className="p-3 hover:bg-gray-50 transition-colors cursor-pointer relative flex items-center border-none shadow-sm w-full" 
       onClick={() => handleViewDetails(id)}
     >
-      <div className="space-y-1 flex-1 pr-6">
-        <h3 className="font-medium text-base">{name}</h3>
-        <div className="flex items-center text-muted-foreground text-xs">
-          <span className="truncate">
+      <div className="space-y-1 flex-1 pr-6 min-w-0">
+        <h3 className="font-medium text-base truncate">{name}</h3>
+        <div className="flex items-center text-muted-foreground text-xs flex-wrap">
+          <span className="truncate max-w-full">
             {address}{city ? `, ${city}` : ''}
           </span>
           {distance && 
-            <Badge variant="outline" className="ml-2 bg-gray-100 text-xs font-normal px-1.5 py-0 h-5">
+            <Badge variant="outline" className="ml-2 bg-gray-100 text-xs font-normal px-1.5 py-0 h-5 shrink-0">
               {distance}
             </Badge>
           }
@@ -53,7 +53,7 @@ const LocationCard: React.FC<LocationCardProps> = ({
         </div>
       </div>
 
-      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+      <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
     </Card>
   );
 };
