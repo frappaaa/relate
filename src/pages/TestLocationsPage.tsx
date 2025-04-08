@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import LocationMap from '@/components/test-locations/LocationMap';
 import { useLocationData } from '@/hooks/use-location-data';
@@ -63,7 +64,7 @@ const TestLocationsPage: React.FC = () => {
       </div>
 
       {!isViewingList && (
-        <div className="absolute bottom-6 right-6 z-10">
+        <div className="absolute bottom-24 right-6 z-10">
           <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
             <DrawerTrigger asChild>
               <Button className="rounded-full h-14 w-14 shadow-lg" size="icon">
