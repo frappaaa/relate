@@ -1,11 +1,13 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import './leaflet-fix.css';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Loader2 } from 'lucide-react';
+import { Loader2, MapPin } from 'lucide-react';
 import L from 'leaflet';
+import { fetchLocations, TestLocation } from '@/services/locationService';
+import { useGeocode } from '@/hooks/use-geocode';
 
 // Fix for default marker icons in Leaflet
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -75,6 +77,94 @@ const UserLocationControl = () => {
     </Marker> : null;
 };
 
+// Component to handle location pins from the database
+const LocationPins = () => {
+  const [locations, setLocations] = useState<TestLocation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { geocodeAddress, geocodingStatus } = useGeocode();
+  
+  // Load test locations from database
+  useEffect(() => {
+    const loadLocations = async () => {
+      try {
+        const { data } = await fetchLocations();
+        setLocations(data);
+      } catch (error) {
+        console.error("Failed to load test locations:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadLocations();
+  }, []);
+  
+  // For locations without coordinates, geocode them
+  useEffect(() => {
+    const geocodeLocations = async () => {
+      // Process only 5 locations at a time to avoid rate limits
+      const locationsToGeocode = locations
+        .filter(loc => !loc.coordinates)
+        .slice(0, 5);
+        
+      if (locationsToGeocode.length === 0) return;
+      
+      for (const location of locationsToGeocode) {
+        if (!location.address) continue;
+        
+        try {
+          // Use address plus city/region for better accuracy
+          const addressToGeocode = `${location.address}, ${location.city || location.region || 'Italia'}`;
+          const coordinates = await geocodeAddress(addressToGeocode);
+          
+          if (coordinates) {
+            // Update the location with coordinates in our local state
+            setLocations(prev => prev.map(loc => 
+              loc.id === location.id 
+                ? { ...loc, coordinates: [coordinates.lat, coordinates.lng] } 
+                : loc
+            ));
+          }
+        } catch (error) {
+          console.error(`Failed to geocode location ${location.name}:`, error);
+        }
+      }
+    };
+    
+    if (!loading && geocodingStatus !== 'loading') {
+      geocodeLocations();
+    }
+  }, [locations, loading, geocodeAddress, geocodingStatus]);
+  
+  return (
+    <>
+      {locations.map(location => (
+        location.coordinates && (
+          <Marker 
+            key={location.id} 
+            position={[location.coordinates[0], location.coordinates[1]]}
+            icon={DefaultIcon}
+          >
+            <Popup>
+              <div className="min-w-40 flex flex-col gap-1">
+                <h3 className="font-medium text-base">{location.name}</h3>
+                <p className="text-sm text-gray-600">{location.address}</p>
+                {location.testTypes && location.testTypes.length > 0 && (
+                  <div className="mt-1">
+                    <span className="text-xs font-medium bg-red-50 text-red-700 px-2 py-0.5 rounded-full">
+                      {location.category || location.testTypes[0]}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </Popup>
+          </Marker>
+        )
+      ))}
+    </>
+  );
+};
+
 const LocationMap: React.FC = () => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const isMobile = useIsMobile();
@@ -97,6 +187,7 @@ const LocationMap: React.FC = () => {
           />
           <ChangeMapView center={center} />
           <UserLocationControl />
+          <LocationPins />
         </MapContainer>
       </div>
       
