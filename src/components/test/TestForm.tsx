@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -36,7 +35,6 @@ const TestForm: React.FC<TestFormProps> = ({
     }
   });
   
-  // Determina se la data è nel passato/presente o nel futuro
   const selectedDate = form.watch('date');
   const isPastOrToday = selectedDate && new Date(selectedDate).setHours(0, 0, 0, 0) <= new Date().setHours(0, 0, 0, 0);
 
@@ -52,7 +50,6 @@ const TestForm: React.FC<TestFormProps> = ({
           
           <STISelector form={form} />
           
-          {/* Mostra i risultati specifici solo se la data è nel passato o oggi */}
           {isPastOrToday && <SpecificResultsSelector form={form} />}
           
           <LocationField form={form} />
