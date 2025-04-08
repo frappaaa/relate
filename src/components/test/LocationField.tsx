@@ -23,7 +23,7 @@ const LocationField: React.FC<LocationFieldProps> = ({ form }) => {
 
   // Fetch locations when search query changes
   useEffect(() => {
-    if (!open || !searchQuery) return;
+    if (!open || !searchQuery || searchQuery.length < 2) return;
     
     const fetchLocations = async () => {
       setIsLoading(true);
@@ -63,6 +63,17 @@ const LocationField: React.FC<LocationFieldProps> = ({ form }) => {
     form.setValue('location', input);
   };
 
+  // Reset locations when popover closes to prevent stale data
+  useEffect(() => {
+    if (!open) {
+      // Small delay to prevent flickering during animations
+      const timer = setTimeout(() => {
+        if (!open) setLocations([]);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [open]);
+
   return (
     <FormField
       control={form.control}
@@ -88,55 +99,53 @@ const LocationField: React.FC<LocationFieldProps> = ({ form }) => {
               </FormControl>
             </PopoverTrigger>
             <PopoverContent className="w-full p-0" align="start">
-              <Command shouldFilter={false}>
-                <CommandInput 
-                  placeholder="Cerca un centro..." 
-                  value={searchQuery || field.value}
-                  onValueChange={handleInputChange}
-                />
-                {isLoading ? (
-                  <div className="py-6 text-center text-sm text-muted-foreground">
-                    Ricerca in corso...
-                  </div>
-                ) : (
-                  <>
-                    <CommandEmpty>
-                      {searchQuery 
-                        ? "Nessun risultato. Continua a digitare per inserire un nuovo luogo."
-                        : "Inizia a digitare per cercare luoghi disponibili."}
-                    </CommandEmpty>
-                    {locations.length > 0 && (
-                      <CommandGroup heading="Centri disponibili">
-                        {locations.map((location) => (
-                          <CommandItem
-                            key={location.id}
-                            value={location.name}
-                            onSelect={() => handleSelect(location.name)}
-                          >
-                            <div className="flex items-center">
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  value === location.name ? "opacity-100" : "opacity-0"
-                                )}
-                              />
-                              <div>
-                                <p>{location.name}</p>
-                                {location.address && (
-                                  <p className="text-xs text-muted-foreground">
-                                    <MapPin className="h-3 w-3 mr-1 inline-block" />
-                                    {location.address}
-                                  </p>
-                                )}
-                              </div>
+              {isLoading ? (
+                <div className="py-6 text-center text-sm text-muted-foreground">
+                  Ricerca in corso...
+                </div>
+              ) : (
+                <Command>
+                  <CommandInput 
+                    placeholder="Cerca un centro..." 
+                    value={searchQuery || field.value}
+                    onValueChange={handleInputChange}
+                  />
+                  <CommandEmpty>
+                    {searchQuery 
+                      ? "Nessun risultato. Continua a digitare per inserire un nuovo luogo."
+                      : "Inizia a digitare per cercare luoghi disponibili."}
+                  </CommandEmpty>
+                  {locations && locations.length > 0 && (
+                    <CommandGroup heading="Centri disponibili">
+                      {locations.map((location) => (
+                        <CommandItem
+                          key={location.id}
+                          value={location.name}
+                          onSelect={() => handleSelect(location.name)}
+                        >
+                          <div className="flex items-center">
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                value === location.name ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            <div>
+                              <p>{location.name}</p>
+                              {location.address && (
+                                <p className="text-xs text-muted-foreground">
+                                  <MapPin className="h-3 w-3 mr-1 inline-block" />
+                                  {location.address}
+                                </p>
+                              )}
                             </div>
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    )}
-                  </>
-                )}
-              </Command>
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  )}
+                </Command>
+              )}
             </PopoverContent>
           </Popover>
           <FormDescription>
