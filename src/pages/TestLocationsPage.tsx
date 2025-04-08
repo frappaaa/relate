@@ -55,7 +55,7 @@ const TestLocationsPage: React.FC = () => {
         </div>
       </div>
 
-      {view === 'list' && <div className="p-4 sm:p-6 pt-16 pb-2 bg-background">
+      {view === 'list' && <div className="p-4 sm:p-6 pt-12 pb-2 bg-background">
           <LocationSearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} handleSearch={handleSearch} />
           <div className="mt-2 flex justify-center">
             <Button onClick={handleFindNearMe} variant="outline" size="sm" disabled={isLocating} className="text-xs">
