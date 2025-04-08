@@ -63,12 +63,14 @@ const LocationField: React.FC<LocationFieldProps> = ({ form }) => {
     form.setValue('location', input);
   };
 
-  // Reset locations when popover closes to prevent stale data
+  // Reset search results when popover closes
   useEffect(() => {
     if (!open) {
-      // Small delay to prevent flickering during animations
       const timer = setTimeout(() => {
-        if (!open) setLocations([]);
+        if (!open) {
+          setSearchQuery('');
+          // Don't reset the form value when closing
+        }
       }, 300);
       return () => clearTimeout(timer);
     }
@@ -107,15 +109,18 @@ const LocationField: React.FC<LocationFieldProps> = ({ form }) => {
                 <Command>
                   <CommandInput 
                     placeholder="Cerca un centro..." 
-                    value={searchQuery || field.value}
+                    value={searchQuery}
                     onValueChange={handleInputChange}
                   />
-                  <CommandEmpty>
-                    {searchQuery 
-                      ? "Nessun risultato. Continua a digitare per inserire un nuovo luogo."
-                      : "Inizia a digitare per cercare luoghi disponibili."}
-                  </CommandEmpty>
-                  {locations && locations.length > 0 && (
+                  {searchQuery.length === 0 ? (
+                    <CommandEmpty>
+                      Inizia a digitare per cercare luoghi disponibili.
+                    </CommandEmpty>
+                  ) : locations.length === 0 ? (
+                    <CommandEmpty>
+                      Nessun risultato. Continua a digitare per inserire un nuovo luogo.
+                    </CommandEmpty>
+                  ) : (
                     <CommandGroup heading="Centri disponibili">
                       {locations.map((location) => (
                         <CommandItem
