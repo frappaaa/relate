@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import LocationMap from '@/components/test-locations/LocationMap';
 import { useLocationData } from '@/hooks/use-location-data';
@@ -28,12 +27,10 @@ const TestLocationsPage: React.FC = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
-    // Detect iOS device
     const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     setIsIOS(isIOSDevice);
     
-    // Detect if running as PWA (standalone mode)
     const isRunningAsPWA = window.matchMedia('(display-mode: standalone)').matches || 
                           (window.navigator as any).standalone === true;
     setIsPWA(isRunningAsPWA);
@@ -46,7 +43,6 @@ const TestLocationsPage: React.FC = () => {
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] -mx-4 sm:-mx-6 -my-2 relative z-0"> 
-      {/* Toggle buttons */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex bg-white rounded-full shadow-md p-1">
         <Button 
           variant={isViewingList ? "ghost" : "default"} 
@@ -66,7 +62,6 @@ const TestLocationsPage: React.FC = () => {
         </Button>
       </div>
 
-      {/* List Drawer Button - Visible only in map view */}
       {!isViewingList && (
         <div className="absolute bottom-6 right-6 z-10">
           <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
@@ -75,27 +70,28 @@ const TestLocationsPage: React.FC = () => {
                 <List className="h-6 w-6" />
               </Button>
             </DrawerTrigger>
-            <DrawerContent className="h-[85vh]">
-              <div className="px-4 pt-4">
+            <DrawerContent className="h-[85vh] px-0">
+              <div className="px-4 pt-4 pb-2">
                 <LocationSearchBar 
                   searchQuery={searchQuery}
                   setSearchQuery={setSearchQuery}
                   handleSearch={handleSearch}
                 />
               </div>
-              <ScrollArea className="h-[calc(85vh-80px)] p-4">
-                <LocationList 
-                  isLoading={isLoading}
-                  filteredLocations={filteredLocations}
-                  handleViewDetails={handleViewDetails}
-                />
+              <ScrollArea className="h-[calc(85vh-80px)]">
+                <div className="px-4">
+                  <LocationList 
+                    isLoading={isLoading}
+                    filteredLocations={filteredLocations}
+                    handleViewDetails={handleViewDetails}
+                  />
+                </div>
               </ScrollArea>
             </DrawerContent>
           </Drawer>
         </div>
       )}
 
-      {/* Search bar - Visible only in list view */}
       {isViewingList && (
         <div className="absolute top-16 left-0 right-0 px-4 z-10">
           <LocationSearchBar 

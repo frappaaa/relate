@@ -28,23 +28,23 @@ const LocationList: React.FC<LocationListProps> = ({
 }) => {
   if (isLoading && filteredLocations.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-        <p className="text-muted-foreground">Caricamento centri test...</p>
+      <div className="flex flex-col items-center justify-center py-8">
+        <Loader2 className="h-6 w-6 animate-spin text-primary mb-2" />
+        <p className="text-sm text-muted-foreground">Caricamento centri test...</p>
       </div>
     );
   }
 
   if (filteredLocations.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">Nessun risultato trovato</p>
+      <div className="text-center py-8">
+        <p className="text-sm text-muted-foreground">Nessun risultato trovato</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-1">
       {filteredLocations.map((location) => (
         <LocationCard
           key={location.id}
