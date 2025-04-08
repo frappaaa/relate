@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import LocationMap from '@/components/test-locations/LocationMap';
 import { useLocationData } from '@/hooks/use-location-data';
@@ -70,7 +71,7 @@ const TestLocationsPage: React.FC = () => {
                 <List className="h-6 w-6" />
               </Button>
             </DrawerTrigger>
-            <DrawerContent className="h-[85vh] px-0">
+            <DrawerContent className="max-h-[85vh] px-0 mx-auto w-full max-w-[100vw] overflow-hidden">
               <div className="px-4 pt-4 pb-2">
                 <LocationSearchBar 
                   searchQuery={searchQuery}
@@ -78,8 +79,8 @@ const TestLocationsPage: React.FC = () => {
                   handleSearch={handleSearch}
                 />
               </div>
-              <ScrollArea className="h-[calc(85vh-80px)]">
-                <div className="px-4 w-full max-w-full">
+              <ScrollArea className="h-[calc(85vh-80px)] w-full">
+                <div className="px-4 w-full">
                   <LocationList 
                     isLoading={isLoading}
                     filteredLocations={filteredLocations}

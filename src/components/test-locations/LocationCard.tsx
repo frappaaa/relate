@@ -30,11 +30,11 @@ const LocationCard: React.FC<LocationCardProps> = ({
   
   return (
     <Card 
-      className="p-3 hover:bg-gray-50 transition-colors cursor-pointer relative flex items-center border-none shadow-sm w-full" 
+      className="p-3 hover:bg-gray-50 transition-colors cursor-pointer relative flex items-center border-none shadow-sm w-full max-w-full box-border" 
       onClick={() => handleViewDetails(id)}
     >
-      <div className="space-y-1 flex-1 pr-6 min-w-0">
-        <h3 className="font-medium text-base truncate">{name}</h3>
+      <div className="space-y-1 flex-1 pr-6 min-w-0 w-full overflow-hidden">
+        <h3 className="font-medium text-base truncate max-w-full">{name}</h3>
         <div className="flex items-center text-muted-foreground text-xs flex-wrap">
           <span className="truncate max-w-full">
             {address}{city ? `, ${city}` : ''}
