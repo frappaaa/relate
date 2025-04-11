@@ -6,26 +6,29 @@ import { calculateDistance, formatDistance } from '@/utils/locationUtils';
 
 export const useLocationData = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [allLocations, setAllLocations] = useState<TestLocation[]>([]);
   const [filteredLocations, setFilteredLocations] = useState<TestLocation[]>([]);
   const [isLocating, setIsLocating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   
-  const loadSearchResults = useCallback(async () => {
+  // Initial load of all locations
+  const loadAllLocations = useCallback(async () => {
     try {
       setIsLoading(true);
       
       const { data, count } = await fetchLocations(
         0,
         1000, // Large number to get all results
-        searchQuery,
-        selectedCategories
+        '', // No search query for initial load
+        []  // No category filters for initial load
       );
       
+      setAllLocations(data);
       setFilteredLocations(data);
       
-      // Extract unique categories from locations on first load
+      // Extract unique categories
       if (availableCategories.length === 0 && data.length > 0) {
         const categories = new Set<string>();
         data.forEach(location => {
@@ -45,28 +48,55 @@ export const useLocationData = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [searchQuery, selectedCategories, availableCategories]);
+  }, [availableCategories]);
 
-  // Initial load
+  // Filter locations based on search query and categories
+  const filterLocations = useCallback(() => {
+    if (!allLocations.length) return;
+    
+    let results = [...allLocations];
+    
+    // Apply search query filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      results = results.filter(location => 
+        location.name.toLowerCase().includes(query) ||
+        location.address.toLowerCase().includes(query) ||
+        location.city?.toLowerCase().includes(query) ||
+        location.region?.toLowerCase().includes(query) ||
+        location.testTypes.some(type => type.toLowerCase().includes(query))
+      );
+    }
+    
+    // Apply category filters
+    if (selectedCategories.length > 0) {
+      results = results.filter(location =>
+        location.category && selectedCategories.includes(location.category)
+      );
+    }
+    
+    setFilteredLocations(results);
+  }, [searchQuery, selectedCategories, allLocations]);
+
+  // Load locations when component mounts
   useEffect(() => {
-    loadSearchResults();
+    loadAllLocations();
   }, []);
 
-  // When filters change
+  // Apply filters whenever search query or selected categories change
   useEffect(() => {
     if (!isLoading) {
-      // Apply filters
       const handler = setTimeout(() => {
-        loadSearchResults();
+        filterLocations();
       }, 300); // Debounce search
       
       return () => clearTimeout(handler);
     }
-  }, [searchQuery, selectedCategories]);
+  }, [searchQuery, selectedCategories, filterLocations, isLoading]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    loadSearchResults();
+    filterLocations();
   };
 
   const handleCategoryToggle = (category: string) => {
@@ -93,38 +123,13 @@ export const useLocationData = () => {
       const userLat = position.coords.latitude;
       const userLon = position.coords.longitude;
       
-      // Load all locations to calculate distances
-      fetchLocations(0, 1000)
-        .then(({data: allLocations}) => {
-          const locationsWithDistance = allLocations.map(location => {
-            if (!location.coordinates) return location;
-            const distance = calculateDistance(userLat, userLon, location.coordinates[0], location.coordinates[1]);
-            return {
-              ...location,
-              distance: formatDistance(distance)
-            };
-          });
-          const sortedLocations = [...locationsWithDistance].sort((a, b) => {
-            if (!a.distance || !b.distance) return 0;
-            return parseFloat(a.distance) - parseFloat(b.distance);
-          });
-          setFilteredLocations(sortedLocations);
-          toast({
-            title: "Posizione rilevata",
-            description: "I centri sono stati ordinati in base alla distanza da te."
-          });
-        })
-        .catch(error => {
-          console.error('Error fetching all locations:', error);
-          toast({
-            title: "Errore",
-            description: "Si è verificato un errore durante il recupero dei centri.",
-            variant: "destructive"
-          });
-        })
-        .finally(() => {
-          setIsLocating(false);
+      if (!allLocations.length) {
+        loadAllLocations().then(() => {
+          calculateDistances(userLat, userLon, allLocations);
         });
+      } else {
+        calculateDistances(userLat, userLon, allLocations);
+      }
     }, error => {
       console.error('Geolocation error:', error);
       let errorMessage = "Si è verificato un errore durante il rilevamento della posizione.";
@@ -150,6 +155,59 @@ export const useLocationData = () => {
       timeout: 5000,
       maximumAge: 0
     });
+  };
+
+  const calculateDistances = (userLat: number, userLon: number, locations: TestLocation[]) => {
+    const locationsWithDistance = locations.map(location => {
+      if (!location.coordinates) return location;
+      const distance = calculateDistance(userLat, userLon, location.coordinates[0], location.coordinates[1]);
+      return {
+        ...location,
+        distance: formatDistance(distance)
+      };
+    });
+    
+    const sortedLocations = [...locationsWithDistance].sort((a, b) => {
+      if (!a.distance || !b.distance) return 0;
+      return parseFloat(a.distance) - parseFloat(b.distance);
+    });
+    
+    setAllLocations(sortedLocations);
+    // Apply current filters to the updated locations with distances
+    const filtered = applyFilters(sortedLocations);
+    setFilteredLocations(filtered);
+    
+    toast({
+      title: "Posizione rilevata",
+      description: "I centri sono stati ordinati in base alla distanza da te."
+    });
+    
+    setIsLocating(false);
+  };
+
+  const applyFilters = (locations: TestLocation[]) => {
+    let results = locations;
+    
+    // Apply search query filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      results = results.filter(location => 
+        location.name.toLowerCase().includes(query) ||
+        location.address.toLowerCase().includes(query) ||
+        location.city?.toLowerCase().includes(query) ||
+        location.region?.toLowerCase().includes(query) ||
+        location.testTypes.some(type => type.toLowerCase().includes(query))
+      );
+    }
+    
+    // Apply category filters
+    if (selectedCategories.length > 0) {
+      results = results.filter(location =>
+        location.category && selectedCategories.includes(location.category)
+      );
+    }
+    
+    return results;
   };
 
   return {

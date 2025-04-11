@@ -19,6 +19,10 @@ const LocationSearchBar: React.FC<LocationSearchBarProps> = ({
     setSearchQuery('');
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
   return (
     <div className="w-full">
       <form onSubmit={handleSearch} className="relative">
@@ -30,7 +34,7 @@ const LocationSearchBar: React.FC<LocationSearchBarProps> = ({
             type="text"
             placeholder="Cerca per nome, indirizzo o tipo di test"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleInputChange}
             className="pl-9 pr-10 py-2 border bg-white/90 backdrop-blur-sm shadow-lg rounded-full focus-visible:ring-1"
           />
           {searchQuery && (
