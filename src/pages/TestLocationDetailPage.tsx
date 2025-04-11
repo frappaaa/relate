@@ -63,17 +63,7 @@ const TestLocationDetailPage: React.FC = () => {
     <div className="space-y-6">
       <LocationDetailHeader onBack={handleBack} />
       <LocationDetailsCard 
-        location={{
-          name: location.name,
-          address: location.address,
-          city: location.city || location.region || '',
-          testTypes: location.testTypes,
-          distance: location.distance,
-          phone: location.phone,
-          website: location.website,
-          hours: location.hours,
-          description: location.description
-        }}
+        location={location}
         onBookAppointment={handleBookAppointment}
       />
     </div>
