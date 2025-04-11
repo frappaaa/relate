@@ -44,6 +44,7 @@ const TestLocationsPage: React.FC = () => {
 
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] -mx-4 sm:-mx-6 -my-2 relative z-0"> 
+      {/* Map/List Toggle - Always centered at the top */}
       <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 flex bg-white rounded-full shadow-md p-1">
         <Button 
           variant={isViewingList ? "ghost" : "default"} 
@@ -63,35 +64,34 @@ const TestLocationsPage: React.FC = () => {
         </Button>
       </div>
 
-      {!isViewingList && (
-        <div className="absolute bottom-24 right-6 z-10">
-          <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-            <DrawerTrigger asChild>
-              <Button className="rounded-full h-14 w-14 shadow-lg" size="icon">
-                <List className="h-6 w-6" />
-              </Button>
-            </DrawerTrigger>
-            <DrawerContent className="max-h-[85vh] px-0 mx-auto w-full max-w-[100vw] overflow-hidden">
-              <div className="px-4 pt-4 pb-2">
-                <LocationSearchBar 
-                  searchQuery={searchQuery}
-                  setSearchQuery={setSearchQuery}
-                  handleSearch={handleSearch}
+      {/* Drawer toggle button - Always at bottom right */}
+      <div className="absolute bottom-24 right-6 z-10">
+        <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+          <DrawerTrigger asChild>
+            <Button className="rounded-full h-14 w-14 shadow-lg" size="icon">
+              <List className="h-6 w-6" />
+            </Button>
+          </DrawerTrigger>
+          <DrawerContent className="max-h-[85vh] px-0 mx-auto w-full max-w-[100vw] overflow-hidden">
+            <div className="px-4 pt-4 pb-2">
+              <LocationSearchBar 
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                handleSearch={handleSearch}
+              />
+            </div>
+            <ScrollArea className="h-[calc(85vh-80px)] w-full">
+              <div className="px-4 w-full">
+                <LocationList 
+                  isLoading={isLoading}
+                  filteredLocations={filteredLocations}
+                  handleViewDetails={handleViewDetails}
                 />
               </div>
-              <ScrollArea className="h-[calc(85vh-80px)] w-full">
-                <div className="px-4 w-full">
-                  <LocationList 
-                    isLoading={isLoading}
-                    filteredLocations={filteredLocations}
-                    handleViewDetails={handleViewDetails}
-                  />
-                </div>
-              </ScrollArea>
-            </DrawerContent>
-          </Drawer>
-        </div>
-      )}
+            </ScrollArea>
+          </DrawerContent>
+        </Drawer>
+      </div>
 
       {isViewingList && (
         <div className="absolute top-16 left-0 right-0 px-4 z-10">
