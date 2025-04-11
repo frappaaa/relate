@@ -44,7 +44,7 @@ const LocationList: React.FC<LocationListProps> = ({
   }
 
   return (
-    <div className="space-y-1 w-full box-border">
+    <div className="space-y-1 w-full box-border max-w-full">
       {filteredLocations.map((location) => (
         <LocationCard
           key={location.id}

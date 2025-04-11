@@ -30,7 +30,7 @@ const LocationCard: React.FC<LocationCardProps> = ({
   
   return (
     <Card 
-      className="p-3 hover:bg-gray-50 transition-colors cursor-pointer relative flex items-center border-none shadow-sm w-full max-w-full box-border" 
+      className="p-3 hover:bg-gray-50 transition-colors cursor-pointer relative flex items-center border-none shadow-sm w-full box-border max-w-full" 
       onClick={() => handleViewDetails(id)}
     >
       <div className="space-y-1 flex-1 pr-6 min-w-0 w-full overflow-hidden">
