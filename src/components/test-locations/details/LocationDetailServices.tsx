@@ -9,15 +9,10 @@ interface LocationDetailServicesProps {
 }
 
 const LocationDetailServices: React.FC<LocationDetailServicesProps> = ({ 
-  services, 
-  testTypes 
+  services
 }) => {
-  const hasServices = services && services.length > 0;
-  const hasTestTypes = testTypes && testTypes.length > 0;
-  
-  if (!hasServices && !hasTestTypes) return null;
-  
-  const items = hasServices ? services : testTypes;
+  // Only show the component if services exist and have items
+  if (!services || services.length === 0) return null;
   
   return (
     <>
@@ -25,9 +20,9 @@ const LocationDetailServices: React.FC<LocationDetailServicesProps> = ({
       <div>
         <p className="font-medium mb-2">Servizi disponibili:</p>
         <div className="flex flex-wrap gap-2 mb-4">
-          {items?.map((item) => (
-            <Badge key={item} variant="secondary">
-              {item}
+          {services.map((service) => (
+            <Badge key={service} variant="secondary">
+              {service}
             </Badge>
           ))}
         </div>
