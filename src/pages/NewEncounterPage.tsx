@@ -7,6 +7,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { FormData } from '@/components/encounter/types';
 
+// Valid encounter types
+const validEncounterTypes = ['oral', 'vaginal', 'anal'];
+
 const NewEncounterPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -24,17 +27,27 @@ const NewEncounterPage: React.FC = () => {
       date: initialDate
     };
     
-    // Get encounter type from URL if available
+    // Get encounter type from URL if available and validate it
     const typeParam = searchParams.get('type');
     if (typeParam) {
-      formData.type = typeParam.includes(',') 
-        ? typeParam.split(',') 
-        : typeParam;
+      if (typeParam.includes(',')) {
+        // Handle multiple types
+        const types = typeParam.split(',').filter(type => 
+          validEncounterTypes.includes(type)
+        ) as ('oral' | 'vaginal' | 'anal')[];
+        
+        if (types.length > 0) {
+          formData.type = types;
+        }
+      } else if (validEncounterTypes.includes(typeParam)) {
+        // Handle single type
+        formData.type = typeParam as 'oral' | 'vaginal' | 'anal';
+      }
     }
     
     // Get protection level from URL if available
     const protectionParam = searchParams.get('protection');
-    if (protectionParam) {
+    if (protectionParam && ['none', 'partial', 'full'].includes(protectionParam)) {
       formData.protection = protectionParam as 'none' | 'partial' | 'full';
     }
     
