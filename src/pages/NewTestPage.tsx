@@ -20,24 +20,35 @@ const NewTestPage: React.FC = () => {
 
   // Process URL parameters to populate the form
   useEffect(() => {
-    // Get test types from URL if available
     const testTypesParam = searchParams.get('testTypes');
-    if (testTypesParam) {
-      const testTypes = testTypesParam.split(', ');
-      const testTypesObject = stiOptions.reduce((acc, option) => {
-        acc[option.id] = testTypes.includes(option.id);
-        return acc;
-      }, {} as Record<string, boolean>);
-      
-      // Create initial data object
+    const locationParam = searchParams.get('location');
+    const notesParam = searchParams.get('notes');
+    
+    // Only create initial data if we have parameters
+    if (testTypesParam || locationParam || notesParam) {
+      // Initialize with default values
       const formData: FormData = {
         date: initialDate,
-        testTypes: testTypesObject,
-        location: searchParams.get('location') || '',
+        testTypes: {},
+        location: locationParam || '',
         specificResults: {},
-        notes: searchParams.get('notes') || ''
+        notes: notesParam || ''
       };
       
+      // Process testTypes parameter (comma-separated list)
+      if (testTypesParam) {
+        const testTypes = testTypesParam.split(', ');
+        
+        // Convert to the expected object format
+        const testTypesObject = stiOptions.reduce((acc, option) => {
+          acc[option.id] = testTypes.includes(option.id);
+          return acc;
+        }, {} as Record<string, boolean>);
+        
+        formData.testTypes = testTypesObject;
+      }
+      
+      console.log("Setting initial data for test form:", formData);
       setInitialData(formData);
     }
   }, [searchParams, initialDate]);

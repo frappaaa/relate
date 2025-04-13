@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
@@ -60,7 +59,9 @@ const TestDetailCard: React.FC<TestDetailCardProps> = ({ test, onDelete, isDelet
     queryParams.set('date', new Date().toISOString());
     
     // Add test types
-    queryParams.set('testTypes', test.test_type || '');
+    if (test.test_type) {
+      queryParams.set('testTypes', test.test_type);
+    }
     
     // Add location if available
     if (test.location) {
@@ -71,6 +72,8 @@ const TestDetailCard: React.FC<TestDetailCardProps> = ({ test, onDelete, isDelet
     if (test.notes) {
       queryParams.set('notes', test.notes);
     }
+    
+    console.log("Duplicating test with params:", queryParams.toString());
     
     // Navigate to new test page with params
     navigate(`/app/new-test?${queryParams.toString()}`);
