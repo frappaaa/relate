@@ -107,7 +107,8 @@ const EncounterDetailPage = () => {
           <EncounterDetailActions 
             encounterId={id as string} 
             onDelete={handleDelete} 
-            isDeleting={isDeleting} 
+            isDeleting={isDeleting}
+            encounter={encounter}
           />
         </CardFooter>
       </Card>

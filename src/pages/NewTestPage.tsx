@@ -1,21 +1,46 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import TestForm from '@/components/test/TestForm';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { FormData } from '@/components/test/types';
+import { FormData, stiOptions } from '@/components/test/types';
 
 const NewTestPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [initialData, setInitialData] = useState<FormData | null>(null);
   const { user } = useAuth();
   
   // Get date from URL if available
   const dateParam = searchParams.get('date');
   const initialDate = dateParam ? new Date(dateParam) : new Date();
+
+  // Process URL parameters to populate the form
+  useEffect(() => {
+    // Get test types from URL if available
+    const testTypesParam = searchParams.get('testTypes');
+    if (testTypesParam) {
+      const testTypes = testTypesParam.split(', ');
+      const testTypesObject = stiOptions.reduce((acc, option) => {
+        acc[option.id] = testTypes.includes(option.id);
+        return acc;
+      }, {} as Record<string, boolean>);
+      
+      // Create initial data object
+      const formData: FormData = {
+        date: initialDate,
+        testTypes: testTypesObject,
+        location: searchParams.get('location') || '',
+        specificResults: {},
+        notes: searchParams.get('notes') || ''
+      };
+      
+      setInitialData(formData);
+    }
+  }, [searchParams, initialDate]);
 
   const handleSubmit = async (data: FormData) => {
     if (!user) {
@@ -124,7 +149,12 @@ const NewTestPage: React.FC = () => {
         <p className="text-muted-foreground">Inserisci i dettagli per programmare o registrare un test per IST</p>
       </section>
 
-      <TestForm onSubmit={handleSubmit} initialDate={initialDate} isSubmitting={isSubmitting} />
+      <TestForm 
+        onSubmit={handleSubmit} 
+        initialDate={initialDate} 
+        initialData={initialData}
+        isSubmitting={isSubmitting} 
+      />
     </div>
   );
 };

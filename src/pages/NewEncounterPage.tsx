@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from '@/hooks/use-toast';
 import EncounterForm from '@/components/encounter/EncounterForm';
@@ -11,11 +11,60 @@ const NewEncounterPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [initialData, setInitialData] = useState<Partial<FormData> | null>(null);
   const { user } = useAuth();
   
   // Get date from URL if available
   const dateParam = searchParams.get('date');
   const initialDate = dateParam ? new Date(dateParam) : new Date();
+
+  // Process URL parameters to populate the form
+  useEffect(() => {
+    const formData: Partial<FormData> = {
+      date: initialDate
+    };
+    
+    // Get encounter type from URL if available
+    const typeParam = searchParams.get('type');
+    if (typeParam) {
+      formData.type = typeParam.includes(',') 
+        ? typeParam.split(',') 
+        : typeParam;
+    }
+    
+    // Get protection level from URL if available
+    const protectionParam = searchParams.get('protection');
+    if (protectionParam) {
+      formData.protection = protectionParam as 'none' | 'partial' | 'full';
+    }
+    
+    // Get custom name from URL if available
+    const customNameParam = searchParams.get('customName');
+    if (customNameParam) {
+      formData.customName = customNameParam;
+    }
+    
+    // Get symptoms from URL if available
+    const symptomsParam = searchParams.get('symptoms');
+    if (symptomsParam) {
+      try {
+        formData.symptoms = JSON.parse(symptomsParam);
+      } catch (e) {
+        console.error('Error parsing symptoms:', e);
+      }
+    }
+    
+    // Get notes from URL if available
+    const notesParam = searchParams.get('notes');
+    if (notesParam) {
+      formData.notes = notesParam;
+    }
+    
+    // Only set initialData if we have parameters beyond the date
+    if (Object.keys(formData).length > 1) {
+      setInitialData(formData);
+    }
+  }, [searchParams, initialDate]);
 
   const handleSubmit = async (data: FormData & { riskScore: number; riskLevel: 'low' | 'medium' | 'high' }) => {
     if (!user) {
@@ -84,7 +133,12 @@ const NewEncounterPage: React.FC = () => {
         <p className="text-muted-foreground">Inserisci i dettagli per valutare il rischio e ricevere raccomandazioni</p>
       </section>
 
-      <EncounterForm onSubmit={handleSubmit} initialDate={initialDate} isSubmitting={isSubmitting} />
+      <EncounterForm 
+        onSubmit={handleSubmit} 
+        initialDate={initialDate}
+        initialData={initialData} 
+        isSubmitting={isSubmitting} 
+      />
     </div>
   );
 };

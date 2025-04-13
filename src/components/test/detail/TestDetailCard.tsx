@@ -7,7 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { Beaker, CalendarClock, MapPin, Edit } from 'lucide-react';
+import { Beaker, CalendarClock, MapPin, Edit, Copy } from 'lucide-react';
 import TestBadges from './TestBadges';
 import TestDeleteDialog from './TestDeleteDialog';
 
@@ -50,6 +50,30 @@ const TestDetailCard: React.FC<TestDetailCardProps> = ({ test, onDelete, isDelet
       default:
         return 'text-blue-700 bg-blue-100';
     }
+  };
+
+  const handleDuplicate = () => {
+    // Create a query string with test data for the new test form
+    const queryParams = new URLSearchParams();
+    
+    // Add date (use today's date as default)
+    queryParams.set('date', new Date().toISOString());
+    
+    // Add test types
+    queryParams.set('testTypes', test.test_type || '');
+    
+    // Add location if available
+    if (test.location) {
+      queryParams.set('location', test.location);
+    }
+    
+    // Add notes if available
+    if (test.notes) {
+      queryParams.set('notes', test.notes);
+    }
+    
+    // Navigate to new test page with params
+    navigate(`/app/new-test?${queryParams.toString()}`);
   };
 
   return (
@@ -116,6 +140,15 @@ const TestDetailCard: React.FC<TestDetailCardProps> = ({ test, onDelete, isDelet
           >
             <Edit className="h-4 w-4" />
             Modifica
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            className="flex items-center gap-2"
+            onClick={handleDuplicate}
+          >
+            <Copy className="h-4 w-4" />
+            Duplica
           </Button>
           
           <TestDeleteDialog onDelete={onDelete} isDeleting={isDeleting} />
