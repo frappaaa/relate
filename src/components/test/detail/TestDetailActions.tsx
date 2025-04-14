@@ -15,57 +15,47 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-interface EncounterDetailActionsProps {
-  encounterId: string;
+interface TestDetailActionsProps {
+  testId: string;
   onDelete: () => Promise<void>;
   isDeleting: boolean;
-  encounter?: any;
+  test?: any;
 }
 
-const EncounterDetailActions: React.FC<EncounterDetailActionsProps> = ({ 
-  encounterId, 
+const TestDetailActions: React.FC<TestDetailActionsProps> = ({ 
+  testId, 
   onDelete, 
   isDeleting,
-  encounter
+  test
 }) => {
   const navigate = useNavigate();
 
   const handleDuplicate = () => {
-    if (!encounter) return;
+    if (!test) return;
     
-    // Create a query string with encounter data for the new encounter form
+    // Create a query string with test data for the new test form
     const queryParams = new URLSearchParams();
     
     // Add date (use today's date as default)
     queryParams.set('date', new Date().toISOString());
     
-    // Add encounter type if available
-    if (encounter.encounter_type) {
-      queryParams.set('type', encounter.encounter_type);
+    // Add test types
+    if (test.test_type) {
+      queryParams.set('testTypes', test.test_type);
     }
     
-    // Add protection info if available
-    if (encounter.protection_used !== undefined) {
-      queryParams.set('protection', encounter.protection_used ? 'full' : 'none');
-    }
-    
-    // Add custom name if available
-    if (encounter.encounter_name) {
-      queryParams.set('customName', encounter.encounter_name);
-    }
-    
-    // Add symptoms if available
-    if (encounter.symptoms && Object.keys(encounter.symptoms).length > 0) {
-      queryParams.set('symptoms', JSON.stringify(encounter.symptoms));
+    // Add location if available
+    if (test.location) {
+      queryParams.set('location', test.location);
     }
     
     // Add notes if available
-    if (encounter.notes) {
-      queryParams.set('notes', encounter.notes);
+    if (test.notes) {
+      queryParams.set('notes', test.notes);
     }
     
-    // Navigate to new encounter page with params
-    navigate(`/app/new-encounter?${queryParams.toString()}`);
+    // Navigate to new test page with params
+    navigate(`/app/new-test?${queryParams.toString()}`);
   };
 
   return (
@@ -73,7 +63,7 @@ const EncounterDetailActions: React.FC<EncounterDetailActionsProps> = ({
       <Button 
         variant="outline" 
         className="flex items-center gap-2" 
-        onClick={() => navigate(`/app/edit-encounter/${encounterId}`)}
+        onClick={() => navigate(`/app/edit-test/${testId}`)}
       >
         <Edit className="h-4 w-4" />
         Modifica
@@ -83,7 +73,7 @@ const EncounterDetailActions: React.FC<EncounterDetailActionsProps> = ({
         variant="outline" 
         className="flex items-center gap-2" 
         onClick={handleDuplicate}
-        disabled={!encounter}
+        disabled={!test}
       >
         <Copy className="h-4 w-4" />
         Duplica
@@ -93,14 +83,14 @@ const EncounterDetailActions: React.FC<EncounterDetailActionsProps> = ({
         <AlertDialogTrigger asChild>
           <Button variant="destructive" className="flex items-center gap-2" disabled={isDeleting}>
             <Trash2 className="h-4 w-4" />
-            {isDeleting ? 'Eliminazione...' : 'Elimina rapporto'}
+            {isDeleting ? 'Eliminazione...' : 'Elimina test'}
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Sei sicuro di voler eliminare questo rapporto?</AlertDialogTitle>
+            <AlertDialogTitle>Sei sicuro di voler eliminare questo test?</AlertDialogTitle>
             <AlertDialogDescription>
-              Questa azione non può essere annullata. Tutti i dati relativi a questo rapporto verranno eliminati permanentemente.
+              Questa azione non può essere annullata. Tutti i dati relativi a questo test verranno eliminati permanentemente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -115,4 +105,4 @@ const EncounterDetailActions: React.FC<EncounterDetailActionsProps> = ({
   );
 };
 
-export default EncounterDetailActions;
+export default TestDetailActions;

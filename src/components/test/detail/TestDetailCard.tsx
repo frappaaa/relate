@@ -1,24 +1,17 @@
+
 import React from 'react';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
-import { Beaker, CalendarClock, MapPin, Edit, Copy } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Beaker, CalendarClock, MapPin } from 'lucide-react';
 import TestBadges from './TestBadges';
-import TestDeleteDialog from './TestDeleteDialog';
 
 interface TestDetailCardProps {
   test: any;
-  onDelete: () => Promise<void>;
-  isDeleting: boolean;
 }
 
-const TestDetailCard: React.FC<TestDetailCardProps> = ({ test, onDelete, isDeleting }) => {
-  const navigate = useNavigate();
-  
+const TestDetailCard: React.FC<TestDetailCardProps> = ({ test }) => {
   const testDate = new Date(test.date);
   const formattedDate = format(testDate, 'd MMMM yyyy', { locale: it });
   
@@ -51,36 +44,8 @@ const TestDetailCard: React.FC<TestDetailCardProps> = ({ test, onDelete, isDelet
     }
   };
 
-  const handleDuplicate = () => {
-    // Create a query string with test data for the new test form
-    const queryParams = new URLSearchParams();
-    
-    // Add date (use today's date as default)
-    queryParams.set('date', new Date().toISOString());
-    
-    // Add test types
-    if (test.test_type) {
-      queryParams.set('testTypes', test.test_type);
-    }
-    
-    // Add location if available
-    if (test.location) {
-      queryParams.set('location', test.location);
-    }
-    
-    // Add notes if available
-    if (test.notes) {
-      queryParams.set('notes', test.notes);
-    }
-    
-    console.log("Duplicating test with params:", queryParams.toString());
-    
-    // Navigate to new test page with params
-    navigate(`/app/new-test?${queryParams.toString()}`);
-  };
-
   return (
-    <Card>
+    <Card className="shadow-md">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -133,30 +98,6 @@ const TestDetailCard: React.FC<TestDetailCardProps> = ({ test, onDelete, isDelet
           </div>
         )}
       </CardContent>
-      <Separator />
-      <CardFooter className="pt-6 flex justify-between">
-        <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            className="flex items-center gap-2"
-            onClick={() => navigate(`/app/edit-test/${test.id}`)}
-          >
-            <Edit className="h-4 w-4" />
-            Modifica
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            className="flex items-center gap-2"
-            onClick={handleDuplicate}
-          >
-            <Copy className="h-4 w-4" />
-            Duplica
-          </Button>
-          
-          <TestDeleteDialog onDelete={onDelete} isDeleting={isDeleting} />
-        </div>
-      </CardFooter>
     </Card>
   );
 };

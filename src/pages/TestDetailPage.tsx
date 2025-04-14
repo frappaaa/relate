@@ -4,8 +4,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/hooks/use-toast';
+import { Card, CardFooter } from '@/components/ui/card';
 import TestDetailHeader from '@/components/test/detail/TestDetailHeader';
 import TestDetailCard from '@/components/test/detail/TestDetailCard';
+import TestDetailActions from '@/components/test/detail/TestDetailActions';
 import TestLoadingSkeleton from '@/components/test/detail/TestLoadingSkeleton';
 import TestNotFound from '@/components/test/detail/TestNotFound';
 
@@ -93,7 +95,19 @@ const TestDetailPage = () => {
   return (
     <div className="space-y-8">
       <TestDetailHeader isLoading={false} />
-      <TestDetailCard test={test} onDelete={handleDelete} isDeleting={isDeleting} />
+      <div className="grid gap-8">
+        <TestDetailCard test={test} />
+        <Card className="shadow-md border-t-4 border-t-primary">
+          <CardFooter className="pt-6 flex justify-between">
+            <TestDetailActions 
+              testId={id as string} 
+              onDelete={handleDelete} 
+              isDeleting={isDeleting}
+              test={test}
+            />
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 };

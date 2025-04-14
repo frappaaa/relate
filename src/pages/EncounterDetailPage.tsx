@@ -101,17 +101,19 @@ const EncounterDetailPage = () => {
   return (
     <div className="space-y-8">
       <EncounterDetailHeader isLoading={false} />
-      <EncounterDetailCard encounter={encounter} />
-      <Card>
-        <CardFooter className="pt-6 flex justify-between">
-          <EncounterDetailActions 
-            encounterId={id as string} 
-            onDelete={handleDelete} 
-            isDeleting={isDeleting}
-            encounter={encounter}
-          />
-        </CardFooter>
-      </Card>
+      <div className="grid gap-8">
+        <EncounterDetailCard encounter={encounter} />
+        <Card className="shadow-md border-t-4 border-t-primary">
+          <CardFooter className="pt-6 flex justify-between">
+            <EncounterDetailActions 
+              encounterId={id as string} 
+              onDelete={handleDelete} 
+              isDeleting={isDeleting}
+              encounter={encounter}
+            />
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 };
