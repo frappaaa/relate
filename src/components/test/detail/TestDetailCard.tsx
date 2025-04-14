@@ -45,16 +45,16 @@ const TestDetailCard: React.FC<TestDetailCardProps> = ({ test }) => {
   };
 
   return (
-    <Card className="shadow-md">
+    <Card className="shadow-md overflow-hidden">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Beaker className="h-5 w-5 text-blue-500" />
-            <CardTitle>Test IST</CardTitle>
+            <Beaker className="h-5 w-5 text-blue-500 flex-shrink-0" />
+            <CardTitle className="text-xl sm:text-2xl">Test IST</CardTitle>
           </div>
           <Badge 
             variant="outline" 
-            className={getBadgeColor(test.result || 'pending')}
+            className={`${getBadgeColor(test.result || 'pending')} whitespace-nowrap`}
           >
             {statusLabels[test.status as keyof typeof statusLabels]}
             {test.status === 'completed' && test.result !== 'positive' && 
@@ -64,37 +64,41 @@ const TestDetailCard: React.FC<TestDetailCardProps> = ({ test }) => {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center gap-2">
-          <CalendarClock className="h-5 w-5 text-muted-foreground" />
+          <CalendarClock className="h-5 w-5 text-muted-foreground flex-shrink-0" />
           <span>{formattedDate}</span>
         </div>
 
         <div>
           <h3 className="text-sm font-medium text-muted-foreground mb-2">Test effettuati per:</h3>
-          <TestBadges testTypes={testTypes} />
+          <div className="flex flex-wrap gap-2">
+            <TestBadges testTypes={testTypes} />
+          </div>
         </div>
 
         {test.status === 'completed' && test.result === 'positive' && (
           <div>
             <h3 className="text-sm font-medium text-muted-foreground mb-2">Risultati positivi per:</h3>
-            <TestBadges 
-              testTypes={testTypes}
-              specificResults={specificResults}
-              showPositiveOnly={true}
-            />
+            <div className="flex flex-wrap gap-2">
+              <TestBadges 
+                testTypes={testTypes}
+                specificResults={specificResults}
+                showPositiveOnly={true}
+              />
+            </div>
           </div>
         )}
 
         {test.location && (
           <div className="flex items-start gap-2">
-            <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
-            <span>{test.location}</span>
+            <MapPin className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+            <span className="break-words">{test.location}</span>
           </div>
         )}
 
         {test.notes && (
           <div>
             <h3 className="text-sm font-medium text-muted-foreground mb-1">Note</h3>
-            <p className="whitespace-pre-line">{test.notes}</p>
+            <p className="whitespace-pre-line break-words">{test.notes}</p>
           </div>
         )}
       </CardContent>

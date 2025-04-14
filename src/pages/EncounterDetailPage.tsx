@@ -99,12 +99,12 @@ const EncounterDetailPage = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-full overflow-hidden">
       <EncounterDetailHeader isLoading={false} />
-      <div className="grid gap-8">
+      <div className="grid gap-8 max-w-full">
         <EncounterDetailCard encounter={encounter} />
-        <Card className="shadow-md border-t-4 border-t-primary">
-          <CardFooter className="pt-6 flex justify-between">
+        <Card className="shadow-md border-t-4 border-t-primary overflow-hidden">
+          <CardFooter className="p-4 sm:p-6 flex justify-between max-w-full overflow-x-auto">
             <EncounterDetailActions 
               encounterId={id as string} 
               onDelete={handleDelete} 

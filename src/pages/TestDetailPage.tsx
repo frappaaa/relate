@@ -93,12 +93,12 @@ const TestDetailPage = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-full overflow-hidden">
       <TestDetailHeader isLoading={false} />
-      <div className="grid gap-8">
+      <div className="grid gap-8 max-w-full">
         <TestDetailCard test={test} />
-        <Card className="shadow-md border-t-4 border-t-primary">
-          <CardFooter className="pt-6 flex justify-between">
+        <Card className="shadow-md border-t-4 border-t-primary overflow-hidden">
+          <CardFooter className="p-4 sm:p-6 flex justify-between max-w-full overflow-x-auto">
             <TestDetailActions 
               testId={id as string} 
               onDelete={handleDelete} 

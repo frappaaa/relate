@@ -44,18 +44,18 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
   const displayTitle = encounter.encounter_name || `Rapporto ${encounterTypeDisplay}`;
 
   return (
-    <Card>
+    <Card className="overflow-hidden">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Heart className="h-5 w-5 text-pink-500" />
-            <CardTitle className="truncate">
+            <Heart className="h-5 w-5 text-pink-500 flex-shrink-0" />
+            <CardTitle className="text-xl sm:text-2xl truncate">
               {displayTitle}
             </CardTitle>
           </div>
           <Badge 
             variant="outline" 
-            className={`${getRiskColor(encounter.risk_level)} bg-opacity-15`}
+            className={`${getRiskColor(encounter.risk_level)} bg-opacity-15 whitespace-nowrap`}
           >
             {getRiskLabel(encounter.risk_level)}
           </Badge>
@@ -63,13 +63,13 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center gap-2">
-          <CalendarClock className="h-5 w-5 text-muted-foreground" />
+          <CalendarClock className="h-5 w-5 text-muted-foreground flex-shrink-0" />
           <span>{formattedDate}</span>
         </div>
         
         <div>
           <h3 className="text-sm font-medium text-muted-foreground mb-1">Tipo</h3>
-          <p>{encounterTypeDisplay}</p>
+          <p className="break-words">{encounterTypeDisplay}</p>
         </div>
 
         <div>
@@ -77,12 +77,12 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
           <div className="flex items-center gap-2">
             {encounter.protection_used ? (
               <>
-                <ShieldCheck className="h-5 w-5 text-green-500" />
+                <ShieldCheck className="h-5 w-5 text-green-500 flex-shrink-0" />
                 <span>Utilizzata</span>
               </>
             ) : (
               <>
-                <ShieldAlert className="h-5 w-5 text-red-500" />
+                <ShieldAlert className="h-5 w-5 text-red-500 flex-shrink-0" />
                 <span>Non utilizzata</span>
               </>
             )}
@@ -109,7 +109,7 @@ const EncounterDetailCard: React.FC<EncounterDetailCardProps> = ({ encounter }) 
         {encounter.notes && (
           <div>
             <h3 className="text-sm font-medium text-muted-foreground mb-1">Note</h3>
-            <p className="whitespace-pre-line">{encounter.notes}</p>
+            <p className="whitespace-pre-line break-words">{encounter.notes}</p>
           </div>
         )}
       </CardContent>
