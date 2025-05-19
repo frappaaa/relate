@@ -3,12 +3,15 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const CtaBanner: React.FC = () => {
   const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       toast({
         title: "Errore",
@@ -18,11 +21,30 @@ const CtaBanner: React.FC = () => {
       return;
     }
     
-    toast({
-      title: "Grazie per esserti iscritto!",
-      description: "Ti terremo aggiornato sulle novità di Relate.",
-    });
-    setEmail('');
+    setIsSubmitting(true);
+    
+    try {
+      const { error } = await supabase.functions.invoke('send-subscription', {
+        body: { email }
+      });
+      
+      if (error) throw new Error(error.message);
+      
+      toast({
+        title: "Grazie per esserti iscritto!",
+        description: "Ti terremo aggiornato sulle novità di Relate.",
+      });
+      setEmail('');
+    } catch (error) {
+      console.error('Errore durante l\'iscrizione:', error);
+      toast({
+        title: "Si è verificato un errore",
+        description: "Non è stato possibile completare l'iscrizione. Riprova più tardi.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -44,9 +66,15 @@ const CtaBanner: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-white/20 border-white/30 text-white placeholder:text-white/70 focus:bg-white/30"
+                disabled={isSubmitting}
               />
-              <Button type="submit" variant="secondary" className="bg-white text-primary hover:bg-white/90">
-                Iscriviti
+              <Button 
+                type="submit" 
+                variant="secondary" 
+                className="bg-white text-primary hover:bg-white/90" 
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Invio...' : 'Iscriviti'}
               </Button>
             </form>
           </div>
